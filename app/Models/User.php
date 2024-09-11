@@ -22,6 +22,8 @@ class User extends Authenticatable
         'password',
         'referred_by',
         'points',
+        'level',
+        'is_active',
     ];
 
     /**
@@ -45,5 +47,25 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function profile()
+    {
+        return $this->hasOne(Profile::class);
+    }
+
+    public function transaction()
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
+    public function user()
+    {
+        return $this->hasMany(User::class);
+    }
+
+    public function referrals()
+    {
+        return $this->hasMany(Referrals::class);
     }
 }

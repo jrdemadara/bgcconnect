@@ -13,35 +13,35 @@ return new class extends Migration
     {
         Schema::create('profiles', function (Blueprint $table) {
             $table->id();
-            $table->string('lastname');
-            $table->string('firstname');
-            $table->string('middlename');
-            $table->string('extension');
+            $table->string('lastname')->nullable();
+            $table->string('firstname')->nullable();
+            $table->string('middlename')->nullable();
+            $table->string('extension')->nullable();
             // media filenames
-            $table->string('precinct_number');
-            $table->string('avatar');
-            $table->string('id_type');
-            $table->string('id_card_front');
-            $table->string('id_card_back');
+            $table->string('precinct_number')->nullable();
+            $table->string('avatar')->nullable();
+            $table->string('id_type')->nullable();
+            $table->string('id_card_front')->nullable();
+            $table->string('id_card_back')->nullable();
             // address
-            $table->string('region');
-            $table->string('province');
-            $table->string('municipality_city');
-            $table->string('barangay');
-            $table->string('street');
+            $table->string('region')->nullable();
+            $table->string('province')->nullable();
+            $table->string('municipality_city')->nullable();
+            $table->string('barangay')->nullable();
+            $table->string('street')->nullable();
             // personal
-            $table->string('gender');
-            $table->string('birthdate');
-            $table->string('civil_status');
-            $table->string('blood_type');
-            $table->string('religion');
-            $table->string('tribe');
-            $table->string('industry_sector');
-            $table->string('occupation');
-            $table->string('income_level');
+            $table->string('gender')->nullable();
+            $table->string('birthdate')->nullable();
+            $table->string('civil_status')->nullable();
+            $table->string('blood_type')->nullable();
+            $table->string('religion')->nullable();
+            $table->string('tribe')->nullable();
+            $table->string('industry_sector')->nullable();
+            $table->string('occupation')->nullable();
+            $table->string('income_level')->nullable();
 
-            $table->string('affiliation');
-            $table->string('facebook');
+            $table->string('affiliation')->nullable();
+            $table->string('facebook')->nullable();
 
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade')->onUpdate('cascade');
             $table->index('user_id');

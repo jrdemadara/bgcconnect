@@ -13,14 +13,14 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('code');
+            $table->string('code')->nullable();
             $table->string('phone')->unique();
             $table->timestamp('phone_verified_at')->nullable();
             $table->string('password');
             $table->foreignId('referred_by')->nullable()->constrained('users')->onDelete('cascade')->onUpdate('cascade');
             $table->integer('points')->default(0);
             $table->integer('level')->default(1);
-            $table->string('location');
+            $table->string('location')->nullable();
             $table->boolean('is_active')->default(true);
             $table->rememberToken();
             $table->timestamps();
