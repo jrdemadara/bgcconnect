@@ -30,7 +30,7 @@ const submit = () => {
 
         <form @submit.prevent="submit">
             <div
-                class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-2 mt-4"
+                class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mt-4"
             >
                 <div>
                     <InputLabel for="firstname" value="Firstname" />
@@ -137,22 +137,6 @@ const submit = () => {
                             target="_blank"
                             rel="noopener noreferrer"
                             >Terms & Conditions</a
-                        >
-                    </p>
-                </div>
-
-                <div
-                    class="flex items-center space-x-2 font-medium text-gray-700 dark:text-gray-300"
-                >
-                    <input type="checkbox" name="" id="" />
-                    <p>
-                        I accept/agree to
-                        <a
-                            class="text-blue-500"
-                            href="#"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            >Data Privacy Policy</a
                         >
                     </p>
                 </div>

@@ -15,10 +15,10 @@ import { Link } from "@inertiajs/vue3";
         <h2
             class="font-semibold text-2xl mt-2 text-gray-800 dark:text-gray-100"
         >
-            Registration
+            BGC Connect
         </h2>
         <p class="text-gray-600 dark:text-gray-200">
-            Join now for exclusive rewards.
+            Invite, Earn, Win – Your Free Ticket to Big Rewards!
         </p>
         <div
             class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white dark:bg-gray-800 sm:shadow-md overflow-hidden sm:rounded-lg"

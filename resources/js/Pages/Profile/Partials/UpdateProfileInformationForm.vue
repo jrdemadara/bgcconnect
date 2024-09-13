@@ -1,48 +1,110 @@
 <script setup lang="ts">
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
-import { Link, useForm, usePage } from '@inertiajs/vue3';
+import InputError from "@/Components/InputError.vue";
+import InputLabel from "@/Components/InputLabel.vue";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
+import TextInput from "@/Components/TextInput.vue";
+import { Link, useForm, usePage } from "@inertiajs/vue3";
 
 defineProps<{
-    mustVerifyEmail?: Boolean;
+    mustVerifyPhone?: Boolean;
     status?: String;
 }>();
 
 const user = usePage().props.auth.user;
 
+console.log(user);
+
 const form = useForm({
-    name: user.name,
-    email: user.email,
+    firstname: user.profile.firstname,
+    middlename: user.profile.middlename,
+    lastname: user.profile.lastname,
+    extension: user.profile.extension,
+    precinct_number: user.profile.precinct_number,
+    avatar: user.profile.avatar,
+    id_type: user.profile.id_type,
+    id_card_front: user.profile.id_card_front,
+    id_card_back: user.profile.id_card_back,
+    region: user.profile.region,
+    province: user.profile.province,
+    municipality_city: user.profile.municipality_city,
+    barangay: user.profile.barangay,
+    street: user.profile.street,
+    gender: user.profile.gender,
+    birthdate: user.profile.birthdate,
+    civil_status: user.profile.civil_status,
+    blood_type: user.profile.blood_type,
+    religion: user.profile.religion,
+    tribe: user.profile.tribe,
+    industry_sector: user.profile.industry_sector,
+    occupation: user.profile.occupation,
+    income_level: user.profile.income_level,
+    affiliation: user.profile.affiliation,
+    facebook: user.profile.facebook,
 });
 </script>
 
 <template>
     <section>
         <header>
-            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Profile Information</h2>
+            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
+                Profile Information
+            </h2>
 
             <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
                 Update your account's profile information and email address.
             </p>
         </header>
 
-        <form @submit.prevent="form.patch(route('profile.update'))" class="mt-6 space-y-6">
+        <form
+            @submit.prevent="form.patch(route('profile.update'))"
+            class="mt-6 space-y-6"
+        >
             <div>
-                <InputLabel for="name" value="Name" />
+                <InputLabel for="firstname" value="Firstname" />
 
                 <TextInput
-                    id="name"
+                    id="firstname"
                     type="text"
-                    class="mt-1 block w-full"
-                    v-model="form.name"
+                    class="mt-1 block w-full capitalize"
+                    v-model="form.firstname"
                     required
                     autofocus
-                    autocomplete="name"
+                    autocomplete="firstname"
                 />
 
-                <InputError class="mt-2" :message="form.errors.name" />
+                <InputError class="mt-2" :message="form.errors.firstname" />
+            </div>
+
+            <div>
+                <InputLabel for="middlename" value="Middlename" />
+
+                <TextInput
+                    id="middlename"
+                    type="text"
+                    class="mt-1 block w-full capitalize"
+                    v-model="form.middlename"
+                    required
+                    autofocus
+                    autocomplete="middlename"
+                />
+
+                <InputError class="mt-2" :message="form.errors.middlename" />
+            </div>
+
+            <div>
+                <InputLabel for="lastname" value="Lastname" />
+
+                <TextInput
+                    id="lastname"
+                    type="text"
+                    class="mt-1 block w-full capitalize"
+                    v-model="form.lastname"
+                    required
+                    autofocus
+                    autocomplete="lastname"
+                />
+
+                <InputError class="mt-2" :message="form.errors.lastname" />
             </div>
 
             <div>
@@ -60,7 +122,7 @@ const form = useForm({
                 <InputError class="mt-2" :message="form.errors.email" />
             </div>
 
-            <div v-if="mustVerifyEmail && user.email_verified_at === null">
+            <div v-if="user.email_verified_at === null">
                 <p class="text-sm mt-2 text-gray-800 dark:text-gray-200">
                     Your email address is unverified.
                     <Link
@@ -90,7 +152,12 @@ const form = useForm({
                     leave-active-class="transition ease-in-out"
                     leave-to-class="opacity-0"
                 >
-                    <p v-if="form.recentlySuccessful" class="text-sm text-gray-600 dark:text-gray-400">Saved.</p>
+                    <p
+                        v-if="form.recentlySuccessful"
+                        class="text-sm text-gray-600 dark:text-gray-400"
+                    >
+                        Saved.
+                    </p>
                 </Transition>
             </div>
         </form>
