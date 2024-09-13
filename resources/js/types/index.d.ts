@@ -30,6 +30,7 @@ export interface User {
     phone: string;
     points: number;
     level: number;
+    phone_verified_at: string;
     profile: Profile;
 }
 

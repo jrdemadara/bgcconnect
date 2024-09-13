@@ -20,7 +20,7 @@ defineProps<{
             <h2
                 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight"
             >
-                Profile
+                Profile Overview
             </h2>
         </template>
 
@@ -35,7 +35,7 @@ defineProps<{
                         class="max-w-xl sm:max-w-full"
                     />
                 </div>
-                <div
+                <!-- <div
                     class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg"
                 >
                     <UpdateProfileInformationForm
@@ -55,7 +55,7 @@ defineProps<{
                     class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg"
                 >
                     <DeleteUserForm class="max-w-xl" />
-                </div>
+                </div> -->
             </div>
         </div>
     </AuthenticatedLayout>

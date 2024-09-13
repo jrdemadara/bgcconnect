@@ -51,7 +51,7 @@ const form = useForm({
             </h2>
 
             <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                Update your account's profile information and email address.
+                Update your account's profile information.
             </p>
         </header>
 
@@ -105,6 +105,38 @@ const form = useForm({
                 />
 
                 <InputError class="mt-2" :message="form.errors.lastname" />
+            </div>
+
+            <div>
+                <InputLabel for="extension" value="Extension" />
+
+                <TextInput
+                    id="extension"
+                    type="text"
+                    class="mt-1 block w-full capitalize"
+                    v-model="form.extension"
+                    required
+                    autofocus
+                    autocomplete="extension"
+                />
+
+                <InputError class="mt-2" :message="form.errors.extension" />
+            </div>
+            <div class="w-full h-0.5 mt-4 bg-gray-100 dark:bg-gray-600"></div>
+            <div>
+                <InputLabel for="extension" value="Extension" />
+
+                <TextInput
+                    id="extension"
+                    type="text"
+                    class="mt-1 block w-full capitalize"
+                    v-model="form.extension"
+                    required
+                    autofocus
+                    autocomplete="extension"
+                />
+
+                <InputError class="mt-2" :message="form.errors.extension" />
             </div>
 
             <div>
