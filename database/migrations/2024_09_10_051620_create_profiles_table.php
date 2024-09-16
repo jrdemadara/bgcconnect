@@ -40,8 +40,8 @@ return new class extends Migration
             $table->string('occupation')->nullable();
             $table->string('income_level')->nullable();
 
-            $table->string('affiliation')->nullable();
-            $table->string('facebook')->nullable();
+            $table->string('affiliation')->nullable()->default('bgc partylist');
+            $table->string('facebook')->nullable()->default('https://facebook.com/profile.php?id=61565478390720');
 
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade')->onUpdate('cascade');
             $table->index('user_id');

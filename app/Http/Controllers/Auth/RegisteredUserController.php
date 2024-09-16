@@ -43,7 +43,7 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        $profile = Profile::create([
+        Profile::create([
             'firstname' => $request->firstname,
             'lastname' => $request->lastname,
             'user_id' => $user->id,
