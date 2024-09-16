@@ -9,7 +9,7 @@ import { QrcodeStream, QrcodeDropZone, QrcodeCapture } from "vue-qrcode-reader";
 //     status?: string;
 // }>();
 
-const result = ref("");
+const qrcode = ref("");
 const error = ref("");
 const showScanConfirmation = ref(false);
 
@@ -26,7 +26,6 @@ function paintBoundingBox(detectedCodes, ctx) {
 }
 
 function onError(err) {
-    console.log(err);
     error.value = `[${err.name}]: `;
 
     if (err.name === "NotAllowedError") {
@@ -59,14 +58,29 @@ function onCameraOff(detectedCodes) {
 
 function onDetect(detectedCodes) {
     let code = detectedCodes.map((code) => code.rawValue);
-    result.value = code[0];
+    qrcode.value = code[0];
+    checkActivity(code[0]);
 }
 
 const app = createApp({
     setup() {
-        return { result, error, onDetect, onError, paintBoundingBox };
+        return { qrcode, error, onDetect, onError, paintBoundingBox };
     },
 });
+
+const checkActivity = (code) => {
+    axios
+        .post("/activity", {
+            qrcode: code,
+        })
+        .then(function (response) {
+            console.log(response);
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+};
+
 app.use(QrcodeStream);
 app.mount("#app");
 </script>

@@ -25,7 +25,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/activity', [ActivityController::class, 'index'])->name('activity.index');
-    Route::post('/activity', [ActivityController::class, 'store'])->name('activity.store');
+    Route::post('/activity', [ActivityController::class, 'storeActivityAttendees'])->name('activity.store');
 
 });
 
