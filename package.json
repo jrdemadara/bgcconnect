@@ -20,6 +20,7 @@
         "vue-tsc": "^2.0.24"
     },
     "dependencies": {
-        "lucide-vue-next": "^0.441.0"
+        "lucide-vue-next": "^0.441.0",
+        "qrcode-reader-vue3": "^3.1.2"
     }
 }
