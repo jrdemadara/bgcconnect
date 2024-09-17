@@ -4,30 +4,23 @@ import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { Link, useForm, usePage } from "@inertiajs/vue3";
-import { computed } from "vue";
+import { ref, computed } from "vue";
 import {
-    Activity,
     Badge,
     BadgeCheck,
-    CalendarCheck,
     CalendarCheck2,
-    ChevronDown,
     ChevronsDown,
     Info,
-    LoaderPinwheel,
-    Phone,
     QrCode,
-    Smartphone,
     Ticket,
-    Tickets,
     TrendingDown,
     TrendingUp,
-    UserRoundCheck,
-    UserRoundX,
     UsersRound,
-    Wallet,
     Wallet2,
 } from "lucide-vue-next";
+
+import { ModalsContainer, useModal } from "vue-final-modal";
+import ModalQR from "./QRModal.vue";
 
 defineProps<{
     // mustVerifyEmail?: Boolean;
@@ -49,43 +42,25 @@ const completionPercentage = computed(() => {
     }
 });
 
-const form = useForm({
-    firstname: user.profile.firstname,
-    middlename: user.profile.middlename,
-    lastname: user.profile.lastname,
-    extension: user.profile.extension,
-    precinct_number: user.profile.precinct_number,
-    avatar: user.profile.avatar,
-    id_type: user.profile.id_type,
-    id_card_front: user.profile.id_card_front,
-    id_card_back: user.profile.id_card_back,
-    region: user.profile.region,
-    province: user.profile.province,
-    municipality_city: user.profile.municipality_city,
-    barangay: user.profile.barangay,
-    street: user.profile.street,
-    gender: user.profile.gender,
-    birthdate: user.profile.birthdate,
-    civil_status: user.profile.civil_status,
-    blood_type: user.profile.blood_type,
-    religion: user.profile.religion,
-    tribe: user.profile.tribe,
-    industry_sector: user.profile.industry_sector,
-    occupation: user.profile.occupation,
-    income_level: user.profile.income_level,
-    affiliation: user.profile.affiliation,
-    facebook: user.profile.facebook,
+const { open, close } = useModal({
+    component: ModalQR,
+    attrs: {
+        qrcode: user.code,
+        onConfirm() {
+            close();
+        },
+    },
+    slots: {
+        default: "<p>UseModal: The content of the modal</p>",
+    },
 });
 </script>
 
 <template>
     <section>
-        <form
-            @submit.prevent="form.patch(route('profile.update'))"
-            class="flex flex-col justify-center items-center mt-4"
-        >
+        <div class="flex flex-col justify-center items-center mt-4">
             <img
-                class="bg-blue-400 w-36 h-36 rounded-xl"
+                class="bg-blue-400 w-36 h-36 rounded-xl border-2 border-gray-300"
                 src="../../../../image/me.jpg"
                 alt=""
             />
@@ -93,8 +68,6 @@ const form = useForm({
             <h4 class="font-medium text-xl dark:text-white capitalize">
                 {{ user.profile.firstname }}
                 {{ user.profile.lastname }}
-                {{ user.profile.middlename }}
-                {{ user.profile.extension }}
             </h4>
 
             <div
@@ -116,14 +89,18 @@ const form = useForm({
                     verified
                 </span>
                 <button
+                    v-show="user.level > 1"
                     class="flex justify-center items-center mt-2 text-gray-900 dark:text-white"
+                    @click="() => open()"
                 >
                     <QrCode
                         class="text-gray-900 dark:text-white mt-1 mr-1"
                         :size="20"
                     />
-                    <span class="underline">Show my QR</span>
+                    <span class="underline cursor-default">Show my QR</span>
                 </button>
+
+                <ModalsContainer />
             </div>
             <div class="flex flex-col w-full my-6">
                 <div class="flex justify-between mb-1">
@@ -148,11 +125,12 @@ const form = useForm({
                 <div class="flex w-full">
                     <Info class="text-red-400 mr-1" :size="24" />
                     <p class="text-red-500">
-                        Complete your profile to proceed to level 2
+                        Complete your profile and verify your <br />
+                        phone number to proceed to level 2
                     </p>
                 </div>
                 <Link
-                    :href="route('login')"
+                    :href="route('profile.edit')"
                     class="underline mt-1 text-sm text-blue-600 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
                 >
                     Click to complete
@@ -166,8 +144,7 @@ const form = useForm({
                 <div class="flex w-full">
                     <Info class="text-orange-400 mr-1" :size="24" />
                     <p class="text-orange-500">
-                        Verify your phone number and upload <br />
-                        your valid id to proceed to level 3.
+                        Upload your valid id to proceed to level 3.
                     </p>
                 </div>
                 <Link
@@ -286,6 +263,6 @@ const form = useForm({
                     <Ticket class="mr-1" :size="28" />Submit your raffle entry
                 </button>
             </div>
-        </form>
+        </div>
     </section>
 </template>

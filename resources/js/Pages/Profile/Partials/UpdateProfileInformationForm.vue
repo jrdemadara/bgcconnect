@@ -1,9 +1,73 @@
 <script setup lang="ts">
+import { ref } from "vue";
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
+import SecondaryButton from "@/Components/SecondaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { Link, useForm, usePage } from "@inertiajs/vue3";
+import cameraSound from "../../../../sound/camera.mp3"; // Import the sound file
+
+const video = ref<HTMLVideoElement | null>(null);
+const canvas = ref<HTMLCanvasElement | null>(null);
+const photo = ref<string | null>(null);
+const captureSoundSrc = cameraSound; // Use the imported sound file
+let stream: MediaStream | null = null; // To hold the media stream
+
+const cameraState = ref("start");
+
+const startCamera = async () => {
+    try {
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            stream = await navigator.mediaDevices.getUserMedia({
+                video: true,
+            });
+            if (video.value) {
+                video.value.srcObject = stream;
+                cameraState.value = "capture";
+            }
+        } else {
+            console.error("getUserMedia not supported");
+        }
+    } catch (error) {
+        console.error("Error accessing camera: ", error);
+    }
+};
+
+const capturePhoto = () => {
+    if (video.value && canvas.value) {
+        const context = canvas.value.getContext("2d");
+        if (context) {
+            canvas.value.width = video.value.videoWidth;
+            canvas.value.height = video.value.videoHeight;
+            context.drawImage(video.value, 0, 0);
+            photo.value = canvas.value.toDataURL("image/png");
+
+            // Play the capture sound
+            const audioElement = document.querySelector(
+                "audio"
+            ) as HTMLAudioElement;
+            if (audioElement) {
+                audioElement.play();
+            }
+            cameraState.value = "done";
+            if (stream) {
+                stream.getTracks().forEach((track) => track.stop());
+            }
+        }
+    }
+};
+
+const retakePhoto = () => {
+    cameraState.value = "capture";
+    if (video.value) {
+        // Clear the previous photo
+        photo.value = null;
+
+        // Restart the camera
+        startCamera();
+    }
+};
 
 defineProps<{
     mustVerifyPhone?: Boolean;
@@ -11,8 +75,6 @@ defineProps<{
 }>();
 
 const user = usePage().props.auth.user;
-
-console.log(user);
 
 const form = useForm({
     firstname: user.profile.firstname,
@@ -59,6 +121,50 @@ const form = useForm({
             @submit.prevent="form.patch(route('profile.update'))"
             class="mt-6 space-y-6"
         >
+            <div class="flex flex-col justify-center items-center">
+                <h3 class="mb-2 text-gray-800">Capture Profile Photo</h3>
+                <video
+                    v-show="cameraState == 'capture'"
+                    ref="video"
+                    autoplay
+                    class="border-4 border-gray-300 rounded-xl"
+                ></video>
+
+                <canvas ref="canvas" style="display: none"></canvas>
+                <!-- Display the captured photo -->
+                <img
+                    v-if="photo && cameraState == 'done'"
+                    :src="photo"
+                    alt="Captured Photo"
+                    class="border-4 border-gray-300 rounded-xl"
+                />
+
+                <audio ref="captureSound" :src="captureSoundSrc"></audio>
+
+                <SecondaryButton
+                    v-show="cameraState == 'start'"
+                    @click="startCamera"
+                    class="mt-4"
+                    :disabled="form.processing"
+                    >Open Camera</SecondaryButton
+                >
+
+                <SecondaryButton
+                    v-show="cameraState == 'capture'"
+                    @click="capturePhoto"
+                    class="mt-4"
+                    :disabled="form.processing"
+                    >Capture</SecondaryButton
+                >
+
+                <SecondaryButton
+                    v-show="cameraState == 'done'"
+                    @click="retakePhoto"
+                    class="mt-4"
+                    :disabled="form.processing"
+                    >Retake Photo</SecondaryButton
+                >
+            </div>
             <div>
                 <InputLabel for="firstname" value="Firstname" />
 
@@ -110,15 +216,20 @@ const form = useForm({
             <div>
                 <InputLabel for="extension" value="Extension" />
 
-                <TextInput
+                <select
                     id="extension"
-                    type="text"
-                    class="mt-1 block w-full capitalize"
+                    class="mt-1 block w-full capitalize rounded shadow-sm border border-gray-300"
                     v-model="form.extension"
                     required
                     autofocus
-                    autocomplete="extension"
-                />
+                >
+                    <option selected value="">None</option>
+                    <option value="sr.">Sr.</option>
+                    <option value="jr.">Jr.</option>
+                    <option value="iii">III</option>
+                    <option value="iv">IV</option>
+                    <option value="v">V</option>
+                </select>
 
                 <InputError class="mt-2" :message="form.errors.extension" />
             </div>

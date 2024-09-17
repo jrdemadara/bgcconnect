@@ -10,20 +10,32 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
-use Illuminate\Support\Str;
 
 class ProfileController extends Controller
 {
-    /**
-     * Display the user's profile form.
-     */
+
+    // Display the user's profile form.
+    public function index(Request $request): Response
+    {
+        $user = $request->user();
+        $profile = $user->profile->select('firstname', 'lastname', 'avatar')->first();
+        return Inertia::render('Profile/Profile', [
+            // 'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
+            'status' => session('status'),
+            'user' => $user,
+            'profile' => $profile,
+        ]);
+    }
+
+    // Display the user's profile form for edit.
     public function edit(Request $request): Response
     {
         $user = $request->user();
         $profile = $user->profile; // Fetch the user's profile
-        $provinces = Province::select('provCode','provDescription')->where('regCode', '1900000000');
+        $provinces = Province::select('provCode', 'provDescription')->where('regCode', '1900000000');
         return Inertia::render('Profile/Edit', [
             // 'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => session('status'),

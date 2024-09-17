@@ -16,11 +16,15 @@
         "tailwindcss": "^3.2.1",
         "typescript": "^5.5.3",
         "vite": "^5.0",
-        "vue": "^3.4.0",
+        "vue": "^3.5.6",
         "vue-tsc": "^2.0.24"
     },
     "dependencies": {
+        "@chenfengyuan/vue-qrcode": "^2.0.0",
         "lucide-vue-next": "^0.441.0",
+        "qrcode": "^1.5.4",
+        "qrcode.vue": "^3.4.1",
+        "vue-final-modal": "^4.5.5",
         "vue-qrcode-reader": "^5.5.8"
     }
 }
