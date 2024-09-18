@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from "vue";
 import GuestLayout from "@/Layouts/GuestLayout.vue";
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
@@ -15,12 +16,19 @@ const form = useForm({
     password_confirmation: "",
 });
 
+const isFilipino = ref(false);
+const termsAccept = ref(false);
+
 const submit = () => {
-    form.post(route("register"), {
-        onFinish: () => {
-            form.reset("password", "password_confirmation");
-        },
-    });
+    if (isFilipino && termsAccept) {
+        form.post(route("register"), {
+            onFinish: () => {
+                form.reset("password", "password_confirmation");
+            },
+        });
+    } else {
+        console.log("ok");
+    }
 };
 </script>
 
@@ -121,14 +129,14 @@ const submit = () => {
                 <div
                     class="flex items-center space-x-2 font-medium text-gray-700 dark:text-gray-300"
                 >
-                    <input type="checkbox" name="" id="" />
+                    <input type="checkbox" v-model="isFilipino" />
                     <p>I am a Filipino</p>
                 </div>
 
                 <div
                     class="flex items-center space-x-2 font-medium text-gray-700 dark:text-gray-300"
                 >
-                    <input type="checkbox" name="" id="" />
+                    <input type="checkbox" v-model="termsAccept" />
                     <p>
                         I accept the
                         <a
@@ -152,8 +160,11 @@ const submit = () => {
 
                 <PrimaryButton
                     class="ms-4"
-                    :class="{ 'opacity-25': form.processing }"
-                    :disabled="form.processing"
+                    :class="{
+                        'opacity-25':
+                            form.processing || !isFilipino || !termsAccept,
+                    }"
+                    :disabled="form.processing || !isFilipino || !termsAccept"
                 >
                     Register
                 </PrimaryButton>

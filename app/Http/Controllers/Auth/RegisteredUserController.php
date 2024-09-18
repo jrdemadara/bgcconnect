@@ -41,6 +41,8 @@ class RegisteredUserController extends Controller
         $user = User::create([
             'phone' => $request->phone,
             'password' => Hash::make($request->password),
+            'code' => $this->generateRandomString(),
+
         ]);
 
         Profile::create([
@@ -55,4 +57,14 @@ class RegisteredUserController extends Controller
 
         return redirect(route('dashboard', absolute: false));
     }
+
+    private function generateRandomString()
+    {
+        // Define your allowed characters (both letters and numbers)
+        $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+
+        // Shuffle and pick random characters
+        return substr(str_shuffle(str_repeat($characters, 12)), 0, 12);
+    }
+
 }

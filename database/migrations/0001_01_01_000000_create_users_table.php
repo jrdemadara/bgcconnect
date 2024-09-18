@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('code')->nullable();
             $table->string('phone')->unique();
+            $table->string('verification_code')->nullable();
             $table->timestamp('phone_verified_at')->nullable();
             $table->string('password');
             $table->foreignId('referred_by')->nullable()->constrained('users')->onDelete('cascade')->onUpdate('cascade');
@@ -22,6 +23,7 @@ return new class extends Migration
             $table->integer('level')->default(1);
             $table->string('location')->nullable();
             $table->boolean('is_active')->default(true);
+            $table->string('status')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

@@ -76,16 +76,16 @@ const { open, close } = useModal({
                 {{ user.phone }}
                 <span
                     v-show="!user.phone_verified_at"
-                    class="flex justify-center items-center w-fit px-2 py-0.5 mt-1 font-medium rounded-full text-red-700 bg-red-200"
+                    class="flex justify-center items-center w-fit px-2 py-0.5 mt-1 font-medium text-sm rounded-full text-red-700 bg-red-200"
                 >
-                    <Badge class="text-red-700 mr-1" :size="16" />
+                    <Badge class="text-red-700 mr-0.5" :size="16" />
                     unverified
                 </span>
                 <span
                     v-show="user.phone_verified_at"
-                    class="flex justify-center items-center w-fit px-2 py-0.5 mt-1 font-medium rounded-full text-green-700 bg-green-200"
+                    class="flex justify-center items-center w-fit px-2 py-0.5 mt-1 font-medium text-sm rounded-full text-green-700 bg-green-200"
                 >
-                    <BadgeCheck class="text-green-700 mr-1" :size="16" />
+                    <BadgeCheck class="text-green-700 mr-0.5" :size="16" />
                     verified
                 </span>
                 <button
