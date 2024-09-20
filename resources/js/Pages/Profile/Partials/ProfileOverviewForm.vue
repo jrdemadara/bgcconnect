@@ -31,10 +31,14 @@ const user = usePage().props.auth.user;
 const completionPercentage = computed(() => {
     switch (user.level) {
         case 1:
-            return "30%";
+            return "10%";
         case 2:
-            return "70%";
+            return "30%";
         case 3:
+            return "50%";
+        case 4:
+            return "70%";
+        case 5:
             return "100%";
         // Add more cases as needed
         default:
@@ -112,21 +116,22 @@ const { open, close } = useModal({
                 <div
                     :class="[
                         'h-2 rounded-full bg-green-500 transition-width duration-500 ease-in-out',
-                        { 'w-[33.33%]': user.level === 1 },
-                        { 'w-[66.66%]': user.level === 2 },
-                        { 'w-[100%]': user.level === 3 },
+                        { 'w-[10%]': user.level === 1 },
+                        { 'w-[30%]': user.level === 2 },
+                        { 'w-[50%]': user.level === 3 },
+                        { 'w-[70%]': user.level === 4 },
+                        { 'w-[100%]': user.level === 5 },
                     ]"
                 />
             </div>
             <div
-                v-show="user.level < 2"
+                v-show="user.level === 1"
                 class="flex flex-col items-center w-full rounded p-2 bg-red-100"
             >
                 <div class="flex w-full">
                     <Info class="text-red-400 mr-1" :size="24" />
                     <p class="text-red-500">
-                        Complete your profile and verify your <br />
-                        phone number to proceed to level 2
+                        Complete your profile and elevate to level 2.
                     </p>
                 </div>
                 <Link
@@ -134,6 +139,24 @@ const { open, close } = useModal({
                     class="underline mt-1 text-sm text-blue-600 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
                 >
                     Click to complete
+                </Link>
+            </div>
+
+            <div
+                v-show="user.level < 2"
+                class="flex flex-col items-center w-full rounded p-2 mt-3 bg-orange-100"
+            >
+                <div class="flex w-full">
+                    <Info class="text-orange-400 mr-1" :size="24" />
+                    <p class="text-orange-500">
+                        Verify your phone number to proceed to level 3.
+                    </p>
+                </div>
+                <Link
+                    :href="route('login')"
+                    class="underline mt-1 text-sm text-blue-600 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
+                >
+                    Verify Phone
                 </Link>
             </div>
 

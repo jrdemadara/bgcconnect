@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ActivityController;
+use App\Http\Controllers\AddressController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -27,6 +28,10 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/activity', [ActivityController::class, 'index'])->name('activity.index');
     Route::post('/activity', [ActivityController::class, 'storeActivityAttendees'])->name('activity.store');
+
+    Route::get('/provinces', [AddressController::class, 'getProvinces'])->name('address.getProvinces');
+    Route::get('/municipalities', [AddressController::class, 'getMunicipalities'])->name('address.getMunicipalities');
+    Route::get('/barangays', [AddressController::class, 'getBarangays'])->name('address.getBarangays');
 
 });
 

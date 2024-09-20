@@ -34,14 +34,11 @@ class ProfileController extends Controller
     public function edit(Request $request): Response
     {
         $user = $request->user();
-        $profile = $user->profile; // Fetch the user's profile
-        $provinces = Province::select('provCode', 'provDescription')->where('regCode', '1900000000');
+        $profile = $user->profile;
         return Inertia::render('Profile/Edit', [
-            // 'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => session('status'),
             'user' => $user,
             'profile' => $profile,
-            'provinces' => $provinces,
         ]);
     }
     /**
@@ -51,10 +48,8 @@ class ProfileController extends Controller
     {
         $request->user()->fill($request->validated());
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
-        }
-        $profile = Profile::find($request->user('id'));
+        $profile = Profile::where('id', $request->user()->id)->first();
+
         $profile->lastname = Str::lower($request->lastname);
         $profile->firstname = Str::lower($request->firstname);
         $profile->middlename = Str::lower($request->middlename);
@@ -64,15 +59,15 @@ class ProfileController extends Controller
         $profile->id_type = Str::lower($request->id_type);
         $profile->id_card_front = Str::lower($request->id_card_front);
         $profile->id_card_back = Str::lower($request->id_card_back);
-        $profile->region = Str::lower($request->region);
-        $profile->province = Str::lower($request->province);
-        $profile->municipality_city = Str::lower($request->municipality_city);
-        $profile->barangay = Str::lower($request->barangay);
+        $profile->region = $request->region;
+        $profile->province = $request->province;
+        $profile->municipality_city = $request->municipality_city;
+        $profile->barangay = $request->barangay;
         $profile->street = Str::lower($request->street);
         $profile->gender = Str::lower($request->gender);
         $profile->birthdate = $request->birthdate;
         $profile->civil_status = Str::lower($request->civil_status);
-        $profile->blood_type = Str::lower($request->blood_type);
+        $profile->blood_type = $request->blood_type;
         $profile->religion = Str::lower($request->religion);
         $profile->tribe = Str::lower($request->tribe);
         $profile->industry_sector = Str::lower($request->industry_sector);
@@ -80,8 +75,16 @@ class ProfileController extends Controller
         $profile->income_level = $request->income_level;
         $profile->affiliation = Str::lower($request->affiliation);
         $profile->facebook = Str::lower($request->facebook);
-        $profile->user_id = $request->input('user');
+        $profile->user_id = $request->user()->id;
         $profile->save();
+
+        // Update user phone verification code
+        $user = $request->user();
+        if (!$user->phone_verified_at) {
+            $user->verification_code = $this->generateRandomString();
+            $user->save();
+
+        }
 
         return Redirect::route('profile.edit');
     }
@@ -105,5 +108,14 @@ class ProfileController extends Controller
         $request->session()->regenerateToken();
 
         return Redirect::to('/');
+    }
+
+    private function generateRandomString()
+    {
+        // Define your allowed characters (both letters and numbers)
+        $characters = '0123456789';
+
+        // Shuffle and pick random characters
+        return substr(str_shuffle(str_repeat($characters, 8)), 0, 8);
     }
 }
