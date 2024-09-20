@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -80,13 +81,41 @@ class ProfileController extends Controller
 
         // Update user phone verification code
         $user = $request->user();
-        if (!$user->phone_verified_at) {
-            $user->verification_code = $this->generateRandomString();
-            $user->save();
-
-        }
+        $user->level = 2;
+        $user->save();
 
         return Redirect::route('profile.edit');
+    }
+
+    public function sendVerification()
+    {
+
+        $id = Auth::id();
+        $user = User::find($id);
+        $user->verification_code = $this->generateRandomString();
+        $user->save();
+
+        return Inertia::render('Profile/VerifyPhone', [
+            'status' => session('status'),
+        ]);
+
+    }
+
+    public function verify(Request $request): RedirectResponse
+    {
+        //TODO: Implement Redis for Verification Code expiry
+
+        $id = Auth::id();
+        $user = User::find($id);
+        $verification_code = $user->verification_code;
+
+        if ($request->verification_code == $verification_code) {
+            $user->phone_verified_at = Date::now();
+            $user->level = 3;
+            $user->save();
+        }
+
+        return Redirect::route('profile.index');
     }
 
     /**

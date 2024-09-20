@@ -19,11 +19,14 @@ class User extends Authenticatable
     protected $fillable = [
         'code',
         'phone',
+        'verification_code',
+        'phone_verified_at',
         'password',
         'referred_by',
         'points',
         'level',
         'is_active',
+        'status',
     ];
 
     /**

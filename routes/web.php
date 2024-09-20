@@ -24,6 +24,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::get('/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/verify/send', [ProfileController::class, 'sendVerification'])->name('verify.send');
+    Route::get('/verify/phone', [ProfileController::class, 'verify'])->name('profile.verifyPhone');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/activity', [ActivityController::class, 'index'])->name('activity.index');
