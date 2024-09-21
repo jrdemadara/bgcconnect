@@ -153,7 +153,7 @@ const { open, close } = useModal({
                     </p>
                 </div>
                 <Link
-                    :href="route('verify.send')"
+                    :href="route('verify.index')"
                     class="underline mt-1 text-sm text-blue-600 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
                 >
                     Verify Phone

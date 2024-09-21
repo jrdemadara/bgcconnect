@@ -1,23 +1,43 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
+
 import GuestLayout from "@/Layouts/GuestLayout.vue";
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
-import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
-import { Head, Link, useForm } from "@inertiajs/vue3";
-import SecondaryButton from "@/Components/SecondaryButton.vue";
+import { Head, useForm } from "@inertiajs/vue3";
 import axios from "axios";
 
-const props = defineProps<{
-    status?: string;
-}>();
+const timer = ref(0);
+let interval: ReturnType<typeof setInterval> | null = null;
 
 const verification_code = ref("");
 const verification_code_error = ref("");
-const resend_verification_code = ref(false);
+const some_error = ref("");
 
-const status = ref("");
+const send = async () => {
+    if (timer.value == 0) {
+        try {
+            const response = await axios.get("/verify/send");
+
+            console.log(response.data.message);
+
+            if (response.data.message === "sent") {
+                const verificationDuration = 3600; // 1 hour in seconds
+                timer.value = verificationDuration;
+                localStorage.setItem(
+                    "verificationTimer",
+                    String(verificationDuration)
+                );
+                startTimer();
+            } else {
+                if (interval) clearInterval(interval);
+            }
+        } catch (error) {
+            some_error.value = "Something went wrong, Please try again!";
+        }
+    }
+};
 
 const verify = () => {
     axios
@@ -27,24 +47,55 @@ const verify = () => {
             },
         })
         .then(function (response) {
-            // handle success
-            status.value = "verified";
             console.log(response);
-            window.location.href = "/profile";
+            if (response.status == 200) {
+                window.location.href = "/profile";
+            }
         })
         .catch(function (error) {
-            console.log(error);
-            // handle error
-            status.value = "unverified";
-            verification_code_error.value = "Verification Code is not valid.";
+            if (error.status === 400) {
+                verification_code_error.value = "Invalid Verification Code";
+            } else {
+                some_error.value = "Something went wrong, Please try again!";
+            }
         });
 };
 
-const form = useForm({});
+const startTimer = () => {
+    if (interval) clearInterval(interval);
 
-const submit = () => {
-    form.post(route("verification.send"));
+    interval = setInterval(() => {
+        if (timer.value > 0) {
+            timer.value--;
+            localStorage.setItem("verificationTimer", String(timer.value)); // Update localStorage
+        } else {
+            clearInterval(interval!);
+            localStorage.removeItem("verificationTimer"); // Clear when expired
+        }
+    }, 1000); // Update every second
 };
+
+const formatTime = (seconds: number): string => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
+};
+
+// Restore timer on component mount
+onMounted(() => {
+    const storedTimer = localStorage.getItem("verificationTimer");
+    if (storedTimer) {
+        timer.value = Number(storedTimer);
+        if (timer.value > 0) {
+            startTimer();
+        }
+    }
+});
+
+// Cleanup on component unmount
+onUnmounted(() => {
+    if (interval) clearInterval(interval);
+});
 </script>
 
 <template>
@@ -59,51 +110,63 @@ const submit = () => {
 
         <div
             class="mb-4 font-medium text-sm text-green-600 dark:text-green-400"
-            v-if="resend_verification_code"
+            v-if="timer > 0"
         >
-            A new verification link has been sent to the email address you
-            provided during registration.
+            A new verification code has been sent to your phone number.
         </div>
 
-        <form @submit.prevent="submit">
-            <div
-                class="mt-4 flex flex-col items-center justify-between space-y-6"
-            >
-                <div class="w-full">
-                    <InputLabel
-                        for="verrification_code"
-                        value="Verification Code"
-                    />
+        <div
+            class="bg-red-500 rounded-md mb-4 p-2 font-medium text-sm text-white"
+            v-if="some_error"
+        >
+            {{ some_error }}
+        </div>
 
-                    <TextInput
-                        id="verrification_code"
-                        v-model="verification_code"
-                        type="text"
-                        class="mt-1 block w-full"
-                    />
+        <div class="mt-4 flex flex-col items-center justify-between space-y-6">
+            <div class="w-full">
+                <InputLabel
+                    for="verrification_code"
+                    value="Verification Code"
+                />
 
-                    <InputError
-                        :message="verification_code_error"
-                        class="mt-2"
-                    />
-                    <p class="text-red-500">
-                        The code is valid for 30 minutes.
-                    </p>
-                </div>
-                <PrimaryButton
+                <TextInput
+                    id="verrification_code"
+                    v-model="verification_code"
+                    type="text"
+                    class="mt-1 block w-full"
+                />
+
+                <InputError :message="verification_code_error" class="mt-2" />
+            </div>
+
+            <div class="flex flex-col space-y-4 w-full">
+                <button
                     @click="verify"
-                    :class="{ 'opacity-25': form.processing }"
-                    :disabled="form.processing"
+                    class="inline-flex justify-center items-center h-10 px-4 py-2 bg-[#05203c] dark:bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-white dark:text-gray-800 uppercase tracking-widest hover:bg-gray-700 dark:hover:bg-white focus:bg-gray-700 dark:focus:bg-white active:bg-gray-900 dark:active:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150"
                 >
                     Verify
-                </PrimaryButton>
-                <SecondaryButton
-                    :class="{ 'opacity-25': form.processing }"
-                    :disabled="form.processing"
+                </button>
+
+                <button
+                    @click="send"
+                    type="button"
+                    :class="{
+                        'inline-flex justify-center items-center h-10 px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest transition ease-in-out duration-150': true,
+                        'bg-[#05203c] text-white hover:bg-[#041b33] focus:bg-[#041b33] active:bg-[#03182e]':
+                            timer === 0,
+                        'bg-gray-400 text-gray-300 cursor-not-allowed':
+                            timer > 0,
+                    }"
                 >
                     Resend Verification Code
-                </SecondaryButton>
+                </button>
+                <p class="text-red-500 text-center font-bold" v-if="timer > 0">
+                    <span class="text-gray-600 font-normal">
+                        Verification code will expire in:
+                    </span>
+                    {{ formatTime(timer) }}
+                </p>
             </div>
-        </form>
+        </div>
     </GuestLayout>
 </template>

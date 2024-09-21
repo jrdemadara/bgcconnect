@@ -79,43 +79,11 @@ class ProfileController extends Controller
         $profile->user_id = $request->user()->id;
         $profile->save();
 
-        // Update user phone verification code
         $user = $request->user();
         $user->level = 2;
         $user->save();
 
         return Redirect::route('profile.edit');
-    }
-
-    public function sendVerification()
-    {
-
-        $id = Auth::id();
-        $user = User::find($id);
-        $user->verification_code = $this->generateRandomString();
-        $user->save();
-
-        return Inertia::render('Profile/VerifyPhone', [
-            'status' => session('status'),
-        ]);
-
-    }
-
-    public function verify(Request $request): RedirectResponse
-    {
-        //TODO: Implement Redis for Verification Code expiry
-
-        $id = Auth::id();
-        $user = User::find($id);
-        $verification_code = $user->verification_code;
-
-        if ($request->verification_code == $verification_code) {
-            $user->phone_verified_at = Date::now();
-            $user->level = 3;
-            $user->save();
-        }
-
-        return Redirect::route('profile.index');
     }
 
     /**
@@ -139,12 +107,4 @@ class ProfileController extends Controller
         return Redirect::to('/');
     }
 
-    private function generateRandomString()
-    {
-        // Define your allowed characters (both letters and numbers)
-        $characters = '0123456789';
-
-        // Shuffle and pick random characters
-        return substr(str_shuffle(str_repeat($characters, 8)), 0, 8);
-    }
 }

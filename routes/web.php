@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\AddressController;
+use App\Http\Controllers\PhoneVerificationController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -24,9 +26,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::get('/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::get('/verify/send', [ProfileController::class, 'sendVerification'])->name('verify.send');
-    Route::get('/verify/phone', [ProfileController::class, 'verify'])->name('profile.verifyPhone');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::get('/verify', [PhoneVerificationController::class, 'index'])->name('verify.index');
+    Route::get('/verify/send', [PhoneVerificationController::class, 'send'])->name('verify.send');
+    Route::get('/verify/phone', [PhoneVerificationController::class, 'verify'])->name('profile.verifyPhone');
 
     Route::get('/activity', [ActivityController::class, 'index'])->name('activity.index');
     Route::post('/activity', [ActivityController::class, 'storeActivityAttendees'])->name('activity.store');
@@ -34,6 +38,24 @@ Route::middleware('auth')->group(function () {
     Route::get('/provinces', [AddressController::class, 'getProvinces'])->name('address.getProvinces');
     Route::get('/municipalities', [AddressController::class, 'getMunicipalities'])->name('address.getMunicipalities');
     Route::get('/barangays', [AddressController::class, 'getBarangays'])->name('address.getBarangays');
+
+});
+
+Route::get('/publish', function () {
+    $channel = 'sms';
+// Create an array with the data you want to send
+    $data = [
+        'phone_number' => '123-456-7890',
+        'verification_code' => 'ABC123',
+    ];
+
+// Encode the array as JSON
+    $message = json_encode($data);
+
+// Publish the JSON message to the channel
+    Redis::publish($channel, "ok");
+
+    return 'Message published!';
 
 });
 

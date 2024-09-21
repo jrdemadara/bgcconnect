@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string('code')->nullable();
             $table->string('phone')->unique();
-            $table->string('verification_code')->nullable();
             $table->timestamp('phone_verified_at')->nullable();
             $table->string('password');
             $table->foreignId('referred_by')->nullable()->constrained('users')->onDelete('cascade')->onUpdate('cascade');
