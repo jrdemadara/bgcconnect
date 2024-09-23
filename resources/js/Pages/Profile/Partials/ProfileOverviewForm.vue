@@ -161,7 +161,7 @@ const { open, close } = useModal({
             </div>
 
             <div
-                v-show="user.level < 3"
+                v-show="user.level <= 3"
                 class="flex flex-col items-center w-full rounded p-2 mt-3 bg-orange-100"
             >
                 <div class="flex w-full">
@@ -171,7 +171,7 @@ const { open, close } = useModal({
                     </p>
                 </div>
                 <Link
-                    :href="route('login')"
+                    :href="route('verify.id')"
                     class="underline mt-1 text-sm text-blue-600 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
                 >
                     Verify Phone & ID

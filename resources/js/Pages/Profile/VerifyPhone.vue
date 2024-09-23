@@ -47,8 +47,8 @@ const verify = () => {
             },
         })
         .then(function (response) {
-            console.log(response);
             if (response.status == 200) {
+                if (interval) clearInterval(interval);
                 window.location.href = "/profile";
             }
         })
@@ -152,7 +152,7 @@ onUnmounted(() => {
                     type="button"
                     :class="{
                         'inline-flex justify-center items-center h-10 px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest transition ease-in-out duration-150': true,
-                        'bg-[#05203c] text-white hover:bg-[#041b33] focus:bg-[#041b33] active:bg-[#03182e]':
+                        'bg-gray-400 text-white hover:bg-gray-500 focus:bg-gray-400 active:bg-gray-400':
                             timer === 0,
                         'bg-gray-400 text-gray-300 cursor-not-allowed':
                             timer > 0,

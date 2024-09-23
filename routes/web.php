@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\AddressController;
+use App\Http\Controllers\IDVerificationController;
 use App\Http\Controllers\PhoneVerificationController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
@@ -31,6 +32,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/verify', [PhoneVerificationController::class, 'index'])->name('verify.index');
     Route::get('/verify/send', [PhoneVerificationController::class, 'send'])->name('verify.send');
     Route::get('/verify/phone', [PhoneVerificationController::class, 'verify'])->name('profile.verifyPhone');
+
+    Route::get('/verify/id', [IDVerificationController::class, 'index'])->name('verify.id');
 
     Route::get('/activity', [ActivityController::class, 'index'])->name('activity.index');
     Route::post('/activity', [ActivityController::class, 'storeActivityAttendees'])->name('activity.store');
