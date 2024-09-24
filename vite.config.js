@@ -6,6 +6,7 @@ export default defineConfig({
     server: {
         host: true,
     },
+
     plugins: [
         laravel({
             input: "resources/js/app.ts",

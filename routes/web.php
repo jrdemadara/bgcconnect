@@ -27,6 +27,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::get('/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile/photo', [ProfileController::class, 'updatePhoto'])->name('profile.photo');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/verify', [PhoneVerificationController::class, 'index'])->name('verify.index');
@@ -34,6 +35,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/verify/phone', [PhoneVerificationController::class, 'verify'])->name('profile.verifyPhone');
 
     Route::get('/verify/id', [IDVerificationController::class, 'index'])->name('verify.id');
+    Route::post('/verify/store', [IDVerificationController::class, 'store'])->name('verify.store');
 
     Route::get('/activity', [ActivityController::class, 'index'])->name('activity.index');
     Route::post('/activity', [ActivityController::class, 'storeActivityAttendees'])->name('activity.store');

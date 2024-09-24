@@ -12,6 +12,7 @@ import cameraSound from "../../../../sound/camera.mp3"; // Import the sound file
 const video = ref<HTMLVideoElement | null>(null);
 const canvas = ref<HTMLCanvasElement | null>(null);
 const photo = ref<string | null>(null);
+const profilePhoto = ref<File | null>(null);
 const captureSoundSrc = cameraSound; // Use the imported sound file
 let stream: MediaStream | null = null; // To hold the media stream
 
@@ -26,6 +27,7 @@ const selectedProvince = ref<string | null>(null);
 const selectedMunicipality = ref<string | null>(null);
 const selectedBarangay = ref<string | null>(null);
 
+const some_error = ref("");
 const barangays = ref<{ brgyCode: string; brgyDescription: string }[]>([]);
 
 const startCamera = async () => {
@@ -50,11 +52,26 @@ const capturePhoto = () => {
     if (video.value && canvas.value) {
         const context = canvas.value.getContext("2d");
         if (context) {
+            // Set canvas dimensions to match the video
             canvas.value.width = video.value.videoWidth;
             canvas.value.height = video.value.videoHeight;
+
+            // Draw the video frame onto the canvas
             context.drawImage(video.value, 0, 0);
-            photo.value = canvas.value.toDataURL("image/png");
-            form.avatar = photo.value;
+
+            photo.value = canvas.value.toDataURL("image/jpeg");
+
+            // Get base64 encoded image data
+            const dataUrl = canvas.value.toDataURL("image/jpeg");
+
+            // Convert base64 to Blob
+            const blob = dataURLToBlob(dataUrl);
+
+            // If you specifically need a File object, convert the Blob to a File
+            profilePhoto.value = new File([blob], "photo.jpeg", {
+                type: "image/jpeg",
+            });
+
             // Play the capture sound
             const audioElement = document.querySelector(
                 "audio"
@@ -62,7 +79,11 @@ const capturePhoto = () => {
             if (audioElement) {
                 audioElement.play();
             }
+
+            // Set camera state to done
             cameraState.value = "done";
+
+            // Stop all video tracks to release the camera
             if (stream) {
                 stream.getTracks().forEach((track) => track.stop());
             }
@@ -75,16 +96,30 @@ const retakePhoto = () => {
     if (video.value) {
         // Clear the previous photo
         photo.value = null;
+        //profilePhoto.value = null;
 
         // Restart the camera
         startCamera();
     }
 };
 
+// Helper function to convert a base64-encoded Data URL to a Blob
+function dataURLToBlob(dataUrl: string): Blob {
+    const byteString = atob(dataUrl.split(",")[1]);
+    const mimeString = dataUrl.split(",")[0].split(":")[1].split(";")[0];
+    const buffer = new ArrayBuffer(byteString.length);
+    const uintArray = new Uint8Array(buffer);
+
+    for (let i = 0; i < byteString.length; i++) {
+        uintArray[i] = byteString.charCodeAt(i);
+    }
+
+    return new Blob([uintArray], { type: mimeString });
+}
+
 const user = usePage().props.auth.user;
 
 const form = useForm({
-    avatar: user.profile.avatar,
     firstname: user.profile.firstname,
     middlename: user.profile.middlename,
     lastname: user.profile.lastname,
@@ -110,6 +145,51 @@ const form = useForm({
     affiliation: user.profile.affiliation,
     facebook: user.profile.facebook,
 });
+
+const submit = () => {
+    updatePhoto;
+};
+const updatePhoto = async () => {
+    if (profilePhoto.value instanceof File) {
+        const formData = new FormData();
+        formData.append("avatar", profilePhoto.value);
+
+        try {
+            const response = await axios.post("/profile/photo", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+
+            // Convert profilePhoto (File) to Base64 and save it in localStorage
+            // const reader = new FileReader();
+            // reader.onload = function () {
+            //     const base64String = reader.result;
+            //     if (base64String) {
+            //         // Save the base64 image to localStorage
+            //         localStorage.setItem("profilePhoto", base64String);
+            //         // Update the img tag with the saved image
+            //         // updateImageSrc();
+            //     }
+            // };
+            // reader.readAsDataURL(profilePhoto.value);
+
+            console.log("Upload successful:", response.data);
+        } catch (error) {
+            console.log(error);
+            some_error.value = "Something went wrong, Please try again!";
+        }
+    }
+};
+
+// const updateImageSrc = () => {
+//     const imgElement = document.querySelector("#profileImage"); // Assuming the img tag has an ID of 'profileImage'
+//     const storedImage = localStorage.getItem("profilePhoto");
+
+//     if (imgElement && storedImage) {
+//         imgElement.src = storedImage;
+//     }
+// };
 
 const handleProvince = () => {
     selectedProvince.value = form.province;
@@ -181,7 +261,8 @@ const getBarangay = (municipality: String) => {
 };
 
 onMounted(() => {
-    getProvinces();
+    //getProvinces();
+    // updateImageSrc();
 });
 </script>
 
@@ -197,10 +278,7 @@ onMounted(() => {
             </p>
         </header>
 
-        <form
-            @submit.prevent="form.patch(route('profile.update'))"
-            class="mt-6 space-y-6"
-        >
+        <form @submit.prevent="submit" class="mt-6 space-y-6">
             <div class="flex flex-col justify-center items-center">
                 <h3 class="mb-2 text-gray-800">Capture Profile Photo</h3>
                 <video
@@ -326,6 +404,7 @@ onMounted(() => {
                     required
                     autofocus
                 >
+                    <option value="province">province</option>
                     <option
                         v-for="province in provinces"
                         :key="province.provCode"
@@ -349,6 +428,7 @@ onMounted(() => {
                     required
                     autofocus
                 >
+                    <option value="city">city</option>
                     <option
                         v-for="municipality in municipalities"
                         :key="municipality.citymunCode"
@@ -374,6 +454,7 @@ onMounted(() => {
                     required
                     autofocus
                 >
+                    <option value="barangay">barangay</option>
                     <option
                         v-for="barangay in barangays"
                         :key="barangay.brgyCode"
@@ -698,7 +779,9 @@ onMounted(() => {
             </div>
 
             <div class="flex items-center gap-4">
-                <PrimaryButton :disabled="form.processing">Save</PrimaryButton>
+                <PrimaryButton @click="updatePhoto" :disabled="form.processing"
+                    >Save</PrimaryButton
+                >
 
                 <Transition
                     enter-active-class="transition ease-in-out"

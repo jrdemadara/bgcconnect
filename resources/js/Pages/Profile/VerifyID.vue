@@ -15,8 +15,11 @@ const videoFront = ref<HTMLVideoElement | null>(null);
 const videoBack = ref<HTMLVideoElement | null>(null);
 const canvasFront = ref<HTMLCanvasElement | null>(null);
 const canvasBack = ref<HTMLCanvasElement | null>(null);
-const photoFront = ref<string | null>(null);
-const photoBack = ref<string | null>(null);
+const photoFrontImage = ref<string | null>(null);
+const photoBackImage = ref<string | null>(null);
+
+const photoFront = ref<File | null>(null);
+const photoBack = ref<File | null>(null);
 const captureSoundSrc = cameraSound; // Use the imported sound file
 let streamFront: MediaStream | null = null; // To hold the media stream
 let streamBack: MediaStream | null = null; // To hold the media stream
@@ -26,23 +29,27 @@ const cameraStateBack = ref("start");
 const infoPage = ref();
 const some_error = ref("");
 
-const send = async () => {
-    try {
-        const response = await axios.get("/verify/send");
+const uploadPhoto = async () => {
+    if (photoFront.value instanceof File && photoBack.value instanceof File) {
+        // Ensure it's a File
+        const formData = new FormData();
+        formData.append("idPhotoFront", photoFront.value); // Append the File object
+        formData.append("idPhotoBack", photoBack.value); // Append the File object
 
-        console.log(response.data.message);
-
-        if (response.data.message === "sent") {
-            const verificationDuration = 3600; // 1 hour in seconds
-
-            localStorage.setItem(
-                "verificationTimer",
-                String(verificationDuration)
-            );
-        } else {
+        try {
+            const response = await axios.post("/verify/store", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+            console.log(response);
+            console.log("Upload successful:", response.data);
+        } catch (error) {
+            console.log(error);
+            some_error.value = "Something went wrong, Please try again!";
         }
-    } catch (error) {
-        some_error.value = "Something went wrong, Please try again!";
+    } else {
+        console.error("No photo available for upload.");
     }
 };
 
@@ -90,10 +97,25 @@ const capturePhotoFront = () => {
     if (videoFront.value && canvasFront.value) {
         const context = canvasFront.value.getContext("2d");
         if (context) {
+            // Set canvas dimensions to match the video
             canvasFront.value.width = videoFront.value.videoWidth;
             canvasFront.value.height = videoFront.value.videoHeight;
+
+            // Draw the video frame onto the canvas
             context.drawImage(videoFront.value, 0, 0);
-            photoFront.value = canvasFront.value.toDataURL("image/png");
+
+            photoFrontImage.value = canvasFront.value.toDataURL("image/jpeg");
+
+            // Get base64 encoded image data
+            const dataUrl = canvasFront.value.toDataURL("image/jpeg");
+
+            // Convert base64 to Blob
+            const blob = dataURLToBlob(dataUrl);
+
+            // If you specifically need a File object, convert the Blob to a File
+            photoFront.value = new File([blob], "photo.jpeg", {
+                type: "image/jpeg",
+            });
 
             // Play the capture sound
             const audioElement = document.querySelector(
@@ -102,7 +124,11 @@ const capturePhotoFront = () => {
             if (audioElement) {
                 audioElement.play();
             }
+
+            // Set camera state to done
             cameraStateFront.value = "done";
+
+            // Stop all video tracks to release the camera
             if (streamFront) {
                 streamFront.getTracks().forEach((track) => track.stop());
             }
@@ -114,10 +140,25 @@ const capturePhotoBack = () => {
     if (videoBack.value && canvasBack.value) {
         const context = canvasBack.value.getContext("2d");
         if (context) {
+            // Set canvas dimensions to match the video
             canvasBack.value.width = videoBack.value.videoWidth;
             canvasBack.value.height = videoBack.value.videoHeight;
+
+            // Draw the video frame onto the canvas
             context.drawImage(videoBack.value, 0, 0);
-            photoBack.value = canvasBack.value.toDataURL("image/png");
+
+            photoBackImage.value = canvasBack.value.toDataURL("image/jpeg");
+
+            // Get base64 encoded image data
+            const dataUrl = canvasBack.value.toDataURL("image/jpeg");
+
+            // Convert base64 to Blob
+            const blob = dataURLToBlob(dataUrl);
+
+            // If you specifically need a File object, convert the Blob to a File
+            photoBack.value = new File([blob], "photo.jpeg", {
+                type: "image/jpeg",
+            });
 
             // Play the capture sound
             const audioElement = document.querySelector(
@@ -126,7 +167,11 @@ const capturePhotoBack = () => {
             if (audioElement) {
                 audioElement.play();
             }
+
+            // Set camera state to done
             cameraStateBack.value = "done";
+
+            // Stop all video tracks to release the camera
             if (streamBack) {
                 streamBack.getTracks().forEach((track) => track.stop());
             }
@@ -155,6 +200,20 @@ const retakePhotoBack = () => {
         startCameraBack();
     }
 };
+
+// Helper function to convert a base64-encoded Data URL to a Blob
+function dataURLToBlob(dataUrl: string): Blob {
+    const byteString = atob(dataUrl.split(",")[1]);
+    const mimeString = dataUrl.split(",")[0].split(":")[1].split(";")[0];
+    const buffer = new ArrayBuffer(byteString.length);
+    const uintArray = new Uint8Array(buffer);
+
+    for (let i = 0; i < byteString.length; i++) {
+        uintArray[i] = byteString.charCodeAt(i);
+    }
+
+    return new Blob([uintArray], { type: mimeString });
+}
 
 onMounted(() => {
     infoPage.value = true;
@@ -256,8 +315,8 @@ onMounted(() => {
                 <canvas ref="canvasFront" style="display: none"></canvas>
                 <!-- Display the captured photo -->
                 <img
-                    v-if="photoFront && cameraStateFront == 'done'"
-                    :src="photoFront"
+                    v-if="photoFrontImage && cameraStateFront == 'done'"
+                    :src="photoFrontImage"
                     alt="Captured Photo"
                     class="border-4 border-gray-300 rounded-xl"
                 />
@@ -300,8 +359,8 @@ onMounted(() => {
                 <canvas ref="canvasBack" style="display: none"></canvas>
                 <!-- Display the captured photo -->
                 <img
-                    v-if="photoBack && cameraStateBack == 'done'"
-                    :src="photoBack"
+                    v-if="photoBackImage && cameraStateBack == 'done'"
+                    :src="photoBackImage"
                     alt="Captured Photo"
                     class="border-4 border-gray-300 rounded-xl"
                 />
@@ -340,12 +399,20 @@ onMounted(() => {
             <div
                 class="mt-4 flex flex-col items-center justify-between space-y-6"
             >
-                <div class="flex flex-col space-y-4 w-full">
+                <div v-if="infoPage" class="flex flex-col space-y-4 w-full">
                     <button
                         @click="infoPage = false"
                         class="inline-flex justify-center items-center h-10 px-4 py-2 bg-[#05203c] dark:bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-white dark:text-gray-800 uppercase tracking-widest hover:bg-gray-700 dark:hover:bg-white focus:bg-gray-700 dark:focus:bg-white active:bg-gray-900 dark:active:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150"
                     >
-                        Verify
+                        Proceed
+                    </button>
+                </div>
+                <div v-if="!infoPage" class="flex flex-col space-y-4 w-full">
+                    <button
+                        @click="uploadPhoto"
+                        class="inline-flex justify-center items-center h-10 px-4 py-2 bg-[#05203c] dark:bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-white dark:text-gray-800 uppercase tracking-widest hover:bg-gray-700 dark:hover:bg-white focus:bg-gray-700 dark:focus:bg-white active:bg-gray-900 dark:active:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150"
+                    >
+                        Proceed
                     </button>
                 </div>
             </div>

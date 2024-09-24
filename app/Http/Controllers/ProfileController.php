@@ -56,10 +56,7 @@ class ProfileController extends Controller
         $profile->middlename = Str::lower($request->middlename);
         $profile->extension = Str::lower($request->extension);
         $profile->precinct_number = Str::lower($request->precinct_number);
-        $profile->avatar = Str::lower($request->avatar);
-        $profile->id_type = Str::lower($request->id_type);
-        $profile->id_card_front = Str::lower($request->id_card_front);
-        $profile->id_card_back = Str::lower($request->id_card_back);
+
         $profile->region = $request->region;
         $profile->province = $request->province;
         $profile->municipality_city = $request->municipality_city;
@@ -84,6 +81,30 @@ class ProfileController extends Controller
         $user->save();
 
         return Redirect::route('profile.edit');
+    }
+
+    public function updatePhoto(Request $request)
+    {
+        $request->validate([
+            'avatar' => 'required|file|mimes:jpeg,jpg|max:2048',
+        ]);
+
+        $id = Auth::id();
+
+        $profile = Profile::where('id', $id)->first();
+
+        // Store the file in S3 (automatically uses the 's3' disk)
+        $path = $request->file('avatar')->store('users', 's3');
+
+        if (!$path) {
+            return response()->json(['error' => 'File upload failed'], 500);
+        }
+
+        $profile->avatar = $path;
+        $profile->save();
+
+        return response()->json(['success' => 'Upload success'], 200);
+
     }
 
     /**

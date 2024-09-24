@@ -126,11 +126,11 @@ const { open, close } = useModal({
             </div>
             <div
                 v-show="user.level === 1"
-                class="flex flex-col items-center w-full rounded p-2 bg-red-100"
+                class="flex flex-col items-center w-full rounded-xl p-2 bg-orange-100"
             >
                 <div class="flex w-full">
-                    <Info class="text-red-400 mr-1" :size="24" />
-                    <p class="text-red-500">
+                    <Info class="text-orange-400 mr-1" :size="24" />
+                    <p class="text-orange-500">
                         Complete your profile and elevate to level 2.
                     </p>
                 </div>
@@ -138,13 +138,13 @@ const { open, close } = useModal({
                     :href="route('profile.edit')"
                     class="underline mt-1 text-sm text-blue-600 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
                 >
-                    Click to complete
+                    Complete my profile
                 </Link>
             </div>
 
             <div
                 v-show="user.level === 2"
-                class="flex flex-col items-center w-full rounded p-2 mt-3 bg-orange-100"
+                class="flex flex-col items-center w-full rounded-xl p-2 mt-3 bg-orange-100"
             >
                 <div class="flex w-full">
                     <Info class="text-orange-400 mr-1" :size="24" />
@@ -161,8 +161,8 @@ const { open, close } = useModal({
             </div>
 
             <div
-                v-show="user.level <= 3"
-                class="flex flex-col items-center w-full rounded p-2 mt-3 bg-orange-100"
+                v-show="user.level == 3"
+                class="flex flex-col items-center w-full rounded-xl p-2 mt-3 bg-orange-100"
             >
                 <div class="flex w-full">
                     <Info class="text-orange-400 mr-1" :size="24" />
