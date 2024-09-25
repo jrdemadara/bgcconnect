@@ -1,10 +1,6 @@
 <script setup lang="ts">
-import InputError from "@/Components/InputError.vue";
-import InputLabel from "@/Components/InputLabel.vue";
-import PrimaryButton from "@/Components/PrimaryButton.vue";
-import TextInput from "@/Components/TextInput.vue";
 import { Link, useForm, usePage } from "@inertiajs/vue3";
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import {
     Badge,
     BadgeCheck,
@@ -27,20 +23,19 @@ defineProps<{
     status?: String;
 }>();
 
+const photo = ref<string | null>(null);
+
 const user = usePage().props.auth.user;
 const completionPercentage = computed(() => {
     switch (user.level) {
         case 1:
-            return "10%";
+            return "25%";
         case 2:
-            return "30%";
-        case 3:
             return "50%";
+        case 3:
+            return "75%";
         case 4:
-            return "70%";
-        case 5:
             return "100%";
-        // Add more cases as needed
         default:
             return "0%"; // Default width if level does not match
     }
@@ -58,14 +53,27 @@ const { open, close } = useModal({
         default: "<p>UseModal: The content of the modal</p>",
     },
 });
+
+const updateImageSrc = () => {
+    const storedImage = localStorage.getItem("profilePhoto");
+
+    if (storedImage) {
+        photo.value = storedImage;
+    }
+};
+
+onMounted(() => {
+    updateImageSrc();
+});
 </script>
 
 <template>
     <section>
         <div class="flex flex-col justify-center items-center mt-4">
             <img
+                v-if="photo"
                 class="bg-blue-400 w-36 h-36 rounded-xl border-2 border-gray-300"
-                src="../../../../image/me.jpg"
+                :src="photo"
                 alt=""
             />
 
@@ -77,7 +85,7 @@ const { open, close } = useModal({
             <div
                 class="flex flex-col items-center text-gray-600 dark:text-gray-400"
             >
-                {{ user.phone }}
+                {{ user.code }}
                 <span
                     v-show="!user.phone_verified_at"
                     class="flex justify-center items-center w-fit px-2 py-0.5 mt-1 font-medium text-sm rounded-full text-red-700 bg-red-200"
@@ -116,11 +124,10 @@ const { open, close } = useModal({
                 <div
                     :class="[
                         'h-2 rounded-full bg-green-500 transition-width duration-500 ease-in-out',
-                        { 'w-[10%]': user.level === 1 },
-                        { 'w-[30%]': user.level === 2 },
-                        { 'w-[50%]': user.level === 3 },
-                        { 'w-[70%]': user.level === 4 },
-                        { 'w-[100%]': user.level === 5 },
+                        { 'w-[25%]': user.level === 1 },
+                        { 'w-[50%]': user.level === 2 },
+                        { 'w-[75%]': user.level === 3 },
+                        { 'w-[100%]': user.level === 4 },
                     ]"
                 />
             </div>
@@ -161,7 +168,7 @@ const { open, close } = useModal({
             </div>
 
             <div
-                v-show="user.level == 3"
+                v-show="user.level == 3 && !user.id_check"
                 class="flex flex-col items-center w-full rounded-xl p-2 mt-3 bg-orange-100"
             >
                 <div class="flex w-full">
@@ -174,8 +181,21 @@ const { open, close } = useModal({
                     :href="route('verify.id')"
                     class="underline mt-1 text-sm text-blue-600 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
                 >
-                    Verify Phone & ID
+                    Upload ID
                 </Link>
+            </div>
+
+            <div
+                v-show="user.id_check"
+                class="flex flex-col items-center w-full rounded-xl p-2 mt-3 bg-orange-100"
+            >
+                <div class="flex w-full">
+                    <Info class="text-orange-400 mr-1" :size="24" />
+                    <p class="text-orange-500">
+                        We are currently verifying your ID and will <br />
+                        notify you once it's complete.
+                    </p>
+                </div>
             </div>
 
             <div class="w-full h-0.5 mt-4 bg-gray-100 dark:bg-gray-600"></div>

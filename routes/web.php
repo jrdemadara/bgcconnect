@@ -3,6 +3,7 @@
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\IDVerificationController;
+use App\Http\Controllers\InviteController;
 use App\Http\Controllers\PhoneVerificationController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
@@ -18,6 +19,8 @@ Route::get('/', function () {
         'phpVersion' => PHP_VERSION,
     ]);
 });
+
+Route::get('/invite', [InviteController::class, 'index'])->name('invite.index');
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');

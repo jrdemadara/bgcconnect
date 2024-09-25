@@ -5,8 +5,11 @@ import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
-import DropDownInput from "@/Components/Dropdown.vue";
 import { Head, Link, useForm } from "@inertiajs/vue3";
+
+const prop = defineProps<{
+    code?: string;
+}>();
 
 const form = useForm({
     firstname: "",
@@ -14,6 +17,7 @@ const form = useForm({
     phone: "",
     password: "",
     password_confirmation: "",
+    code: prop.code || "",
 });
 
 const isFilipino = ref(false);
@@ -37,6 +41,17 @@ const submit = () => {
         <Head title="Register" />
 
         <form @submit.prevent="submit">
+            <div class="mt-4">
+                <InputLabel for="code" value="Invite Code" />
+
+                <TextInput
+                    id="code"
+                    type="text"
+                    class="mt-1 block w-full uppercase text-gray-400"
+                    v-model="form.code"
+                    readonly
+                />
+            </div>
             <div
                 class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mt-4"
             >

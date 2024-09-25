@@ -11,7 +11,7 @@ const props = defineProps<{
     qrcode?: string;
 }>();
 
-value.value = `https://bgcconnect.ph/invite/${props.qrcode}`;
+value.value = `http://127.0.0.1:8000/invite?code=${props.qrcode}`;
 const emit = defineEmits<{
     (e: "confirm"): void;
 }>();

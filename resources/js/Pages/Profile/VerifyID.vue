@@ -17,7 +17,6 @@ const canvasFront = ref<HTMLCanvasElement | null>(null);
 const canvasBack = ref<HTMLCanvasElement | null>(null);
 const photoFrontImage = ref<string | null>(null);
 const photoBackImage = ref<string | null>(null);
-
 const photoFront = ref<File | null>(null);
 const photoBack = ref<File | null>(null);
 const captureSoundSrc = cameraSound; // Use the imported sound file
@@ -29,12 +28,15 @@ const cameraStateBack = ref("start");
 const infoPage = ref();
 const some_error = ref("");
 
+const id_type = ref("");
+
 const uploadPhoto = async () => {
     if (photoFront.value instanceof File && photoBack.value instanceof File) {
         // Ensure it's a File
         const formData = new FormData();
-        formData.append("idPhotoFront", photoFront.value); // Append the File object
-        formData.append("idPhotoBack", photoBack.value); // Append the File object
+        formData.append("idType", id_type.value);
+        formData.append("idPhotoFront", photoFront.value);
+        formData.append("idPhotoBack", photoBack.value);
 
         try {
             const response = await axios.post("/verify/store", formData, {
@@ -301,6 +303,48 @@ onMounted(() => {
         </div>
 
         <div class="mt-4" v-if="!infoPage">
+            <div>
+                <InputLabel for="id_type" value="ID Type" />
+
+                <select
+                    id="id_type"
+                    v-model="id_type"
+                    class="mt-1 block w-full capitalize rounded shadow-sm border border-gray-300"
+                    autofocus
+                >
+                    <option>e-Card / UMID</option>
+                    <option>Employee’s ID / Office ID</option>
+                    <option>Driver’s License</option>
+                    <option>Professional Regulation Commission (PRC) ID</option>
+                    <option>Passport</option>
+                    <option>Senior Citizen ID</option>
+                    <option>SSS ID</option>
+                    <option>
+                        COMELEC / Voter’s ID / COMELEC Registration Form
+                    </option>
+                    <option>
+                        Philippine Identification (PhilID / ePhilID)
+                    </option>
+                    <option>NBI Clearance</option>
+                    <option>Integrated Bar of the Philippines (IBP) ID</option>
+                    <option>Firearms License</option>
+                    <option>AFPSLAI ID</option>
+                    <option>PVAO ID</option>
+                    <option>AFP Beneficiary ID</option>
+                    <option>BIR (TIN)</option>
+                    <option>Pag-ibig ID</option>
+                    <option>Person’s With Disability (PWD) ID</option>
+                    <option>Solo Parent ID</option>
+                    <option>Pantawid Pamilya Pilipino Program (4Ps) ID</option>
+                    <option>Barangay ID</option>
+                    <option>Philippine Postal ID</option>
+                    <option>Phil-health ID</option>
+                    <option>School ID</option>
+                    <option>
+                        Other valid government-issued IDs or documents
+                    </option>
+                </select>
+            </div>
             <div
                 class="flex flex-col justify-center items-center mt-4 bg-gradient-to-r from-slate-100 to bg-slate-200 shadow-md rounded-lg p-4"
             >

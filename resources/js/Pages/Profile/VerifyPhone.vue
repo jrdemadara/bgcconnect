@@ -20,7 +20,7 @@ const send = async () => {
         try {
             const response = await axios.get("/verify/send");
 
-            console.log(response.data.message);
+            console.log(response);
 
             if (response.data.message === "sent") {
                 const verificationDuration = 3600; // 1 hour in seconds
@@ -86,9 +86,6 @@ onMounted(() => {
     const storedTimer = localStorage.getItem("verificationTimer");
     if (storedTimer) {
         timer.value = Number(storedTimer);
-        if (timer.value > 0) {
-            startTimer();
-        }
     }
 });
 

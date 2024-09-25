@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -85,26 +86,34 @@ class ProfileController extends Controller
 
     public function updatePhoto(Request $request)
     {
+        // Validate request inputs
         $request->validate([
             'avatar' => 'required|file|mimes:jpeg,jpg|max:2048',
         ]);
 
         $id = Auth::id();
 
-        $profile = Profile::where('id', $id)->first();
+        // Fetch the user's profile
+        $profile = Profile::findOrFail($id); // Use findOrFail for better error handling
 
-        // Store the file in S3 (automatically uses the 's3' disk)
+        // Delete existing avatar if it exists
+        if ($profile->avatar && Storage::disk('s3')->exists($profile->avatar)) {
+            Storage::disk('s3')->delete($profile->avatar);
+        }
+
+        // Store the new avatar in S3
         $path = $request->file('avatar')->store('users', 's3');
 
+        // Check if the file upload was successful
         if (!$path) {
             return response()->json(['error' => 'File upload failed'], 500);
         }
 
+        // Update the profile with the new avatar path
         $profile->avatar = $path;
         $profile->save();
 
-        return response()->json(['success' => 'Upload success'], 200);
-
+        return response()->json(['success' => 'Upload successful'], 200);
     }
 
     /**

@@ -26,7 +26,7 @@ class User extends Authenticatable
         'points',
         'level',
         'is_active',
-        'status',
+        'id_check',
     ];
 
     /**

@@ -31,6 +31,8 @@ export interface User {
     points: number;
     level: number;
     phone_verified_at: string;
+    reffered_by: string;
+    id_check: boolean;
     profile: Profile;
 }
 

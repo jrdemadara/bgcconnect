@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\Profile;
+use App\Models\Referrals;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -36,14 +37,27 @@ class RegisteredUserController extends Controller
             'lastname' => 'required|string|max:255',
             'phone' => 'required|string|max:11|unique:' . User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'code' => 'required|string',
         ]);
+
+        $referrer = User::where('code', $request->code)->pluck('id')->first();
 
         $user = User::create([
             'phone' => $request->phone,
             'password' => Hash::make($request->password),
             'code' => $this->generateRandomString(),
+            'referred_by' => $referrer,
 
         ]);
+
+        if ($referrer) {
+            // Create referral
+            $referral = new Referrals();
+            $referral->referrer_id = $referrer;
+            $referral->referred_id = $user->id;
+            $referral->save();
+
+        }
 
         Profile::create([
             'firstname' => $request->firstname,

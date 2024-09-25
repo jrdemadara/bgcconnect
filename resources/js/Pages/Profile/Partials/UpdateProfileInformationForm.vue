@@ -147,7 +147,11 @@ const form = useForm({
 });
 
 const submit = () => {
-    updatePhoto;
+    form.patch(route("profile.update"), {
+        onSuccess: () => {
+            updatePhoto;
+        },
+    });
 };
 const updatePhoto = async () => {
     if (profilePhoto.value instanceof File) {
@@ -162,19 +166,21 @@ const updatePhoto = async () => {
             });
 
             // Convert profilePhoto (File) to Base64 and save it in localStorage
-            // const reader = new FileReader();
-            // reader.onload = function () {
-            //     const base64String = reader.result;
-            //     if (base64String) {
-            //         // Save the base64 image to localStorage
-            //         localStorage.setItem("profilePhoto", base64String);
-            //         // Update the img tag with the saved image
-            //         // updateImageSrc();
-            //     }
-            // };
-            // reader.readAsDataURL(profilePhoto.value);
+            const reader = new FileReader();
+            reader.onload = function () {
+                const base64String = reader.result as string;
+                if (base64String) {
+                    // Save the base64 image to localStorage
+                    localStorage.setItem("profilePhoto", base64String);
+                    // Update the img tag with the saved image
+                    updateImageSrc();
+                }
+            };
+            reader.readAsDataURL(profilePhoto.value);
 
-            console.log("Upload successful:", response.data);
+            if (response.data.success) {
+                window.location.href = "/profile";
+            }
         } catch (error) {
             console.log(error);
             some_error.value = "Something went wrong, Please try again!";
@@ -182,14 +188,13 @@ const updatePhoto = async () => {
     }
 };
 
-// const updateImageSrc = () => {
-//     const imgElement = document.querySelector("#profileImage"); // Assuming the img tag has an ID of 'profileImage'
-//     const storedImage = localStorage.getItem("profilePhoto");
+const updateImageSrc = () => {
+    const storedImage = localStorage.getItem("profilePhoto");
 
-//     if (imgElement && storedImage) {
-//         imgElement.src = storedImage;
-//     }
-// };
+    if (storedImage) {
+        photo.value = storedImage;
+    }
+};
 
 const handleProvince = () => {
     selectedProvince.value = form.province;
@@ -262,7 +267,7 @@ const getBarangay = (municipality: String) => {
 
 onMounted(() => {
     //getProvinces();
-    // updateImageSrc();
+    updateImageSrc();
 });
 </script>
 
@@ -291,10 +296,10 @@ onMounted(() => {
                 <canvas ref="canvas" style="display: none"></canvas>
                 <!-- Display the captured photo -->
                 <img
-                    v-if="photo && cameraState == 'done'"
+                    v-if="photo && cameraState !== 'capture'"
                     :src="photo"
                     alt="Captured Photo"
-                    class="border-4 border-gray-300 rounded-xl"
+                    class="border-2 border-gray-300 rounded-xl w-48"
                 />
 
                 <audio ref="captureSound" :src="captureSoundSrc"></audio>
@@ -378,10 +383,9 @@ onMounted(() => {
                     id="extension"
                     class="mt-1 block w-full capitalize rounded shadow-sm border border-gray-300"
                     v-model="form.extension"
-                    required
                     autofocus
                 >
-                    <option selected value="none">None</option>
+                    <option selected value="">None</option>
                     <option value="sr.">Sr.</option>
                     <option value="jr.">Jr.</option>
                     <option value="iii">III</option>

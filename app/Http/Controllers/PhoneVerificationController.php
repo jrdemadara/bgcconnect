@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -22,10 +23,6 @@ class PhoneVerificationController extends Controller
     {
         // Get the authenticated user's ID and phone number
         $user = Auth::user();
-
-        if (!$user) {
-            return response()->json(['error' => 'User not authenticated.'], 401);
-        }
 
         $phone = $user->phone;
 
@@ -61,6 +58,18 @@ class PhoneVerificationController extends Controller
             'phone_verified_at' => now(),
             'level' => 3,
         ]);
+
+        $referrer = $user->referred_by;
+
+        if ($referrer) {
+            // Create transaction
+            $transaction = new Transaction();
+            $transaction->user_id = $referrer;
+            $transaction->points_earned = 10;
+            $transaction->description = "invited user id " . $user->id;
+            $transaction->save();
+
+        }
 
         // Delete the Redis key
         Redis::del($verificationCodeKey);
