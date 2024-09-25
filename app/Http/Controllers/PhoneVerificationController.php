@@ -60,8 +60,8 @@ class PhoneVerificationController extends Controller
         ]);
 
         // If user has referrer, create transaction
-
         $referrer = $user->referred_by;
+
         if ($referrer) {
             $transaction = new Transaction();
             $transaction->user_id = $referrer;
