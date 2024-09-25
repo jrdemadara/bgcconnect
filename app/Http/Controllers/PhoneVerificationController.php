@@ -59,16 +59,15 @@ class PhoneVerificationController extends Controller
             'level' => 3,
         ]);
 
-        $referrer = $user->referred_by;
+        // If user has referrer, create transaction
 
+        $referrer = $user->referred_by;
         if ($referrer) {
-            // Create transaction
             $transaction = new Transaction();
             $transaction->user_id = $referrer;
             $transaction->points_earned = 10;
             $transaction->description = "invited user id " . $user->id;
             $transaction->save();
-
         }
 
         // Delete the Redis key
