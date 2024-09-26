@@ -1,13 +1,13 @@
 <script setup>
-import { ref, computed, createApp } from "vue";
+import { ref, computed, createApp, onMounted } from "vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head } from "@inertiajs/vue3";
 import { QrcodeStream, QrcodeDropZone, QrcodeCapture } from "vue-qrcode-reader";
+import { getDistance } from "geolib";
 
-// defineProps<{
-//     isPhoneVerified?: boolean;
-//     status?: string;
-// }>();
+const isLocation = ref(true);
+const latitude = ref("");
+const longitude = ref("");
 
 const qrcode = ref("");
 const error = ref("");
@@ -59,8 +59,124 @@ function onCameraOff(detectedCodes) {
 function onDetect(detectedCodes) {
     let code = detectedCodes.map((code) => code.rawValue);
     qrcode.value = code[0];
-    checkActivity(code[0]);
+    checkLocation(code[0]);
 }
+
+const checkActivity = (code) => {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                latitude.value = position.coords.latitude;
+                longitude.value = position.coords.longitude;
+                isLocation.value = true;
+                vibrateDevice();
+                axios
+                    .post("/activity", {
+                        code: code,
+                        latitude: latitude,
+                        longitude: longitude,
+                    })
+                    .then(function (response) {
+                        console.log(response);
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+            },
+            () => {
+                isLocation.value = false;
+            },
+            {
+                enableHighAccuracy: true, // Enable high accuracy mode
+                timeout: 5000, // Timeout after 5 seconds
+                maximumAge: 0, // No caching
+            }
+        );
+    } else {
+        isLocation.value = false;
+    }
+};
+
+// Method to check if the user location is within the radius
+const checkLocation = (code) => {
+    console.log(code);
+    axios
+        .get("/activity/location", {
+            params: {
+                code: code,
+            },
+        })
+        .then(function (response) {
+            if (response.status == 200) {
+                const centerLatitude = response.data.centerLatitude;
+                const centerLongitude = response.data.centerLongitude;
+                const centerRadius = response.data.radius;
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            latitude.value = position.coords.latitude;
+                            longitude.value = position.coords.longitude;
+                            isLocation.value = true;
+                            vibrateDevice();
+
+                            const distance = getDistance(
+                                {
+                                    latitude: centerLatitude,
+                                    longitude: centerLongitude,
+                                },
+                                {
+                                    latitude: latitude.value,
+                                    longitude: longitude.value,
+                                }
+                            );
+
+                            const withinRadius =
+                                distance <= centerRadius ? true : false;
+
+                            console.log(withinRadius);
+                            if (withinRadius) {
+                                axios
+                                    .post("/activity/store", {
+                                        code: code,
+                                        latitude: latitude,
+                                        longitude: longitude,
+                                    })
+                                    .then(function (response) {
+                                        console.log(response);
+                                    })
+                                    .catch(function (error) {
+                                        console.log(error);
+                                    });
+                            } else {
+                                console.log("You're out of the range.");
+                            }
+                        },
+                        () => {
+                            isLocation.value = false;
+                        },
+                        {
+                            enableHighAccuracy: true, // Enable high accuracy mode
+                            timeout: 5000, // Timeout after 5 seconds
+                            maximumAge: 0, // No caching
+                        }
+                    );
+                } else {
+                    isLocation.value = false;
+                }
+            }
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+};
+
+const vibrateDevice = () => {
+    if ("vibrate" in navigator) {
+        navigator.vibrate(200); // Vibrate for 200ms
+    } else {
+        console.log("Vibration is not supported in this device/browser.");
+    }
+};
 
 const app = createApp({
     setup() {
@@ -68,21 +184,13 @@ const app = createApp({
     },
 });
 
-const checkActivity = (code) => {
-    axios
-        .post("/activity", {
-            qrcode: code,
-        })
-        .then(function (response) {
-            console.log(response);
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
-};
-
 app.use(QrcodeStream);
-app.mount("#app");
+//app.mount("#app");
+
+onMounted(() => {
+    //getProvinces();
+    //updateImageSrc();
+});
 </script>
 <template>
     <Head title="Profile" />
@@ -107,7 +215,7 @@ app.mount("#app");
                     Last result: <b>{{ result }}</b>
                 </p>
 
-                <div class="border-4 border-gray-500">
+                <div class="border-4 border-gray-500 h-full w-full">
                     <qrcode-stream
                         :track="paintBoundingBox"
                         @detect="onDetect"

@@ -37,7 +37,7 @@ class RegisteredUserController extends Controller
             'lastname' => 'required|string|max:255',
             'phone' => 'required|string|max:11|unique:' . User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'code' => 'required|string',
+
         ]);
 
         $referrer = User::where('code', $request->code)->pluck('id')->first();

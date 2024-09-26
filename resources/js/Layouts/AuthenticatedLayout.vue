@@ -53,10 +53,19 @@ const showingNavigationDropdown = ref(false);
                                         <span class="inline-flex rounded-md">
                                             <button
                                                 type="button"
-                                                class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150"
+                                                class="capitalize inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150"
                                             >
-                                                {{ $page.props.auth.user.code }}
-
+                                                <span
+                                                    v-if="
+                                                        $page.props.auth.user
+                                                            .profile
+                                                    "
+                                                >
+                                                    {{
+                                                        $page.props.auth.user
+                                                            .profile.firstname
+                                                    }}
+                                                </span>
                                                 <svg
                                                     class="ms-2 -me-0.5 h-4 w-4"
                                                     xmlns="http://www.w3.org/2000/svg"
@@ -77,9 +86,26 @@ const showingNavigationDropdown = ref(false);
                                         <DropdownLink
                                             :href="route('profile.index')"
                                         >
-                                            Profile
+                                            Referral Code:
+                                            <span
+                                                class="text-green-500 font-bold"
+                                            >
+                                                {{
+                                                    $page.props.auth.user.code
+                                                }}</span
+                                            >
+                                        </DropdownLink>
+                                        <hr />
+
+                                        <DropdownLink
+                                            :href="route('profile.index')"
+                                        >
+                                            Profile Overview
                                         </DropdownLink>
                                         <DropdownLink
+                                            v-if="
+                                                $page.props.auth.user.level > 2
+                                            "
                                             :href="route('activity.index')"
                                         >
                                             Scan Activity
@@ -162,20 +188,29 @@ const showingNavigationDropdown = ref(false);
                     >
                         <div class="px-4">
                             <div
-                                class="font-medium text-base text-gray-800 dark:text-gray-200 uppercase"
+                                class="font-medium text-base text-gray-800 dark:text-gray-200 capitalize"
+                            >
+                                <span v-if="$page.props.auth.user.profile">
+                                    {{
+                                        $page.props.auth.user.profile.firstname
+                                    }}
+                                </span>
+                            </div>
+                            <div
+                                class="font-medium text-sm text-gray-500 capitalize"
                             >
                                 {{ $page.props.auth.user.code }}
-                            </div>
-                            <div class="font-medium text-sm text-gray-500">
-                                {{ $page.props.auth.user.level }}
                             </div>
                         </div>
 
                         <div class="mt-3 space-y-1">
                             <ResponsiveNavLink :href="route('profile.index')">
-                                Profile
+                                Profile Overview
                             </ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('activity.index')">
+                            <ResponsiveNavLink
+                                v-if="$page.props.auth.user.level > 2"
+                                :href="route('activity.index')"
+                            >
                                 Scan Activity
                             </ResponsiveNavLink>
                             <ResponsiveNavLink

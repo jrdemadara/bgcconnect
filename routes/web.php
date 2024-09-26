@@ -41,7 +41,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/verify/store', [IDVerificationController::class, 'store'])->name('verify.store');
 
     Route::get('/activity', [ActivityController::class, 'index'])->name('activity.index');
-    Route::post('/activity', [ActivityController::class, 'storeActivityAttendees'])->name('activity.store');
+    Route::get('/activity/location', [ActivityController::class, 'checkLocation'])->name('activity.location');
+    Route::post('/activity/store', [ActivityController::class, 'storeActivityAttendees'])->name('activity.store');
 
     Route::get('/provinces', [AddressController::class, 'getProvinces'])->name('address.getProvinces');
     Route::get('/municipalities', [AddressController::class, 'getMunicipalities'])->name('address.getMunicipalities');
