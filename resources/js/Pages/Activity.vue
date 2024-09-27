@@ -184,7 +184,7 @@ const app = createApp({
     },
 });
 
-app.use(QrcodeStream);
+//app.use(QrcodeStream);
 //app.mount("#app");
 
 onMounted(() => {
@@ -211,11 +211,7 @@ onMounted(() => {
                 </p>
                 <p style="color: red">{{ error }}</p>
 
-                <p>
-                    Last result: <b>{{ result }}</b>
-                </p>
-
-                <div class="border-4 border-gray-500 h-full w-full">
+                <div class="border-4 border-gray-500 w-full">
                     <qrcode-stream
                         :track="paintBoundingBox"
                         @detect="onDetect"

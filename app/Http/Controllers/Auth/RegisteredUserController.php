@@ -56,7 +56,6 @@ class RegisteredUserController extends Controller
             $referral->referrer_id = $referrer;
             $referral->referred_id = $user->id;
             $referral->save();
-
         }
 
         Profile::create([

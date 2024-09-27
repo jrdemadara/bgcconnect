@@ -23,7 +23,7 @@ const send = async () => {
             console.log(response);
 
             if (response.data.message === "sent") {
-                const verificationDuration = 3600; // 1 hour in seconds
+                const verificationDuration = 5; // 1 hour in seconds
                 timer.value = verificationDuration;
                 localStorage.setItem(
                     "verificationTimer",

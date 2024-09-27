@@ -64,9 +64,10 @@ class ActivityController extends Controller
 
         $activity = Activities::where('code', $request->code)->pluck('id')->first();
 
-        // Check if the user has already attended this activity
+        // Check if the user has already attended this activity at current day
         $isAttended = ActivityAttendees::where('user_id', $id)
             ->where('activity_id', $activity)
+            ->whereDate('created_at', '=', now())
             ->exists();
 
         if (!$isAttended) {
