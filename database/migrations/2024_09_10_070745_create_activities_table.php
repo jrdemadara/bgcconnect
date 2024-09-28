@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('code');
             $table->string('name');
             $table->string('description');
-            $table->json('location');
+            $table->longText('location');
             $table->date('date_start');
             $table->date('date_end');
             $table->integer('points');

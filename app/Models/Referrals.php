@@ -11,11 +11,18 @@ class Referrals extends Model
 
     protected $fillable = [
         'referrer_id',
-        'reffered_id',
+        'referred_id',
     ];
 
-    public function user()
+    // The user who referred another user
+    public function referrer()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'referrer_id');
+    }
+
+    // The user who was referred
+    public function referred()
+    {
+        return $this->belongsTo(User::class, 'referred_id');
     }
 }

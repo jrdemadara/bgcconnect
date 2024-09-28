@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -63,17 +62,70 @@ class PhoneVerificationController extends Controller
         $referrer = $user->referred_by;
 
         if ($referrer) {
-            $transaction = new Transaction();
-            $transaction->user_id = $referrer;
-            $transaction->points_earned = 10;
-            $transaction->description = "invited user id " . $user->id;
-            $transaction->save();
+            // distribute points
+            $this->distributeReferralPoints($user);
+
         }
 
         // Delete the Redis key
         Redis::del($verificationCodeKey);
 
         return response()->json(['message' => 'Verification successful.'], 200);
+    }
+
+    public function distributeReferralPoints(User $newUser)
+    {
+        // Get the direct referrer by their ID
+        $directReferrerId = $newUser->referred_by;
+
+        if ($directReferrerId) {
+            // Find the referrer as a User model
+            $directReferrer = User::find($directReferrerId);
+
+            if ($directReferrer) {
+                // Direct referral gets 10 points
+                $this->awardPoints($directReferrer, 10);
+
+                // Recursively distribute points to the upline
+                $this->distributeToUpline($directReferrer, 1);
+            }
+        }
+    }
+
+    public function distributeToUpline(User $user, int $level)
+    {
+        // We stop at level 5
+        if ($level > 5) {
+            return;
+        }
+
+        // Get the user's referrer by their ID
+        $uplineId = $user->referred_by;
+
+        if ($uplineId) {
+            // Find the upline as a User model
+            $upline = User::find($uplineId);
+
+            if ($upline) {
+                // Award 5 points to the upline
+                $this->awardPoints($upline, 5);
+
+                // Recursively distribute points to the next level
+                $this->distributeToUpline($upline, $level + 1);
+            }
+        }
+    }
+
+    protected function awardPoints(User $user, int $points)
+    {
+        // You can either use transactions or create a separate points table to log transactions
+        $user->increment('points', $points);
+
+        // Optionally, log the transaction
+        $user->transactions()->create([
+            'points_earned' => $points,
+            'description' => 'Referral bonus',
+        ]);
     }
 
     private function generateRandomString()

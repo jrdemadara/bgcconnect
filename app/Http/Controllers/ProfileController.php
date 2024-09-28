@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Models\Profile;
-use App\Models\Province;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -13,6 +12,7 @@ use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -50,7 +50,8 @@ class ProfileController extends Controller
     {
         $request->user()->fill($request->validated());
 
-        $profile = Profile::where('id', $request->user()->id)->first();
+        $user = Auth::user();
+        $profile = $user->profile;
 
         $profile->lastname = Str::lower($request->lastname);
         $profile->firstname = Str::lower($request->firstname);
@@ -81,7 +82,7 @@ class ProfileController extends Controller
         $user->level = 2;
         $user->save();
 
-        return Redirect::route('profile.edit');
+        return redirect(route('profile.edit'));
     }
 
     public function updatePhoto(Request $request)

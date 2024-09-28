@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('referrals', function (Blueprint $table) {
             $table->id();
             $table->foreignId('referrer_id')->constrained('users')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreignId('reffered_id')->constrained('users')->onDelete('cascade')->onUpdate('cascade');
-            $table->index(['referrer_id', 'reffered_id']);
+            $table->foreignId('referred_id')->constrained('users')->onDelete('cascade')->onUpdate('cascade');
+            $table->index(['referrer_id', 'referred_id']);
             $table->timestamps();
         });
     }

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Municipality extends Model
 {
     use HasFactory;
-    protected $connection = 'mysql_address';
+    protected $connection = 'mariadb_address';
     protected $table = 'address_citymun';
     protected $fillable = [
         'citymunCode',

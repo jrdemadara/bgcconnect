@@ -266,7 +266,7 @@ const getBarangay = (municipality: String) => {
 };
 
 onMounted(() => {
-    //getProvinces();
+    getProvinces();
     updateImageSrc();
 });
 </script>
@@ -408,7 +408,6 @@ onMounted(() => {
                     required
                     autofocus
                 >
-                    <option value="province">province</option>
                     <option
                         v-for="province in provinces"
                         :key="province.provCode"
@@ -432,7 +431,6 @@ onMounted(() => {
                     required
                     autofocus
                 >
-                    <option value="city">city</option>
                     <option
                         v-for="municipality in municipalities"
                         :key="municipality.citymunCode"
@@ -458,7 +456,6 @@ onMounted(() => {
                     required
                     autofocus
                 >
-                    <option value="barangay">barangay</option>
                     <option
                         v-for="barangay in barangays"
                         :key="barangay.brgyCode"

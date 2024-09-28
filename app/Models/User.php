@@ -57,18 +57,38 @@ class User extends Authenticatable
         return $this->hasOne(Profile::class);
     }
 
-    public function transaction()
-    {
-        return $this->hasMany(Transaction::class);
-    }
-
-    public function user()
-    {
-        return $this->hasMany(User::class);
-    }
-
     public function referrals()
     {
-        return $this->hasMany(Referrals::class);
+        return $this->hasMany(Referrals::class, 'referrer_id', 'id');
+    }
+
+    public function downlineUsers()
+    {
+        return $this->hasManyThrough(
+            User::class,
+            Referrals::class,
+            'referrer_id', // Foreign key on referrals table
+            'id', // Foreign key on users table
+            'id', // Local key on users table
+            'referred_id' // Local key on referrals table
+        );
+    }
+
+    // Recursive relationship for fetching all downlines
+    public function allDownlineUsers()
+    {
+        return $this->referrals()->with('referredUser.allDownlineUsers');
+    }
+
+// In Referral.php
+    public function referredUser()
+    {
+        return $this->belongsTo(User::class, 'referred_id');
+    }
+
+    // The transactions related to this user
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class, 'user_id');
     }
 }

@@ -47,13 +47,15 @@ const verify = () => {
             },
         })
         .then(function (response) {
+            console.log(response);
             if (response.status == 200) {
                 if (interval) clearInterval(interval);
-                window.location.href = "/profile";
+                //window.location.href = "/profile";
             }
         })
         .catch(function (error) {
-            if (error.status === 400) {
+            console.log(error);
+            if (error.status == 400) {
                 verification_code_error.value = "Invalid Verification Code";
             } else {
                 some_error.value = "Something went wrong, Please try again!";
