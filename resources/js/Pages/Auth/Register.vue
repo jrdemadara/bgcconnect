@@ -6,6 +6,7 @@ import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { Head, Link, useForm } from "@inertiajs/vue3";
+import { Info, Loader2 } from "lucide-vue-next";
 
 const prop = defineProps<{
     code?: string;
@@ -22,34 +23,54 @@ const form = useForm({
 
 const isFilipino = ref(false);
 const termsAccept = ref(false);
+const registerSucess = ref(false);
 
 const submit = () => {
-    if (isFilipino && termsAccept) {
-        form.post(route("register"), {
-            onFinish: () => {
-                form.reset("password", "password_confirmation");
-            },
-        });
-    } else {
-        console.log("ok");
-    }
+    form.post(route("register"), {
+        onFinish: () => {
+            form.reset("password", "password_confirmation");
+        },
+        onSuccess: () => {
+            registerSucess.value = true;
+        },
+    });
 };
 </script>
 
 <template>
     <GuestLayout>
         <Head title="Register" />
-
-        <form @submit.prevent="submit">
-            <div class="mt-4">
+        <div
+            v-if="registerSucess"
+            class="flex items-center rounded-lg p-4 bg-blue-600 text-white"
+        >
+            <Info class="text-white w-12" />
+            You can now login to your account.
+        </div>
+        <div class="flex justify-between items-center mt-2">
+            <h2 class="font-bold text-xl text-black dark:text-gray-50">
+                Sign up
+            </h2>
+            <Link
+                :href="route('login')"
+                class="underline font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
+            >
+                Login to my account
+            </Link>
+        </div>
+        <form @submit.prevent="submit" class="mt-6">
+            <div>
                 <InputLabel for="code" value="Invite Code" />
 
-                <TextInput
-                    id="code"
-                    type="text"
-                    class="mt-1 block w-full uppercase text-gray-400"
-                    v-model="form.code"
-                />
+                <div class="flex">
+                    <TextInput
+                        id="code"
+                        type="text"
+                        class="mt-1 block w-full uppercase text-gray-400"
+                        v-model="form.code"
+                        readonly
+                    />
+                </div>
             </div>
             <div
                 class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mt-4"
@@ -164,25 +185,17 @@ const submit = () => {
                 </div>
             </div>
 
-            <div class="flex items-center justify-end mt-4 mb-4">
-                <Link
-                    :href="route('login')"
-                    class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
-                >
-                    Already registered?
-                </Link>
-
-                <PrimaryButton
-                    class="ms-4"
-                    :class="{
-                        'opacity-25':
-                            form.processing || !isFilipino || !termsAccept,
-                    }"
-                    :disabled="form.processing || !isFilipino || !termsAccept"
-                >
-                    Register
-                </PrimaryButton>
-            </div>
+            <PrimaryButton
+                class="my-6"
+                :class="{
+                    'opacity-25':
+                        form.processing || !isFilipino || !termsAccept,
+                }"
+                :disabled="form.processing || !isFilipino || !termsAccept"
+            >
+                <Loader2 v-if="form.processing" class="w-10 animate-spin" />
+                Register
+            </PrimaryButton>
         </form>
     </GuestLayout>
 </template>

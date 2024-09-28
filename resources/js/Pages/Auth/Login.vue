@@ -6,6 +6,7 @@ import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { Head, Link, useForm } from "@inertiajs/vue3";
+import { Info, Loader2 } from "lucide-vue-next";
 
 defineProps<{
     canResetPassword?: boolean;
@@ -35,9 +36,18 @@ const submit = () => {
             {{ status }}
         </div>
 
-        <h2 class="font-bold text-xl mb-4 text-gray-800">Login</h2>
-
-        <form @submit.prevent="submit">
+        <div class="flex justify-between items-center mt-2">
+            <h2 class="font-bold text-xl text-black dark:text-gray-50">
+                Sign in
+            </h2>
+            <Link
+                :href="route('register')"
+                class="underline font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
+            >
+                Create an account
+            </Link>
+        </div>
+        <form @submit.prevent="submit" class="mt-6">
             <div>
                 <InputLabel for="phone" value="Phone" />
 
@@ -86,24 +96,14 @@ const submit = () => {
                 </Link>
             </div>
 
-            <div
-                class="flex flex-col sm:flex-row-reverse items-center justify-end mt-4"
+            <PrimaryButton
+                class="my-6"
+                :class="{ 'opacity-25': form.processing }"
+                :disabled="form.processing"
             >
-                <Link
-                    :href="route('register')"
-                    class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
-                >
-                    I didn't have an account
-                </Link>
-
-                <PrimaryButton
-                    class="ms-4"
-                    :class="{ 'opacity-25': form.processing }"
-                    :disabled="form.processing"
-                >
-                    Log in
-                </PrimaryButton>
-            </div>
+                <Loader2 v-if="form.processing" class="w-10 animate-spin" />
+                Log in
+            </PrimaryButton>
         </form>
     </GuestLayout>
 </template>
