@@ -64,7 +64,6 @@ class PhoneVerificationController extends Controller
         if ($referrer) {
             // distribute points
             $this->distributeReferralPoints($user);
-
         }
 
         // Delete the Redis key

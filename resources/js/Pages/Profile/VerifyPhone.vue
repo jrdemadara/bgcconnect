@@ -7,6 +7,7 @@ import InputLabel from "@/Components/InputLabel.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { Head, useForm } from "@inertiajs/vue3";
 import axios from "axios";
+import SecondaryButton from "@/Components/SecondaryButton.vue";
 
 const timer = ref(0);
 let interval: ReturnType<typeof setInterval> | null = null;
@@ -50,7 +51,7 @@ const verify = () => {
             console.log(response);
             if (response.status == 200) {
                 if (interval) clearInterval(interval);
-                //window.location.href = "/profile";
+                window.location.href = "/profile";
             }
         })
         .catch(function (error) {
@@ -141,7 +142,7 @@ onUnmounted(() => {
             <div class="flex flex-col space-y-4 w-full">
                 <button
                     @click="verify"
-                    class="inline-flex justify-center items-center h-10 px-4 py-2 bg-[#05203c] dark:bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-white dark:text-gray-800 uppercase tracking-widest hover:bg-gray-700 dark:hover:bg-white focus:bg-gray-700 dark:focus:bg-white active:bg-gray-900 dark:active:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150"
+                    class="inline-flex justify-center items-center h-10 px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white dark:text-gray-800 uppercase tracking-widest hover:bg-gray-700 dark:hover:bg-white focus:bg-gray-700 dark:focus:bg-white active:bg-gray-900 dark:active:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150"
                 >
                     Verify
                 </button>
@@ -151,9 +152,9 @@ onUnmounted(() => {
                     type="button"
                     :class="{
                         'inline-flex justify-center items-center h-10 px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest transition ease-in-out duration-150': true,
-                        'bg-gray-400 text-white hover:bg-gray-500 focus:bg-gray-400 active:bg-gray-400':
+                        'bg-gray-500 text-white hover:bg-gray-600 focus:bg-gray-700 active:bg-gray-600':
                             timer === 0,
-                        'bg-gray-400 text-gray-300 cursor-not-allowed':
+                        'bg-gray-500 text-gray-300 cursor-not-allowed':
                             timer > 0,
                     }"
                 >

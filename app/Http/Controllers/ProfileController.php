@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -24,11 +23,14 @@ class ProfileController extends Controller
     {
         $user = $request->user();
         $profile = $user->profile->select('firstname', 'lastname', 'avatar')->first();
+
+        $avatarUrl = Storage::temporaryUrl($profile->avatar, now()->addMinutes(10));
+
         return Inertia::render('Profile/Profile', [
-            // 'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => session('status'),
             'user' => $user,
             'profile' => $profile,
+            'avatar' => $avatarUrl,
         ]);
     }
 
@@ -103,7 +105,7 @@ class ProfileController extends Controller
         }
 
         // Store the new avatar in S3
-        $path = $request->file('avatar')->store('users', 's3');
+        $path = $request->file('avatar')->store('users');
 
         // Check if the file upload was successful
         if (!$path) {

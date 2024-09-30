@@ -272,62 +272,63 @@ onMounted(() => {
 </script>
 
 <template>
-    <section>
-        <header>
-            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-                Profile Information
-            </h2>
+    <header>
+        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
+            Profile Information
+        </h2>
 
-            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                Update your account's profile information.
-            </p>
-        </header>
+        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+            Update your account's profile information.
+        </p>
+    </header>
 
-        <form @submit.prevent="submit" class="mt-6 space-y-6">
-            <div class="flex flex-col justify-center items-center">
-                <h3 class="mb-2 text-gray-800">Capture Profile Photo</h3>
-                <video
-                    v-show="cameraState == 'capture'"
-                    ref="video"
-                    autoplay
-                    class="border-4 border-gray-300 rounded-xl"
-                ></video>
+    <form @submit.prevent="submit" class="mt-6 space-y-6">
+        <div class="flex flex-col justify-center items-center">
+            <h3 class="mb-2 text-gray-800">Capture Profile Photo</h3>
+            <video
+                v-show="cameraState == 'capture'"
+                ref="video"
+                autoplay
+                class="border-4 border-gray-300 rounded-xl"
+            ></video>
 
-                <canvas ref="canvas" style="display: none"></canvas>
-                <!-- Display the captured photo -->
-                <img
-                    v-if="photo && cameraState !== 'capture'"
-                    :src="photo"
-                    alt="Captured Photo"
-                    class="border-2 border-gray-300 rounded-xl w-48"
-                />
+            <canvas ref="canvas" style="display: none"></canvas>
+            <!-- Display the captured photo -->
+            <img
+                v-if="photo && cameraState !== 'capture'"
+                :src="photo"
+                alt="Captured Photo"
+                class="border-2 border-gray-300 rounded-xl w-48"
+            />
 
-                <audio ref="captureSound" :src="captureSoundSrc"></audio>
+            <audio ref="captureSound" :src="captureSoundSrc"></audio>
 
-                <SecondaryButton
-                    v-show="cameraState == 'start'"
-                    @click="startCamera"
-                    class="mt-4"
-                    :disabled="form.processing"
-                    >Open Camera</SecondaryButton
-                >
+            <SecondaryButton
+                v-show="cameraState == 'start'"
+                @click="startCamera"
+                class="mt-4 w-52"
+                :disabled="form.processing"
+                >Open Camera</SecondaryButton
+            >
 
-                <SecondaryButton
-                    v-show="cameraState == 'capture'"
-                    @click="capturePhoto"
-                    class="mt-4"
-                    :disabled="form.processing"
-                    >Capture</SecondaryButton
-                >
+            <SecondaryButton
+                v-show="cameraState == 'capture'"
+                @click="capturePhoto"
+                class="mt-4 w-52"
+                :disabled="form.processing"
+                >Capture</SecondaryButton
+            >
 
-                <SecondaryButton
-                    v-show="cameraState == 'done'"
-                    @click="retakePhoto"
-                    class="mt-4"
-                    :disabled="form.processing"
-                    >Retake Photo</SecondaryButton
-                >
-            </div>
+            <SecondaryButton
+                v-show="cameraState == 'done'"
+                @click="retakePhoto"
+                class="mt-4 w-52"
+                :disabled="form.processing"
+                >Retake Photo</SecondaryButton
+            >
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
             <div>
                 <InputLabel for="firstname" value="Firstname" />
 
@@ -395,8 +396,11 @@ onMounted(() => {
 
                 <InputError class="mt-2" :message="form.errors.extension" />
             </div>
-            <div class="w-full h-0.5 mt-4 bg-gray-100 dark:bg-gray-600"></div>
-            <p class="font-medium text-lg">Address</p>
+        </div>
+
+        <div class="w-full h-0.5 mt-4 bg-gray-100 dark:bg-gray-600"></div>
+        <p class="font-medium text-lg">Address</p>
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
             <div>
                 <InputLabel for="province" value="Province" />
 
@@ -482,10 +486,13 @@ onMounted(() => {
 
                 <InputError class="mt-2" :message="form.errors.street" />
             </div>
+        </div>
 
-            <div class="w-full h-0.5 mt-4 bg-gray-100 dark:bg-gray-600"></div>
+        <div class="w-full h-0.5 mt-4 bg-gray-100 dark:bg-gray-600"></div>
 
-            <p class="font-medium text-lg">Personal Information</p>
+        <p class="font-medium text-lg">Personal Information</p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
             <div>
                 <InputLabel for="gender" value="Gender" />
 
@@ -623,8 +630,12 @@ onMounted(() => {
 
                 <InputError class="mt-2" :message="form.errors.tribe" />
             </div>
-            <div class="w-full h-0.5 mt-4 bg-gray-100 dark:bg-gray-600"></div>
-            <p class="font-medium text-lg">Socioeconomic Information</p>
+        </div>
+
+        <div class="w-full h-0.5 mt-4 bg-gray-100 dark:bg-gray-600"></div>
+        <p class="font-medium text-lg">Socioeconomic Information</p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
             <div>
                 <InputLabel for="industry_sector" value="Industry/Sector" />
 
@@ -746,11 +757,14 @@ onMounted(() => {
 
                 <InputError class="mt-2" :message="form.errors.income_level" />
             </div>
+        </div>
 
-            <div class="w-full h-0.5 mt-4 bg-gray-100 dark:bg-gray-600"></div>
-            <p class="font-medium text-lg">
-                Other <small class="text-gray-600">(optional)</small>
-            </p>
+        <div class="w-full h-0.5 mt-4 bg-gray-100 dark:bg-gray-600"></div>
+        <p class="font-medium text-lg">
+            Other <small class="text-gray-600">(optional)</small>
+        </p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
             <div>
                 <InputLabel for="affiliation" value="Affiliation" />
 
@@ -778,26 +792,68 @@ onMounted(() => {
 
                 <InputError class="mt-2" :message="form.errors.facebook" />
             </div>
+            <div>
+                <InputLabel for="affiliation" value="Affiliation" />
 
-            <div class="flex items-center gap-4">
-                <PrimaryButton @click="updatePhoto" :disabled="form.processing"
-                    >Save</PrimaryButton
-                >
+                <TextInput
+                    id="street"
+                    type="text"
+                    class="mt-1 block w-full uppercase"
+                    v-model="form.affiliation"
+                    autocomplete="affiliation"
+                />
 
-                <Transition
-                    enter-active-class="transition ease-in-out"
-                    enter-from-class="opacity-0"
-                    leave-active-class="transition ease-in-out"
-                    leave-to-class="opacity-0"
-                >
-                    <p
-                        v-if="form.recentlySuccessful"
-                        class="text-sm text-gray-600 dark:text-gray-400"
-                    >
-                        Saved.
-                    </p>
-                </Transition>
+                <InputError class="mt-2" :message="form.errors.affiliation" />
             </div>
-        </form>
-    </section>
+
+            <div>
+                <InputLabel for="facebook" value="Facebook Profile" />
+
+                <TextInput
+                    id="facebook"
+                    type="text"
+                    class="mt-1 block w-full"
+                    v-model="form.facebook"
+                    autocomplete="facebook"
+                />
+
+                <InputError class="mt-2" :message="form.errors.facebook" />
+            </div>
+        </div>
+
+        <div
+            class="flex flex-col-reverse sm:flex-row items-center justify-end gap-4"
+        >
+            <Link
+                class="w-full sm:w-52 mt-0 sm:mt-4"
+                :href="route('profile.index')"
+            >
+                <SecondaryButton
+                    @click="updatePhoto"
+                    :disabled="form.processing"
+                    >Back</SecondaryButton
+                >
+            </Link>
+            <PrimaryButton
+                class="sm:w-52 mt-4"
+                @click="updatePhoto"
+                :disabled="form.processing"
+                >Save</PrimaryButton
+            >
+
+            <Transition
+                enter-active-class="transition ease-in-out"
+                enter-from-class="opacity-0"
+                leave-active-class="transition ease-in-out"
+                leave-to-class="opacity-0"
+            >
+                <p
+                    v-if="form.recentlySuccessful"
+                    class="text-sm text-gray-600 dark:text-gray-400"
+                >
+                    Saved.
+                </p>
+            </Transition>
+        </div>
+    </form>
 </template>
