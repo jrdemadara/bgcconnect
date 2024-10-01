@@ -24,13 +24,23 @@ class ProfileController extends Controller
         $user = $request->user();
         $profile = $user->profile->select('firstname', 'lastname', 'avatar')->first();
 
-        $avatarUrl = Storage::temporaryUrl($profile->avatar, now()->addMinutes(10));
+        if ($profile->avatar) {
+            $avatarUrl = Storage::temporaryUrl($profile->avatar, now()->addMinutes(10));
+
+            return Inertia::render('Profile/Profile', [
+                'status' => session('status'),
+                'user' => $user,
+                'profile' => $profile,
+                'avatar' => $avatarUrl,
+            ]);
+
+        }
 
         return Inertia::render('Profile/Profile', [
             'status' => session('status'),
             'user' => $user,
             'profile' => $profile,
-            'avatar' => $avatarUrl,
+            'avatar' => '',
         ]);
     }
 

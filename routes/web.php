@@ -6,6 +6,7 @@ use App\Http\Controllers\IDVerificationController;
 use App\Http\Controllers\InviteController;
 use App\Http\Controllers\PhoneVerificationController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RaffleEntryController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Route;
@@ -47,6 +48,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/provinces', [AddressController::class, 'getProvinces'])->name('address.getProvinces');
     Route::get('/municipalities', [AddressController::class, 'getMunicipalities'])->name('address.getMunicipalities');
     Route::get('/barangays', [AddressController::class, 'getBarangays'])->name('address.getBarangays');
+
+    Route::get('/raffle', [RaffleEntryController::class, 'index'])->name('raffle.index');
 
 });
 

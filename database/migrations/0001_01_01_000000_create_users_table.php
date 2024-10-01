@@ -22,7 +22,7 @@ return new class extends Migration
             $table->integer('level')->default(1);
             $table->string('location')->nullable();
             $table->boolean('is_active')->default(true);
-            $table->boolean('id_check')->default(false);
+            $table->integer('id_status')->default(0);
             $table->rememberToken();
             $table->timestamps();
         });

@@ -53,13 +53,33 @@ class IDVerificationController extends Controller
 
         // Update user ID check status
         $user = User::findOrFail(Auth::id());
-        $user->id_check = true;
+        $user->id_status = 1;
         $user->save();
 
         // Return response with uploaded file paths
         return response()->json([
             'front' => $profile->id_card_front,
             'back' => $profile->id_card_back,
+        ], 200);
+    }
+
+    public function getIDPhoto(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|string',
+        ]);
+
+        $user = $request->user();
+        $profile = $user->profile->select('avatar', 'id_card_front', 'id_card_back')->first();
+
+        $avatarUrl = Storage::temporaryUrl($profile->avatar, now()->addMinutes(10));
+        $idFrontUrl = Storage::temporaryUrl($profile->id_card_front, now()->addMinutes(10));
+        $idBackUrl = Storage::temporaryUrl($profile->id_card_back, now()->addMinutes(10));
+
+        return response()->json([
+            'avatar' => $avatarUrl,
+            'id_front' => $idFrontUrl,
+            'id_back' => $idBackUrl,
         ], 200);
     }
 

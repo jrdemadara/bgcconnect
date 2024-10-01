@@ -11,11 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('raffle_entries', function (Blueprint $table) {
+        Schema::create('raffle_prize', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade')->onUpdate('cascade');
-            $table->index(['user_id']);
+            $table->string('name');
+            $table->integer('quantity');
+            $table->foreignId('tier_id')->constrained('raffle_tiers')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -24,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('raffle_entries');
+        Schema::dropIfExists('raffle_prize');
     }
 };
