@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Models\Profile;
+use App\Models\RaffleDraw;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -24,6 +25,8 @@ class ProfileController extends Controller
         $user = $request->user();
         $profile = $user->profile->select('firstname', 'lastname', 'avatar')->first();
 
+        $draw = RaffleDraw::all()->first();
+
         if ($profile->avatar) {
             $avatarUrl = Storage::temporaryUrl($profile->avatar, now()->addMinutes(10));
 
@@ -32,6 +35,7 @@ class ProfileController extends Controller
                 'user' => $user,
                 'profile' => $profile,
                 'avatar' => $avatarUrl,
+                'draw' => $draw->draw_date,
             ]);
 
         }
@@ -41,6 +45,7 @@ class ProfileController extends Controller
             'user' => $user,
             'profile' => $profile,
             'avatar' => '',
+            'draw' => $draw->draw_date,
         ]);
     }
 

@@ -6,7 +6,8 @@ import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { Head, Link, useForm } from "@inertiajs/vue3";
-import { Info, Loader2 } from "lucide-vue-next";
+import { Loader2 } from "lucide-vue-next";
+import { toast } from "vue3-toastify";
 
 defineProps<{
     canResetPassword?: boolean;

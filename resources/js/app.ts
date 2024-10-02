@@ -8,6 +8,9 @@ import "./bootstrap";
 import "../css/app.css";
 import "vue-final-modal/style.css";
 
+import Vue3Toastify, { type ToastContainerOptions } from "vue3-toastify";
+import "vue3-toastify/dist/index.css";
+
 const appName = import.meta.env.VITE_APP_NAME || "Laravel";
 
 createInertiaApp({
@@ -25,7 +28,8 @@ createInertiaApp({
 
         app.use(plugin)
             .use(ZiggyVue)
-            .use(vfm) // Register the vue-final-modal plugin
+            .use(vfm)
+            .use(Vue3Toastify, { autoClose: 3000 } as ToastContainerOptions)
             .mount(el);
     },
     progress: {

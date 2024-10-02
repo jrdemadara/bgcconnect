@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('draws', function (Blueprint $table) {
             $table->id();
-            $table->datetime('draw_date');
+            $table->date('draw_date');
             $table->timestamps();
             $table->softDeletes();
         });

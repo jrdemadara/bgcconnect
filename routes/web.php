@@ -50,6 +50,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/barangays', [AddressController::class, 'getBarangays'])->name('address.getBarangays');
 
     Route::get('/raffle', [RaffleEntryController::class, 'index'])->name('raffle.index');
+    Route::post('/raffle', [RaffleEntryController::class, 'store'])->name('raffle.store');
 
 });
 

@@ -7,7 +7,8 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { Link, useForm, usePage } from "@inertiajs/vue3";
-import cameraSound from "../../../../sound/camera.mp3"; // Import the sound file
+import cameraSound from "../../../../sound/camera.mp3";
+import { toast } from "vue3-toastify";
 
 const video = ref<HTMLVideoElement | null>(null);
 const canvas = ref<HTMLCanvasElement | null>(null);
@@ -27,7 +28,6 @@ const selectedProvince = ref<string | null>(null);
 const selectedMunicipality = ref<string | null>(null);
 const selectedBarangay = ref<string | null>(null);
 
-const some_error = ref("");
 const barangays = ref<{ brgyCode: string; brgyDescription: string }[]>([]);
 
 const startCamera = async () => {
@@ -147,6 +147,7 @@ const form = useForm({
 });
 
 const submit = () => {
+    toast.loading("Updating profile...");
     form.patch(route("profile.update"), {
         onSuccess: () => {
             updatePhoto;
@@ -179,11 +180,10 @@ const updatePhoto = async () => {
             reader.readAsDataURL(profilePhoto.value);
 
             if (response.data.success) {
-                window.location.href = "/profile";
+                toast.success("Profile is successfully updated.");
             }
         } catch (error) {
-            console.log(error);
-            some_error.value = "Something went wrong, Please try again!";
+            toast.error("Something went wrong, Please try again!");
         }
     }
 };

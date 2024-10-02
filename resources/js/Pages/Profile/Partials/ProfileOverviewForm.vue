@@ -1,5 +1,5 @@
-<script setup lang="ts">
-import { Link, useForm, usePage } from "@inertiajs/vue3";
+<script setup>
+import { Link, usePage } from "@inertiajs/vue3";
 import { ref, computed, onMounted } from "vue";
 import {
     Badge,
@@ -7,7 +7,6 @@ import {
     CalendarCheck2,
     ChevronsDown,
     Info,
-    Link2,
     Network,
     QrCode,
     SquareArrowUpRight,
@@ -56,13 +55,20 @@ const { open, close } = useModal({
 
 const updateImageSrc = () => {
     const storedImage = localStorage.getItem("profilePhoto");
-    const avatar = props.avatar as string;
+    const avatar = props.avatar;
     if (storedImage) {
         photo.value = storedImage;
     } else {
         photo.value = avatar;
     }
 };
+
+const formattedDate = ref(formatDate(props.draw));
+
+function formatDate(dateString) {
+    const options = { year: "numeric", month: "long", day: "numeric" };
+    return new Date(dateString).toLocaleDateString("en-US", options);
+}
 
 onMounted(() => {
     updateImageSrc();
@@ -346,16 +352,16 @@ onMounted(() => {
                 </div>
             </div>
         </div>
-        <div class="w-full h-0.5 mt-6 bg-gray-100 dark:bg-gray-600"></div>
+        <div class="w-full h-0.5 mt-4 bg-gray-100 dark:bg-gray-600"></div>
 
         <div class="flex flex-col justify-center items-center mt-10">
             <div
                 class="flex flex-col justify-center items-center border-4 border-dotted border-orange-200 rounded-lg p-4 w-full text-lg text-center text-gray-600 dark:text-white"
             >
                 Next draw:
-                <br />
-                <span class="font-bold text-xl text-orange-500"
-                    >September 14, 2024 at 10:00 AM</span
+
+                <span class="font-bold text-xl text-orange-500">
+                    {{ props.draw }}</span
                 >
             </div>
             <ChevronsDown

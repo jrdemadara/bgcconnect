@@ -6,6 +6,7 @@ use App\Models\Profile;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -55,6 +56,10 @@ class IDVerificationController extends Controller
         $user = User::findOrFail(Auth::id());
         $user->id_status = 1;
         $user->save();
+
+        Redis::publish('sms0', json_encode([
+            'id' => $user->id,
+        ]));
 
         // Return response with uploaded file paths
         return response()->json([

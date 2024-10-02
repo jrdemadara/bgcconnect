@@ -6,7 +6,8 @@ import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { Head, Link, useForm } from "@inertiajs/vue3";
-import { Info, Loader2 } from "lucide-vue-next";
+import { Loader2 } from "lucide-vue-next";
+import { toast } from "vue3-toastify";
 
 const prop = defineProps<{
     code?: string;
@@ -23,7 +24,6 @@ const form = useForm({
 
 const isFilipino = ref(false);
 const termsAccept = ref(false);
-const registerSucess = ref(false);
 
 const submit = () => {
     form.post(route("register"), {
@@ -31,7 +31,10 @@ const submit = () => {
             form.reset("password", "password_confirmation");
         },
         onSuccess: () => {
-            registerSucess.value = true;
+            toast.success("Registration successful!");
+        },
+        onError: () => {
+            toast.error("Registration failed. Please try again.");
         },
     });
 };
@@ -40,13 +43,6 @@ const submit = () => {
 <template>
     <GuestLayout>
         <Head title="Register" />
-        <div
-            v-if="registerSucess"
-            class="flex items-center rounded-lg p-4 bg-blue-600 text-white"
-        >
-            <Info class="text-white w-12" />
-            You can now login to your account.
-        </div>
         <div class="flex justify-between items-center mt-2">
             <h2 class="font-bold text-xl text-black dark:text-gray-50">
                 Sign up
