@@ -41,7 +41,7 @@ jobs:
       # Step 3: Install PHP dependencies using Composer
       - name: Install PHP Dependencies
         run: |
-          composer update
+          #composer update
         env:
           COMPOSER_AUTH: ${{ secrets.supersecret }} # Use secrets for sensitive information
 
@@ -62,7 +62,7 @@ jobs:
       # Step 6: Restart your web server or queue workers (if necessary)
       - name: Restart Services
         run: |
-          sudo systemctl restart apache2  # Or replace with nginx or php-fpm restart as needed
+          sudo systemctl restart nginx  # Or replace with nginx or php-fpm restart as needed
 
       # Optionally restart other services like queue workers, etc.
       # - name: Restart Queue Workers
