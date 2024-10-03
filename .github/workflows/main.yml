@@ -4,12 +4,12 @@ name: Lint and Deploy
 on:
   push:
     branches:
-      - main  # or specify the branch you want to deploy from
+      - main # or specify the branch you want to deploy from
 
 jobs:
   # Job 1: Super Linter
   super-lint:
-    runs-on: ubuntu-latest  # You can change this to a self-hosted runner if you have one for linting
+    runs-on: ubuntu-latest # You can change this to a self-hosted runner if you have one for linting
     steps:
       # Step 1: Checkout the code
       - name: Checkout code
@@ -17,7 +17,7 @@ jobs:
 
       # Step 2: Run Super Linter
       - name: Super Linter
-        uses: github/super-linter@v5  # Ensure the correct version of Super Linter is being used
+        uses: github/super-linter@v5 # Ensure the correct version of Super Linter is being used
         env:
           VALIDATE_ALL_CODEBASE: true
           DEFAULT_BRANCH: main
@@ -25,8 +25,8 @@ jobs:
 
   # Job 2: Deploy (depends on Super Linter)
   deploy:
-    runs-on: self-hosted  # Use your self-hosted Debian runner for deployment
-    needs: super-lint  # Ensure this job only runs if the Super Linter job is successful
+    runs-on: self-hosted # Use your self-hosted Debian runner for deployment
+    needs: super-lint # Ensure this job only runs if the Super Linter job is successful
     steps:
       # Step 1: Checkout the latest code from the repository
       - name: Checkout code
@@ -41,9 +41,9 @@ jobs:
       # Step 3: Install PHP dependencies using Composer
       - name: Install PHP Dependencies
         run: |
-          sudo composer install --no-interaction --prefer-dist --optimize-autoloader
+          composer install --optimize-autoloader
         env:
-          COMPOSER_AUTH: ${{ secrets.supersecret }}  # Use secrets for sensitive information
+          COMPOSER_AUTH: ${{ secrets.supersecret }} # Use secrets for sensitive information
 
       # Step 4: Set file permissions (if needed for deployment)
       - name: Set Permissions
