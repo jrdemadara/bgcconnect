@@ -25,7 +25,7 @@ jobs:
 
   # Job 2: Deploy (depends on Super Linter)
   deploy:
-    runs-on: self-hosted # Use your self-hosted Debian runner for deployment
+    runs-on: ubuntu-latest # Use your self-hosted Debian runner for deployment
     # needs: super-lint # Ensure this job only runs if the Super Linter job is successful
     steps:
       # Step 1: Checkout the latest code from the repository
