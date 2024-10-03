@@ -32,18 +32,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Step 2: Install Node.js dependencies and build front-end assets
+      # Step 2: Install PHP dependencies using Composer
+      - name: Install PHP Dependencies
+        run: |
+          composer install --optimize-autoloader --no-dev
+        env:
+          COMPOSER_AUTH: ${{ secrets.supersecret }} # Use secrets for sensitive information
+
+      # Step 3: Install Node.js dependencies and build front-end assets
       - name: Install Node.js and NPM dependencies
         run: |
           npm install
           npm run build  # Replace with your build command if different
-
-      # Step 3: Install PHP dependencies using Composer
-      - name: Install PHP Dependencies
-        run: |
-          composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
-        env:
-          COMPOSER_AUTH: ${{ secrets.supersecret }} # Use secrets for sensitive information
 
       # Step 4: Set file permissions (if needed for deployment)
       - name: Set Permissions
@@ -58,6 +58,7 @@ jobs:
           php artisan config:cache
           php artisan route:cache
           php artisan view:cache
+          php artisan optimize
 
       # Step 6: Restart your web server or queue workers (if necessary)
       - name: Restart Services
