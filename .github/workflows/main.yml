@@ -13,13 +13,13 @@ jobs:
     steps:
       # Step 1: Checkout the code
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # Step 2: Run Super Linter
       - name: Super Linter
         uses: github/super-linter@v5  # Ensure the correct version of Super Linter is being used
         env:
-          VALIDATE_ALL_CODEBASE: false
+          VALIDATE_ALL_CODEBASE: true
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -30,7 +30,7 @@ jobs:
     steps:
       # Step 1: Checkout the latest code from the repository
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # Step 2: Install Node.js dependencies and build front-end assets
       - name: Install Node.js and NPM dependencies
