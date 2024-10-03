@@ -1,0 +1,47 @@
+name: Deploy to staging
+
+on:
+  push:
+    branches:
+      - staging
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Checkout the latest code from the repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+        # Step 2: Install PHP dependencies using Composer
+      - name: Install PHP Dependencies
+        run: |
+          composer install --prefer-dist --no-progress --no-suggest --optimize-autoloader
+        env:
+          COMPOSER_AUTH: ${{ secrets.supersecret }} # Use secrets for sensitive information
+
+      # Step 3: Install Node.js dependencies and build front-end assets
+      - name: Install Node.js and NPM dependencies
+        run: |
+          npm install --save-dev vite laravel-vite-plugin
+          npm run build
+
+      # Step 4: Set file permissions (if needed for deployment)
+      - name: Set Permissions
+        run: |
+          sudo chown -R www-data:www-data /var/www/bgcconnect
+          sudo chmod -R 775 /var/www/bgcconnect/storage /var/www/bgcconnect/bootstrap/cache
+
+      # Step 5: Run Laravel-specific commands (like migrations, cache, etc.)
+      - name: Run Laravel Cache
+        run: |
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:cache
+          php artisan optimize
+
+      # Step 6: Restart your web server or queue workers (if necessary)
+      - name: Restart Services
+        run: |
+          sudo systemctl restart nginx
+          sudo systemctl restart php-fpm
