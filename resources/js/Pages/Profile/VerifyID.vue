@@ -44,13 +44,12 @@ const uploadPhoto = async () => {
                     "Content-Type": "multipart/form-data",
                 },
             });
-            console.log(response);
+
             console.log("Upload successful:", response.data);
             if (response.status == 200) {
                 window.location.href = "/profile";
             }
         } catch (error) {
-            console.log(error);
             some_error.value = "Something went wrong, Please try again!";
         }
     } else {
