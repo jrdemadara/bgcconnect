@@ -32,10 +32,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Step 2: Install PHP dependencies using Composer
-      - name: Install PHP Dependencies
-        run: |
-          composer update
+        # Step 2: Install PHP dependencies using Composer
+        # - name: Install PHP Dependencies
+        #   run: |
+        #     composer update
         env:
           COMPOSER_AUTH: ${{ secrets.supersecret }} # Use secrets for sensitive information
 
