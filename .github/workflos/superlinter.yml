@@ -1,0 +1,27 @@
+name: Lint Code Base
+
+on:
+  push:
+    branches:
+      - "**"  # Lint code on push to any branch
+  pull_request:
+    branches:
+      - "**"  # Lint code on pull requests to any branch
+  workflow_dispatch: # Allows you to run the linter manually from the GitHub Actions tab
+
+jobs:
+  lint:
+    name: Lint Code Base
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Run Super-Linter
+        uses: github/super-linter@v5
+        env:
+          VALIDATE_ALL_CODEBASE: true # Set this to true to lint the entire codebase
+          DEFAULT_BRANCH: main # Set your default branch here
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # GitHub token to allow Super Linter to comment on PRs
+          VALIDATE_PYTHON_PYLINT: true # Example of enabling Python linting, customize per your needs
