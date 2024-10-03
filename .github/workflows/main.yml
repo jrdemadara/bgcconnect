@@ -8,62 +8,62 @@ on:
 
 jobs:
   # Job 1: Super Linter
-  super-lint:
-    runs-on: ubuntu-latest # You can change this to a self-hosted runner if you have one for linting
-    steps:
-      # Step 1: Checkout the code
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      # Step 2: Run Super Linter
-      - name: Super Linter
-        uses: github/super-linter@v5 # Ensure the correct version of Super Linter is being used
-        env:
-          VALIDATE_ALL_CODEBASE: true
-          DEFAULT_BRANCH: main
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  # Job 2: Deploy (depends on Super Linter)
-  # deploy:
-  #   runs-on: self-hosted # Use your self-hosted Debian runner for deployment
-  #   needs: super-lint # Ensure this job only runs if the Super Linter job is successful
+  # super-lint:
+  #   runs-on: ubuntu-latest # You can change this to a self-hosted runner if you have one for linting
   #   steps:
-  #     # Step 1: Checkout the latest code from the repository
+  #     # Step 1: Checkout the code
   #     - name: Checkout code
   #       uses: actions/checkout@v4
 
-  #     # Step 2: Install Node.js dependencies and build front-end assets
-  #     - name: Install Node.js and NPM dependencies
-  #       run: |
-  #         npm install
-  #         npm run build  # Replace with your build command if different
-
-  #     # Step 3: Install PHP dependencies using Composer
-  #     - name: Install PHP Dependencies
-  #       run: |
-  #         #composer update
+  #     # Step 2: Run Super Linter
+  #     - name: Super Linter
+  #       uses: github/super-linter@v5 # Ensure the correct version of Super Linter is being used
   #       env:
-  #         COMPOSER_AUTH: ${{ secrets.supersecret }} # Use secrets for sensitive information
+  #         VALIDATE_ALL_CODEBASE: true
+  #         DEFAULT_BRANCH: main
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  #     # Step 4: Set file permissions (if needed for deployment)
-  #     - name: Set Permissions
-  #       run: |
-  #         sudo chown -R www-data:www-data /var/www/bgcconnect
-  #         sudo chmod -R 775 /var/www/bgcconnect/app/storage /var/www/bgcconnect/app/bootstrap/cache
+  # Job 2: Deploy (depends on Super Linter)
+  deploy:
+    runs-on: self-hosted # Use your self-hosted Debian runner for deployment
+    # needs: super-lint # Ensure this job only runs if the Super Linter job is successful
+    steps:
+      # Step 1: Checkout the latest code from the repository
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-  #     # Step 5: Run Laravel-specific commands (like migrations, cache, etc.)
-  #     - name: Run Laravel Migrations and Cache
-  #       run: |
-  #         php artisan migrate --force
-  #         php artisan config:cache
-  #         php artisan route:cache
-  #         php artisan view:cache
+      # Step 2: Install Node.js dependencies and build front-end assets
+      - name: Install Node.js and NPM dependencies
+        run: |
+          npm install
+          npm run build  # Replace with your build command if different
 
-  #     # Step 6: Restart your web server or queue workers (if necessary)
-  #     - name: Restart Services
-  #       run: |
-  #         sudo systemctl restart nginx  # Or replace with nginx or php-fpm restart as needed
+      # Step 3: Install PHP dependencies using Composer
+      - name: Install PHP Dependencies
+        run: |
+          #composer update
+        env:
+          COMPOSER_AUTH: ${{ secrets.supersecret }} # Use secrets for sensitive information
 
-  #     # Optionally restart other services like queue workers, etc.
-  #     # - name: Restart Queue Workers
-  #     #   run: php artisan queue:restart
+      # Step 4: Set file permissions (if needed for deployment)
+      - name: Set Permissions
+        run: |
+          sudo chown -R www-data:www-data /var/www/bgcconnect
+          sudo chmod -R 775 /var/www/bgcconnect/app/storage /var/www/bgcconnect/app/bootstrap/cache
+
+      # Step 5: Run Laravel-specific commands (like migrations, cache, etc.)
+      - name: Run Laravel Migrations and Cache
+        run: |
+          php artisan migrate --force
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:cache
+
+      # Step 6: Restart your web server or queue workers (if necessary)
+      - name: Restart Services
+        run: |
+          sudo systemctl restart nginx  # Or replace with nginx or php-fpm restart as needed
+
+      # Optionally restart other services like queue workers, etc.
+      # - name: Restart Queue Workers
+      #   run: php artisan queue:restart
