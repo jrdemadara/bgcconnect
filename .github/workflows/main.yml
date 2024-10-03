@@ -41,7 +41,7 @@ jobs:
       # Step 3: Install PHP dependencies using Composer
       - name: Install PHP Dependencies
         run: |
-          #composer update
+          composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
         env:
           COMPOSER_AUTH: ${{ secrets.supersecret }} # Use secrets for sensitive information
 
