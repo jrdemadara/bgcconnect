@@ -22,7 +22,8 @@ class ProfileController extends Controller
     // Display the user's profile form.
     public function index(Request $request): Response
     {
-        $user = $request->user();
+        $user = Auth::user();
+
         $profile = $user->profile->select('firstname', 'lastname', 'avatar')->first();
 
         $draw = RaffleDraw::all()->first();
@@ -52,7 +53,8 @@ class ProfileController extends Controller
     // Display the user's profile form for edit.
     public function edit(Request $request): Response
     {
-        $user = $request->user();
+        $user = Auth::user();
+
         $profile = $user->profile;
         return Inertia::render('Profile/Edit', [
             'status' => session('status'),

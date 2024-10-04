@@ -14,7 +14,8 @@ class ActivityController extends Controller
 {
     public function index(Request $request)
     {
-        $user = $request->user();
+        $user = Auth::user();
+
         return Inertia::render('Activity', [
             'isPhoneVerified' => $user->phone_verified_at ?: true, false,
             'status' => session('status'),
