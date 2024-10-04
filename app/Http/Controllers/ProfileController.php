@@ -23,30 +23,24 @@ class ProfileController extends Controller
     public function index(Request $request): Response
     {
         $user = Auth::user();
+        $profile = Profile::where('user_id', $user->id)
+            ->select('firstname', 'lastname', 'avatar')
+            ->first();
 
-        $profile = $user->profile->select('firstname', 'lastname', 'avatar')->first();
+        // Fetch the latest raffle draw
+        $draw = RaffleDraw::latest()->first();
 
-        $draw = RaffleDraw::all()->first();
-
-        if ($profile->avatar) {
-            $avatarUrl = Storage::temporaryUrl($profile->avatar, now()->addMinutes(10));
-
-            return Inertia::render('Profile/Profile', [
-                'status' => session('status'),
-                'user' => $user,
-                'profile' => $profile,
-                'avatar' => $avatarUrl,
-                'draw' => $draw->draw_date,
-            ]);
-
-        }
+        // Prepare the avatar URL
+        $avatarUrl = $profile && $profile->avatar
+        ? Storage::temporaryUrl($profile->avatar, now()->addMinutes(10))
+        : '';
 
         return Inertia::render('Profile/Profile', [
             'status' => session('status'),
             'user' => $user,
             'profile' => $profile,
-            'avatar' => '',
-            'draw' => $draw->draw_date,
+            'avatar' => $avatarUrl,
+            'draw' => $draw ? $draw->draw_date : null,
         ]);
     }
 
