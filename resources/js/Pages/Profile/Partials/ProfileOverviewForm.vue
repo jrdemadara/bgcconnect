@@ -125,8 +125,8 @@ onMounted(() => {
         <h4
             class="flex justify-center items-center font-medium text-xl dark:text-white capitalize"
         >
-            {{ props.profile.firstname }}
-            {{ props.profile.lastname }}
+            {{ user.profile.firstname }}
+            {{ user.profile.lastname }}
         </h4>
 
         <div
