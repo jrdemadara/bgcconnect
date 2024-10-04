@@ -24,7 +24,7 @@ const photo = ref("");
 
 const user = usePage().props.auth.user;
 const props = usePage().props;
-console.log(user.profile.firstname);
+
 const completionPercentage = computed(() => {
     switch (user.level) {
         case 1:
@@ -125,8 +125,8 @@ onMounted(() => {
         <h4
             class="flex justify-center items-center font-medium text-xl dark:text-white capitalize"
         >
-            {{ user.profile.firstname }}
-            {{ user.profile.lastname }}
+            {{ props.profile.firstname }}
+            {{ props.profile.lastname }}
         </h4>
 
         <div
