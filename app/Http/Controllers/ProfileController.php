@@ -289,13 +289,13 @@ class ProfileController extends Controller
     {
         $currentMonthCount = DB::select('
     WITH RECURSIVE referral_hierarchy AS (
-        SELECT id, name, referred_by, created_at
+        SELECT id, referred_by, created_at
         FROM users
         WHERE referred_by = ?
 
         UNION ALL
 
-        SELECT u.id, u.name, u.referred_by, u.created_at
+        SELECT u.id, u.referred_by, u.created_at
         FROM users u
         INNER JOIN referral_hierarchy rh ON rh.id = u.referred_by
     )
@@ -306,13 +306,13 @@ class ProfileController extends Controller
 
         $previousMonthCount = DB::select('
     WITH RECURSIVE referral_hierarchy AS (
-        SELECT id, name, referred_by, created_at
+        SELECT id, referred_by, created_at
         FROM users
         WHERE referred_by = ?
 
         UNION ALL
 
-        SELECT u.id, u.name, u.referred_by, u.created_at
+        SELECT u.id, u.referred_by, u.created_at
         FROM users u
         INNER JOIN referral_hierarchy rh ON rh.id = u.referred_by
     )
