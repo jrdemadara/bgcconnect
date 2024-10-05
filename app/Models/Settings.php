@@ -15,5 +15,6 @@ class Settings extends Model
         'top_level_points',
         'lower_level_points',
         'activity_points',
+        'last_channel',
     ];
 }

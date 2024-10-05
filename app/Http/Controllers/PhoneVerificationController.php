@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Settings;
 use App\Models\User;
+use function Laravel\Prompts\select;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redis;
@@ -31,11 +33,20 @@ class PhoneVerificationController extends Controller
         // Store the verification code in Redis with an expiration of 1 hour
         Redis::setex("verification_code:{$user->id}", 3600, $verificationCode);
 
-        // Prepare and publish the message to the SMS channel
-        Redis::publish('sms', json_encode([
+        $settings = Settings::select('last_channel')->first();
+        $last_channel = $settings->last_channel;
+
+        // Determine the next channel (ensure it loops back to '1' after '5')
+        $next_channel = ($last_channel % 5) + 1; // Assuming you have 5 channels (sms1, sms2, ..., sms5)
+
+        // Prepare and publish the message to the next SMS channel
+        Redis::publish('sms' . $next_channel, json_encode([
             'phone_number' => $phone,
             'verification_code' => $verificationCode,
         ]));
+
+        // Update the last channel in the database
+        $settings->last_channel = $next_channel;
 
         return response()->json(['message' => 'sent'], 200);
     }
