@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Settings;
 use App\Models\User;
-use function Laravel\Prompts\select;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redis;
@@ -27,17 +26,20 @@ class PhoneVerificationController extends Controller
 
         $phone = $user->phone;
 
+        $settings = Settings::find(1);
+
+        $last_channel = $settings->last_channel;
+        $channel_size = $settings->last_channel_size;
+        $verification_expiry = $settings->verification_expiry;
+
         // Generate a random verification code
         $verificationCode = $this->generateRandomString();
 
         // Store the verification code in Redis with an expiration of 1 hour
-        Redis::setex("verification_code:{$user->id}", 3600, $verificationCode);
-
-        $settings = Settings::select('last_channel')->first();
-        $last_channel = $settings->last_channel;
+        Redis::setex("verification_code:{$user->id}", $verification_expiry, $verificationCode);
 
         // Determine the next channel (ensure it loops back to '1' after '5')
-        $next_channel = ($last_channel % 5) + 1; // Assuming you have 5 channels (sms1, sms2, ..., sms5)
+        $next_channel = ($last_channel % $channel_size) + 1; // Assuming you have 5 channels (sms1, sms2, ..., sms5)
 
         // Prepare and publish the message to the next SMS channel
         Redis::publish('sms' . $next_channel, json_encode([
@@ -49,11 +51,18 @@ class PhoneVerificationController extends Controller
         $settings->last_channel = $next_channel;
         $settings->save();
 
-        return response()->json(['message' => 'sent'], 200);
+        return response()->json(['message' => 'sent', 'last_channel' => $last_channel, 'next_channel' => $next_channel], 200);
     }
 
     public function verify(Request $request)
     {
+
+        $settings = Settings::find(1);
+
+        $multilevel_size = $settings->multilevel_size;
+        $direct_points = $settings->direct_points;
+        $downline_points = $settings->downline_points;
+
         $id = Auth::id();
         $verificationCodeKey = "verification_code:$id";
         $verification_code = Redis::get($verificationCodeKey);
@@ -75,7 +84,7 @@ class PhoneVerificationController extends Controller
 
         if ($referrer) {
             // distribute points
-            $this->distributeReferralPoints($user);
+            $this->distributeReferralPoints($user, $multilevel_size, $direct_points, $downline_points);
         }
 
         // Delete the Redis key
@@ -84,7 +93,7 @@ class PhoneVerificationController extends Controller
         return response()->json(['message' => 'Verification successful.'], 200);
     }
 
-    public function distributeReferralPoints(User $newUser)
+    public function distributeReferralPoints(User $newUser, int $multilevel_size, int $direct_points, int $downline_points)
     {
         // Get the direct referrer by their ID
         $directReferrerId = $newUser->referred_by;
@@ -95,18 +104,18 @@ class PhoneVerificationController extends Controller
 
             if ($directReferrer) {
                 // Direct referral gets 10 points
-                $this->awardPoints($directReferrer, 10);
+                $this->awardPoints($directReferrer, $direct_points);
 
                 // Recursively distribute points to the upline
-                $this->distributeToUpline($directReferrer, 1);
+                $this->distributeToUpline($directReferrer, 1, $multilevel_size, $direct_points, $downline_points);
             }
         }
     }
 
-    public function distributeToUpline(User $user, int $level)
+    public function distributeToUpline(User $user, int $level, int $multilevel_size, int $direct_points, int $downline_points)
     {
-        // We stop at level 5
-        if ($level > 5) {
+        // Stop at multilevel_size
+        if ($level > $multilevel_size) {
             return;
         }
 
@@ -118,11 +127,11 @@ class PhoneVerificationController extends Controller
             $upline = User::find($uplineId);
 
             if ($upline) {
-                // Award 5 points to the upline
-                $this->awardPoints($upline, 5);
+                // Award lower_level_points to the upline
+                $this->awardPoints($upline, $downline_points);
 
                 // Recursively distribute points to the next level
-                $this->distributeToUpline($upline, $level + 1);
+                $this->distributeToUpline($upline, $level + 1, $multilevel_size, $direct_points, $downline_points);
             }
         }
     }

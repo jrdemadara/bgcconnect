@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Activities;
 use App\Models\ActivityAttendees;
+use App\Models\Settings;
 use App\Models\User;
 use function Pest\Laravel\json;
 use Illuminate\Http\Request;
@@ -60,6 +61,10 @@ class ActivityController extends Controller
             'longitude' => 'required',
         ]);
 
+        $settings = Settings::find(1);
+
+        $activity_points = $settings->activity_points;
+
         // Get the authenticated user's ID
         $id = Auth::id();
 
@@ -80,7 +85,7 @@ class ActivityController extends Controller
 
             // Increment the user's points
             $user = User::find($id);
-            $user->increment('points', 10); // Adds 10 points to the existing value
+            $user->increment('points', $activity_points); // Adds 10 points to the existing value
 
             return response()->json([
                 'message' => 'success',

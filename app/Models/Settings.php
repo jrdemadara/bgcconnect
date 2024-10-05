@@ -12,9 +12,10 @@ class Settings extends Model
 
     protected $fillable = [
         'multilevel_size',
-        'top_level_points',
-        'lower_level_points',
+        'direct_points',
+        'downline_points',
         'activity_points',
+        'channel_size',
         'last_channel',
     ];
 }

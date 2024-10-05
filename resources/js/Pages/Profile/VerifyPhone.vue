@@ -1,30 +1,27 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted } from "vue";
 
 import GuestLayout from "@/Layouts/GuestLayout.vue";
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import TextInput from "@/Components/TextInput.vue";
-import { Head, useForm } from "@inertiajs/vue3";
+import { Head } from "@inertiajs/vue3";
 import axios from "axios";
-import SecondaryButton from "@/Components/SecondaryButton.vue";
+import { toast } from "vue3-toastify";
 
 const timer = ref(0);
 let interval: ReturnType<typeof setInterval> | null = null;
 
 const verification_code = ref("");
 const verification_code_error = ref("");
-const some_error = ref("");
 
 const send = async () => {
     if (timer.value == 0) {
         try {
             const response = await axios.get("/verify/send");
-
             console.log(response);
-
             if (response.data.message === "sent") {
-                const verificationDuration = 5; // 1 hour in seconds
+                const verificationDuration = 5;
                 timer.value = verificationDuration;
                 localStorage.setItem(
                     "verificationTimer",
@@ -33,10 +30,10 @@ const send = async () => {
                 startTimer();
             } else {
                 if (interval) clearInterval(interval);
+                localStorage.removeItem("verificationTimer");
             }
         } catch (error) {
-            console.log(error);
-            some_error.value = "Something went wrong, Please try again!";
+            toast.error("Something went wrong, Please try again.");
         }
     }
 };
@@ -49,18 +46,18 @@ const verify = () => {
             },
         })
         .then(function (response) {
-            console.log(response);
             if (response.status == 200) {
                 if (interval) clearInterval(interval);
+                localStorage.removeItem("verificationTimer");
                 window.location.href = "/profile";
             }
         })
         .catch(function (error) {
-            console.log(error);
-            if (error.status == 400) {
+            if (error.response && error.response.status == 400) {
                 verification_code_error.value = "Invalid Verification Code";
+                toast.error("Verification Code is invalid.");
             } else {
-                some_error.value = "Something went wrong, Please try again!";
+                toast.error("Something went wrong, Please try again.");
             }
         });
 };
@@ -74,7 +71,7 @@ const startTimer = () => {
             localStorage.setItem("verificationTimer", String(timer.value)); // Update localStorage
         } else {
             clearInterval(interval!);
-            localStorage.removeItem("verificationTimer"); // Clear when expired
+            localStorage.removeItem("verificationTimer");
         }
     }, 1000); // Update every second
 };
@@ -90,12 +87,8 @@ onMounted(() => {
     const storedTimer = localStorage.getItem("verificationTimer");
     if (storedTimer) {
         timer.value = Number(storedTimer);
+        startTimer(); // Start the timer if a value is restored
     }
-});
-
-// Cleanup on component unmount
-onUnmounted(() => {
-    if (interval) clearInterval(interval);
 });
 </script>
 
@@ -104,9 +97,8 @@ onUnmounted(() => {
         <Head title="Phone Verification" />
 
         <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
-            Thank you for joining! A verification code has been sent to your
-            mobile number. Please check your messages and enter the code to
-            proceed.
+            Thank you for joining! Just click the button <br />
+            'SEND VERIFICATION CODE' to verify your number.
         </div>
 
         <div
@@ -114,13 +106,6 @@ onUnmounted(() => {
             v-if="timer > 0"
         >
             A new verification code has been sent to your phone number.
-        </div>
-
-        <div
-            class="bg-red-500 rounded-md mb-4 p-2 font-medium text-sm text-white"
-            v-if="some_error"
-        >
-            {{ some_error }}
         </div>
 
         <div class="mt-4 flex flex-col items-center justify-between space-y-6">
@@ -159,7 +144,7 @@ onUnmounted(() => {
                             timer > 0,
                     }"
                 >
-                    Resend Verification Code
+                    Send Verification Code
                 </button>
                 <p class="text-red-500 text-center font-bold" v-if="timer > 0">
                     <span class="text-gray-600 font-normal">

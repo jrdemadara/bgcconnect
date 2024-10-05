@@ -13,10 +13,13 @@ return new class extends Migration
     {
         Schema::create('settings', function (Blueprint $table) {
             $table->id();
-            $table->integer('multilevel_size');
-            $table->integer('top_level_points')->default(0);
-            $table->integer('lower_level_points')->default(0);
-            $table->integer('activity_points')->default(0);
+            $table->integer('multilevel_size')->default(5);
+            $table->integer('direct_points')->default(10);
+            $table->integer('downline_points')->default(5);
+            $table->integer('activity_points')->default(10);
+            $table->integer('channel_size')->default(5);
+            $table->integer('last_channel')->default(5);
+            $table->integer('verification_expiry')->default(1800);
             $table->timestamps();
             $table->softDeletes();
         });
