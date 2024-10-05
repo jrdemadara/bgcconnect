@@ -29,7 +29,7 @@ class PhoneVerificationController extends Controller
         $settings = Settings::find(1);
 
         $last_channel = $settings->last_channel;
-        $channel_size = $settings->last_channel_size;
+        $channel_size = $settings->channel_size;
         $verification_expiry = $settings->verification_expiry;
 
         // Generate a random verification code
@@ -51,7 +51,7 @@ class PhoneVerificationController extends Controller
         $settings->last_channel = $next_channel;
         $settings->save();
 
-        return response()->json(['message' => 'sent', 'last_channel' => $last_channel, 'next_channel' => $next_channel], 200);
+        return response()->json(['message' => 'sent'], 200);
     }
 
     public function verify(Request $request)
