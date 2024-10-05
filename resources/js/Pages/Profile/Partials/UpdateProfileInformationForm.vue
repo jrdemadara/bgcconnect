@@ -411,6 +411,7 @@ onMounted(() => {
                     required
                     autofocus
                 >
+                    <option selected disabled>{{ form.province }}</option>
                     <option
                         v-for="province in provinces"
                         :key="province.provCode"
@@ -424,7 +425,7 @@ onMounted(() => {
             </div>
 
             <div>
-                <InputLabel for="municipality" value="Municipality" />
+                <InputLabel for="municipality" value="Municipality/City" />
 
                 <select
                     @change="handleMunicipality()"
@@ -434,6 +435,9 @@ onMounted(() => {
                     required
                     autofocus
                 >
+                    <option selected disabled>
+                        {{ form.municipality_city }}
+                    </option>
                     <option
                         v-for="municipality in municipalities"
                         :key="municipality.citymunCode"
@@ -459,6 +463,7 @@ onMounted(() => {
                     required
                     autofocus
                 >
+                    <option selected disabled>{{ form.barangay }}</option>
                     <option
                         v-for="barangay in barangays"
                         :key="barangay.brgyCode"
@@ -472,7 +477,7 @@ onMounted(() => {
             </div>
 
             <div>
-                <InputLabel for="street" value="Street" />
+                <InputLabel for="street" value="Purok/Sitio" />
 
                 <TextInput
                     id="street"
