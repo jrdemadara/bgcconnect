@@ -35,6 +35,7 @@ const send = async () => {
                 if (interval) clearInterval(interval);
             }
         } catch (error) {
+            console.log(error);
             some_error.value = "Something went wrong, Please try again!";
         }
     }

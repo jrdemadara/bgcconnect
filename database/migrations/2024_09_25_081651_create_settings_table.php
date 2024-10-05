@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('lower_level_points')->default(0);
             $table->integer('activity_points')->default(0);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

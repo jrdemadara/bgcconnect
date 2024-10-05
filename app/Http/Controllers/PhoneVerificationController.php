@@ -47,6 +47,7 @@ class PhoneVerificationController extends Controller
 
         // Update the last channel in the database
         $settings->last_channel = $next_channel;
+        $settings->save();
 
         return response()->json(['message' => 'sent'], 200);
     }
