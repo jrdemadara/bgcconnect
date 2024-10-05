@@ -61,7 +61,7 @@ class ProfileController extends Controller
             'avatar' => $avatarUrl,
             'draw' => $draw ? $draw->draw_date : null,
             'downline' => $downline,
-            'all_downline' => $allDownline[0]->downline_count,
+            'all_downline' => $allDownline['downline_count'],
             'activities' => $activitiesCount,
             'points_comparison' => $this->getPointsChange($user->id),
             'referral_comparison' => $this->getReferralChange($user->id),
