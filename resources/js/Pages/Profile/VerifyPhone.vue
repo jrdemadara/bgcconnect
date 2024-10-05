@@ -21,7 +21,7 @@ const send = async () => {
             const response = await axios.get("/verify/send");
             console.log(response);
             if (response.data.message === "sent") {
-                const verificationDuration = 5;
+                const verificationDuration = 1800;
                 timer.value = verificationDuration;
                 localStorage.setItem(
                     "verificationTimer",
