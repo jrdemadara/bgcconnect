@@ -3,13 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\ActivityAttendees;
 use App\Models\Profile;
 use App\Models\RaffleDraw;
+use App\Models\Referrals;
+use App\Models\Transaction;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -35,12 +40,33 @@ class ProfileController extends Controller
         ? Storage::temporaryUrl($profile->avatar, now()->addMinutes(10))
         : '';
 
+        $downline = User::where('referred_by', $user->id)->count();
+
+        $allDownline = DB::select('
+            WITH RECURSIVE referral_hierarchy AS (
+                SELECT id, name, referred_by FROM users WHERE id = ?
+                UNION ALL
+                SELECT u.id, u.name, u.referred_by
+                FROM users u
+                INNER JOIN referral_hierarchy rh ON rh.id = u.referred_by
+            )
+                SELECT COUNT(*) AS downline_count FROM referral_hierarchy;
+        ', [$user->id]);
+
+        $activitiesCount = ActivityAttendees::where('user_id', $user->id)->count();
+
         return Inertia::render('Profile/Profile', [
             'status' => session('status'),
-            'user' => $user,
             'profile' => $profile,
             'avatar' => $avatarUrl,
             'draw' => $draw ? $draw->draw_date : null,
+            'downline' => $downline,
+            // 'all_downline' => $allDownline[0]->downline_count,
+            'activities' => $activitiesCount,
+            'points_comparison' => $this->getPointsChange($user->id),
+            'referral_comparison' => $this->getReferralChange($user->id),
+            'activity_comparison' => $this->getActivityChange($user->id),
+            'downlines_comparison' => $this->getDownlineChange($user->id),
         ]);
     }
 
@@ -149,6 +175,169 @@ class ProfileController extends Controller
         $request->session()->regenerateToken();
 
         return Redirect::to('/');
+    }
+
+    public function getPointsChange($userId)
+    {
+        // Get the current date and the first and last day of the current month
+        $startOfMonth = Carbon::now()->startOfMonth();
+        $endOfMonth = Carbon::now()->endOfMonth();
+
+        // Get the first and last day of the previous month
+        $startOfLastMonth = Carbon::now()->subMonth()->startOfMonth();
+        $endOfLastMonth = Carbon::now()->subMonth()->endOfMonth();
+
+        // Retrieve total points for the current month
+        $currentMonthPoints = Transaction::where('user_id', $userId)
+            ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
+            ->sum('points_earned');
+
+        // Retrieve total points for the previous month
+        $lastMonthPoints = Transaction::where('user_id', $userId)
+            ->whereBetween('created_at', [$startOfLastMonth, $endOfLastMonth])
+            ->sum('points_earned');
+
+        // Calculate percentage change
+        if ($lastMonthPoints == 0) {
+            // Avoid division by zero, if no points were earned last month, assume 100% increase
+            $percentageChange = $currentMonthPoints > 0 ? 100 : 0;
+        } else {
+            $percentageChange = (($currentMonthPoints - $lastMonthPoints) / $lastMonthPoints) * 100;
+        }
+
+        // Format the percentage change with + or - sign
+        $sign = $percentageChange >= 0 ? '+' : '-';
+        $percentageChange = abs($percentageChange); // Convert to positive for display
+
+        // Return the result as a string with + or - sign
+        return $sign . number_format($percentageChange, 0);
+    }
+
+    public function getReferralChange($userId)
+    {
+        // Get the current date and the first and last day of the current month
+        $startOfMonth = Carbon::now()->startOfMonth();
+        $endOfMonth = Carbon::now()->endOfMonth();
+
+        // Get the first and last day of the previous month
+        $startOfLastMonth = Carbon::now()->subMonth()->startOfMonth();
+        $endOfLastMonth = Carbon::now()->subMonth()->endOfMonth();
+
+        // Retrieve total points for the current month
+        $currentMonth = Referrals::where('referrer_id', $userId)
+            ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
+            ->count();
+
+        // Retrieve total points for the previous month
+        $lastMonth = Referrals::where('referrer_id', $userId)
+            ->whereBetween('created_at', [$startOfLastMonth, $endOfLastMonth])
+            ->count();
+
+        // Calculate percentage change
+        if ($lastMonth == 0) {
+            // Avoid division by zero, if no points were earned last month, assume 100% increase
+            $percentageChange = $currentMonth > 0 ? 100 : 0;
+        } else {
+            $percentageChange = (($currentMonth - $lastMonth) / $lastMonth) * 100;
+        }
+
+        // Format the percentage change with + or - sign
+        $sign = $percentageChange >= 0 ? '+' : '-';
+        $percentageChange = abs($percentageChange); // Convert to positive for display
+
+        // Return the result as a string with + or - sign
+        return $sign . number_format($percentageChange, 0);
+    }
+
+    public function getActivityChange($userId)
+    {
+        // Get the current date and the first and last day of the current month
+        $startOfMonth = Carbon::now()->startOfMonth();
+        $endOfMonth = Carbon::now()->endOfMonth();
+
+        // Get the first and last day of the previous month
+        $startOfLastMonth = Carbon::now()->subMonth()->startOfMonth();
+        $endOfLastMonth = Carbon::now()->subMonth()->endOfMonth();
+
+        // Retrieve total points for the current month
+        $currentMonth = ActivityAttendees::where('user_id', $userId)
+            ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
+            ->count();
+
+        // Retrieve total points for the previous month
+        $lastMonth = ActivityAttendees::where('user_id', $userId)
+            ->whereBetween('created_at', [$startOfLastMonth, $endOfLastMonth])
+            ->count();
+
+        // Calculate percentage change
+        if ($lastMonth == 0) {
+            // Avoid division by zero, if no points were earned last month, assume 100% increase
+            $percentageChange = $currentMonth > 0 ? 100 : 0;
+        } else {
+            $percentageChange = (($currentMonth - $lastMonth) / $lastMonth) * 100;
+        }
+
+        // Format the percentage change with + or - sign
+        $sign = $percentageChange >= 0 ? '+' : '-';
+        $percentageChange = abs($percentageChange); // Convert to positive for display
+
+        // Return the result as a string with + or - sign
+        return $sign . number_format($percentageChange, 0);
+    }
+
+    public function getDownlineChange($userId)
+    {
+        $currentMonthCount = DB::select('
+    WITH RECURSIVE referral_hierarchy AS (
+        SELECT id, name, referred_by, created_at
+        FROM users
+        WHERE referred_by = ?
+
+        UNION ALL
+
+        SELECT u.id, u.name, u.referred_by, u.created_at
+        FROM users u
+        INNER JOIN referral_hierarchy rh ON rh.id = u.referred_by
+    )
+    SELECT COUNT(*) AS current_month_count
+    FROM referral_hierarchy
+    WHERE created_at >= DATE_FORMAT(NOW() ,\'%Y-%m-01\')
+', [$userId]);
+
+        $previousMonthCount = DB::select('
+    WITH RECURSIVE referral_hierarchy AS (
+        SELECT id, name, referred_by, created_at
+        FROM users
+        WHERE referred_by = ?
+
+        UNION ALL
+
+        SELECT u.id, u.name, u.referred_by, u.created_at
+        FROM users u
+        INNER JOIN referral_hierarchy rh ON rh.id = u.referred_by
+    )
+    SELECT COUNT(*) AS previous_month_count
+    FROM referral_hierarchy
+    WHERE created_at >= DATE_FORMAT(NOW() - INTERVAL 1 MONTH ,\'%Y-%m-01\')
+    AND created_at < DATE_FORMAT(NOW() ,\'%Y-%m-01\')
+', [$userId]);
+
+        $currentCount = $currentMonthCount[0]->current_month_count ?? 0;
+        $previousCount = $previousMonthCount[0]->previous_month_count ?? 0;
+
+// Calculate percentage change
+        if ($previousCount == 0) {
+            $percentageChange = $currentCount > 0 ? 100 : 0; // 100% increase if previous count is 0
+        } else {
+            $percentageChange = (($currentCount - $previousCount) / $previousCount) * 100;
+        }
+
+// Format the percentage change
+        $sign = $percentageChange >= 0 ? '+' : '-';
+        $percentageChange = abs($percentageChange); // Get the absolute value for display
+
+        return $sign . number_format($percentageChange, 0) . '%'; // Return the result
+
     }
 
 }

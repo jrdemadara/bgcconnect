@@ -23,7 +23,8 @@ import ModalQR from "./QRModal.vue";
 const photo = ref("");
 
 const props = usePage().props;
-const user = usePage().props.auth.user;
+const user = props.auth.user;
+console.log(props);
 const completionPercentage = computed(() => {
     switch (user.level) {
         case 1:
@@ -79,8 +80,9 @@ onMounted(() => {
         <div class="relative">
             <img
                 class="w-48 rounded-xl border-2 border-gray-300"
-                :src="photo"
-                alt="photo"
+                :class="!photo ? 'h-44' : ''"
+                :src="photo || '../../../../image/male.jpg'"
+                alt="profile photo"
             />
 
             <img
@@ -262,13 +264,26 @@ onMounted(() => {
                     <p class="text-gray-600 dark:text-gray-100">Points</p>
                     <div class="flex dark:text-gray-100">
                         <span
-                            class="flex items-center font-medium rounded-full px-2 text-green-700 bg-green-200 mr-1"
+                            :class="[
+                                'flex items-center font-medium rounded-full px-2 mr-1',
+                                props.points_comparison >= 0
+                                    ? 'text-green-700 bg-green-200'
+                                    : 'text-red-700 bg-red-200',
+                            ]"
                         >
                             <TrendingUp
+                                v-if="props.points_comparison >= 0"
                                 class="text-green-600 mr-1"
                                 :size="22"
-                            />+16% </span
-                        >than last month
+                            />
+                            <TrendingDown
+                                v-else
+                                class="text-red-600 mr-1"
+                                :size="22"
+                            />
+                            {{ Math.abs(props.points_comparison) }}% than last
+                            month
+                        </span>
                     </div>
                 </div>
             </div>
@@ -281,20 +296,33 @@ onMounted(() => {
                     <h2
                         class="font-bold text-4xl text-gray-600 dark:text-gray-100"
                     >
-                        36
+                        {{ props.downline }}
                     </h2>
                 </div>
                 <div class="flex justify-between">
                     <p class="text-gray-600 dark:text-gray-100">Referrals</p>
                     <div class="flex dark:text-gray-100">
                         <span
-                            class="flex items-center font-medium rounded-full px-2 text-green-700 bg-green-200 mr-1"
+                            :class="[
+                                'flex items-center font-medium rounded-full px-2 mr-1',
+                                props.referral_comparison >= 0
+                                    ? 'text-green-700 bg-green-200'
+                                    : 'text-red-700 bg-red-200',
+                            ]"
                         >
                             <TrendingUp
+                                v-if="props.referral_comparison >= 0"
                                 class="text-green-600 mr-1"
                                 :size="22"
-                            />+7% </span
-                        >than last month
+                            />
+                            <TrendingDown
+                                v-else
+                                class="text-red-600 mr-1"
+                                :size="22"
+                            />
+                            {{ Math.abs(props.referral_comparison) }}% than last
+                            month
+                        </span>
                     </div>
                 </div>
             </div>
@@ -307,20 +335,33 @@ onMounted(() => {
                     <h2
                         class="font-bold text-4xl text-gray-600 dark:text-gray-100"
                     >
-                        36
+                        {{ props.all_downline }}
                     </h2>
                 </div>
                 <div class="flex justify-between">
                     <p class="text-gray-600 dark:text-gray-100">Downlines</p>
                     <div class="flex dark:text-gray-100">
                         <span
-                            class="flex items-center font-medium rounded-full px-2 text-green-700 bg-green-200 mr-1"
+                            :class="[
+                                'flex items-center font-medium rounded-full px-2 mr-1',
+                                props.downlines_comparison >= 0
+                                    ? 'text-green-700 bg-green-200'
+                                    : 'text-red-700 bg-red-200',
+                            ]"
                         >
                             <TrendingUp
+                                v-if="props.downlines_comparison >= 0"
                                 class="text-green-600 mr-1"
                                 :size="22"
-                            />+7% </span
-                        >than last month
+                            />
+                            <TrendingDown
+                                v-else
+                                class="text-red-600 mr-1"
+                                :size="22"
+                            />
+                            {{ Math.abs(props.downlines_comparison) }}% than
+                            last month
+                        </span>
                     </div>
                 </div>
             </div>
@@ -333,20 +374,33 @@ onMounted(() => {
                     <h2
                         class="font-bold text-4xl text-gray-600 dark:text-gray-100"
                     >
-                        4
+                        {{ props.activities }}
                     </h2>
                 </div>
                 <div class="flex justify-between">
                     <p class="text-gray-600 dark:text-gray-100">Activity</p>
                     <div class="flex dark:text-gray-100">
                         <span
-                            class="flex items-center font-medium rounded-full px-2 text-red-700 bg-red-200 mr-1"
+                            :class="[
+                                'flex items-center font-medium rounded-full px-2 mr-1',
+                                props.activity_comparison >= 0
+                                    ? 'text-green-700 bg-green-200'
+                                    : 'text-red-700 bg-red-200',
+                            ]"
                         >
+                            <TrendingUp
+                                v-if="props.activity_comparison >= 0"
+                                class="text-green-600 mr-1"
+                                :size="22"
+                            />
                             <TrendingDown
+                                v-else
                                 class="text-red-600 mr-1"
                                 :size="22"
-                            />-2% </span
-                        >than last year
+                            />
+                            {{ Math.abs(props.activity_comparison) }}% than last
+                            month
+                        </span>
                     </div>
                 </div>
             </div>
