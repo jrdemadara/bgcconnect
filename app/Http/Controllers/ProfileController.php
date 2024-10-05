@@ -44,9 +44,9 @@ class ProfileController extends Controller
 
         $allDownline = DB::select('
             WITH RECURSIVE referral_hierarchy AS (
-                SELECT id, name, referred_by FROM users WHERE id = ?
+                SELECT id, referred_by FROM users WHERE id = ?
                 UNION ALL
-                SELECT u.id, u.name, u.referred_by
+                SELECT u.id, u.referred_by
                 FROM users u
                 INNER JOIN referral_hierarchy rh ON rh.id = u.referred_by
             )
