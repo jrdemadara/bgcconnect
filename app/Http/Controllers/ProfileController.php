@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Models\ActivityAttendees;
+use App\Models\Barangay;
+use App\Models\Municipality;
 use App\Models\Profile;
+use App\Models\Province;
 use App\Models\RaffleDraw;
 use App\Models\Referrals;
 use App\Models\Transaction;
@@ -29,8 +32,12 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
         $profile = Profile::where('user_id', $user->id)
-            ->select('firstname', 'lastname', 'avatar')
+            ->select('firstname', 'lastname', 'avatar', 'province', 'municipality_city', 'barangay')
             ->first();
+
+        $province = Province::select('provDescription')->where('provCode', $profile->province)->first();
+        $municipality = Municipality::select('citymunDescription')->where('citymunCode', $profile->municipality_city)->first();
+        $barangay = Barangay::select('brgyDescription')->where('brgyCode', $profile->barangay)->first();
 
         // Fetch the latest raffle draw
         $draw = RaffleDraw::latest()->first();
@@ -42,26 +49,28 @@ class ProfileController extends Controller
 
         $downline = User::where('referred_by', $user->id)->count();
         $allDownline = DB::select('
-    WITH RECURSIVE referral_hierarchy AS (
-        SELECT id, referred_by FROM users WHERE id = ?
-        UNION ALL
-        SELECT u.id, u.referred_by
-        FROM users u
-        INNER JOIN referral_hierarchy rh ON rh.id = u.referred_by
-    )
-    SELECT COUNT(*) AS downline_count FROM referral_hierarchy;
-', [$user->id]);
+            WITH RECURSIVE referral_hierarchy AS (
+            SELECT id, referred_by FROM users WHERE id = ?
+            UNION ALL
+            SELECT u.id, u.referred_by
+            FROM users u
+            INNER JOIN referral_hierarchy rh ON rh.id = u.referred_by
+        )
+            SELECT COUNT(*) AS downline_count FROM referral_hierarchy;
+        ', [$user->id]);
 
         $activitiesCount = ActivityAttendees::where('user_id', $user->id)->count();
 
         return Inertia::render('Profile/Profile', [
             'status' => session('status'),
             'profile' => $profile,
+            'province' => $province,
+            'municipality' => $municipality,
+            'barangay' => $barangay,
             'avatar' => $avatarUrl,
             'draw' => $draw ? $draw->draw_date : null,
             'downline' => $downline,
             'all_downline' => !empty($allDownline) ? $allDownline[0]->downline_count : 0,
-
             'activities' => $activitiesCount,
             'points_comparison' => $this->getPointsChange($user->id),
             'referral_comparison' => $this->getReferralChange($user->id),
