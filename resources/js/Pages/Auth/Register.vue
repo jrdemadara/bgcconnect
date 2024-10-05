@@ -115,6 +115,7 @@ const submit = () => {
                     pattern="[0-9]{4}[0-9]{3}[0-9]{4}"
                     required
                     placeholder="ex.09123456789"
+                    autocomplete="phone"
                 />
 
                 <InputError class="mt-2" :message="form.errors.phone" />

@@ -147,7 +147,6 @@ const form = useForm({
 });
 
 const submit = () => {
-    toast.loading("Updating profile...");
     form.patch(route("profile.update"), {
         onSuccess: () => {
             updatePhoto;
