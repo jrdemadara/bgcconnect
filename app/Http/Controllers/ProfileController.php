@@ -42,7 +42,7 @@ class ProfileController extends Controller
 
         $downline = User::where('referred_by', $user->id)->count();
 
-        $allDownline = DB::select('
+        $allDownline = DB::table('users')->select(DB::raw('
             WITH RECURSIVE referral_hierarchy AS (
                 SELECT id, referred_by FROM users WHERE id = ?
                 UNION ALL
@@ -51,7 +51,7 @@ class ProfileController extends Controller
                 INNER JOIN referral_hierarchy rh ON rh.id = u.referred_by
             )
                 SELECT COUNT(*) AS downline_count FROM referral_hierarchy;
-        ', [$user->id]);
+        ', [$user->id]));
 
         $activitiesCount = ActivityAttendees::where('user_id', $user->id)->count();
 
@@ -61,7 +61,7 @@ class ProfileController extends Controller
             'avatar' => $avatarUrl,
             'draw' => $draw ? $draw->draw_date : null,
             'downline' => $downline,
-            // 'all_downline' => $allDownline[0]->downline_count,
+            'all_downline' => $allDownline[0]->downline_count,
             'activities' => $activitiesCount,
             'points_comparison' => $this->getPointsChange($user->id),
             'referral_comparison' => $this->getReferralChange($user->id),
@@ -288,56 +288,59 @@ class ProfileController extends Controller
     public function getDownlineChange($userId)
     {
         $currentMonthCount = DB::select('
-    WITH RECURSIVE referral_hierarchy AS (
-        SELECT id, referred_by, created_at
-        FROM users
-        WHERE referred_by = ?
+        WITH RECURSIVE referral_hierarchy AS (
+            SELECT id, referred_by, created_at
+            FROM users
+            WHERE referred_by = ?
 
-        UNION ALL
+            UNION ALL
 
-        SELECT u.id, u.referred_by, u.created_at
-        FROM users u
-        INNER JOIN referral_hierarchy rh ON rh.id = u.referred_by
-    )
-    SELECT COUNT(*) AS current_month_count
-    FROM referral_hierarchy
-    WHERE created_at >= DATE_FORMAT(NOW() ,\'%Y-%m-01\')
-', [$userId]);
+            SELECT u.id, u.referred_by, u.created_at
+            FROM users u
+            INNER JOIN referral_hierarchy rh ON rh.id = u.referred_by
+        )
+        SELECT COUNT(*) AS current_month_count
+        FROM referral_hierarchy
+        WHERE created_at >= DATE_FORMAT(NOW() ,\'%Y-%m-01\')
+    ', [$userId]);
 
         $previousMonthCount = DB::select('
-    WITH RECURSIVE referral_hierarchy AS (
-        SELECT id, referred_by, created_at
-        FROM users
-        WHERE referred_by = ?
+        WITH RECURSIVE referral_hierarchy AS (
+            SELECT id, referred_by, created_at
+            FROM users
+            WHERE referred_by = ?
 
-        UNION ALL
+            UNION ALL
 
-        SELECT u.id, u.referred_by, u.created_at
-        FROM users u
-        INNER JOIN referral_hierarchy rh ON rh.id = u.referred_by
-    )
-    SELECT COUNT(*) AS previous_month_count
-    FROM referral_hierarchy
-    WHERE created_at >= DATE_FORMAT(NOW() - INTERVAL 1 MONTH ,\'%Y-%m-01\')
-    AND created_at < DATE_FORMAT(NOW() ,\'%Y-%m-01\')
-', [$userId]);
+            SELECT u.id, u.referred_by, u.created_at
+            FROM users u
+            INNER JOIN referral_hierarchy rh ON rh.id = u.referred_by
+        )
+        SELECT COUNT(*) AS previous_month_count
+        FROM referral_hierarchy
+        WHERE created_at >= DATE_FORMAT(NOW() - INTERVAL 1 MONTH ,\'%Y-%m-01\')
+        AND created_at < DATE_FORMAT(NOW() ,\'%Y-%m-01\')
+    ', [$userId]);
 
         $currentCount = $currentMonthCount[0]->current_month_count ?? 0;
         $previousCount = $previousMonthCount[0]->previous_month_count ?? 0;
 
-// Calculate percentage change
+        // Ensure both counts are integers
+        $currentCount = intval($currentCount);
+        $previousCount = intval($previousCount);
+
+        // Calculate percentage change
         if ($previousCount == 0) {
             $percentageChange = $currentCount > 0 ? 100 : 0; // 100% increase if previous count is 0
         } else {
             $percentageChange = (($currentCount - $previousCount) / $previousCount) * 100;
         }
 
-// Format the percentage change
+        // Format the percentage change
         $sign = $percentageChange >= 0 ? '+' : '-';
         $percentageChange = abs($percentageChange); // Get the absolute value for display
 
         return $sign . number_format($percentageChange, 0) . '%'; // Return the result
-
     }
 
 }
