@@ -65,7 +65,9 @@ const startCameraFront = async () => {
     try {
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             streamFront = await navigator.mediaDevices.getUserMedia({
-                video: true,
+                video: {
+                    facingMode: { ideal: "environment" }, // Attempt to use back camera, fallback to front if not available
+                },
             });
             if (videoFront.value) {
                 videoFront.value.srcObject = streamFront;
@@ -83,7 +85,9 @@ const startCameraBack = async () => {
     try {
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             streamBack = await navigator.mediaDevices.getUserMedia({
-                video: true,
+                video: {
+                    facingMode: { ideal: "environment" }, // Attempt to use back camera, fallback to front if not available
+                },
             });
             if (videoBack.value) {
                 videoBack.value.srcObject = streamBack;
