@@ -27,6 +27,39 @@ class PasswordResetController extends Controller
             $settings = Settings::find(1);
             $verification_expiry = $settings->verification_expiry;
 
+            $resetCodeKey = "reset_code:$user->id";
+            $verification_code = Redis::get($resetCodeKey);
+
+            
+
+            // Generate a random reset code
+            $resetCode = $this->generateRandomString();
+
+            // Store the reset code in Redis
+            Redis::setex("reset_code:{$user->id}", $verification_expiry, $resetCode);
+
+            Redis::publish('sms6', json_encode([
+                'phone' => $request->phone,
+                'reset_code' => $resetCode,
+            ]));
+
+            return response()->json(['success' => 'reset code sent.'], 200);
+        }
+
+        return response()->json(['error' => 'phone not found'], 404);
+    }
+
+    public function checkResetCode(Request $request)
+    {
+        $request->validate([
+            'code' => 'required|string',
+        ]);
+
+        $user = User::where('phone', $request->phone)->first();
+        if ($user) {
+            $settings = Settings::find(1);
+            $verification_expiry = $settings->verification_expiry;
+
             // Generate a random reset code
             $resetCode = $this->generateRandomString();
 

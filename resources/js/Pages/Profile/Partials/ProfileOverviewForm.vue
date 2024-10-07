@@ -31,7 +31,6 @@ const photo = ref("");
 
 const props = usePage().props;
 const user = props.auth.user;
-console.log(props);
 const completionPercentage = computed(() => {
     switch (user.level) {
         case 1:

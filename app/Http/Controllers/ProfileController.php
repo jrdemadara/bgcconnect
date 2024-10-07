@@ -48,36 +48,32 @@ class ProfileController extends Controller
         : '';
 
         $downline = User::where('referred_by', $user->id)->count();
-        $allDownline = DB::select('
-    WITH RECURSIVE referral_hierarchy AS (
-        SELECT id, referred_by FROM users WHERE id = ?
-        UNION ALL
-        SELECT u.id, u.referred_by
-        FROM users u
-        INNER JOIN referral_hierarchy rh ON rh.id = u.referred_by
-    )
-    SELECT COUNT(*) AS downline_count
-    FROM referral_hierarchy
-    WHERE id != ?;
-', [$user->id, $user->id]);
+//         $allDownline = DB::select('
+//     WITH RECURSIVE referral_hierarchy AS (
+//         SELECT id, referred_by FROM users WHERE id = ?
+//         UNION ALL
+//         SELECT u.id, u.referred_by
+//         FROM users u
+//         INNER JOIN referral_hierarchy rh ON rh.id = u.referred_by
+//     )
+//     SELECT COUNT(*) AS downline_count
+//     FROM referral_hierarchy
+//     WHERE id != ?;
+// ', [$user->id, $user->id]);
 
         $activitiesCount = ActivityAttendees::where('user_id', $user->id)->count();
 
         return Inertia::render('Profile/Profile', [
             'status' => session('status'),
-            'profile' => $profile,
-            'province' => $province,
-            'municipality' => $municipality,
-            'barangay' => $barangay,
             'avatar' => $avatarUrl,
             'draw' => $draw ? $draw->draw_date : null,
             'downline' => $downline,
-            'all_downline' => !empty($allDownline) ? $allDownline[0]->downline_count : 0,
+            // 'all_downline' => !empty($allDownline) ? $allDownline[0]->downline_count : 0,
             'activities' => $activitiesCount,
-            'points_comparison' => $this->getPointsChange($user->id),
-            'referral_comparison' => $this->getReferralChange($user->id),
-            'activity_comparison' => $this->getActivityChange($user->id),
-            'downlines_comparison' => $this->getDownlineChange($user->id),
+            // 'points_comparison' => $this->getPointsChange($user->id),
+            // 'referral_comparison' => $this->getReferralChange($user->id),
+            // 'activity_comparison' => $this->getActivityChange($user->id),
+            // 'downlines_comparison' => $this->getDownlineChange($user->id),
         ]);
     }
 
@@ -87,10 +83,18 @@ class ProfileController extends Controller
         $user = Auth::user();
 
         $profile = $user->profile;
+
+        $province = Province::select('provDescription')->where('provCode', $profile->province)->first();
+        $municipality = Municipality::select('citymunDescription')->where('citymunCode', $profile->municipality_city)->first();
+        $barangay = Barangay::select('brgyDescription')->where('brgyCode', $profile->barangay)->first();
+
         return Inertia::render('Profile/Edit', [
             'status' => session('status'),
             'user' => $user,
             'profile' => $profile,
+            'province' => $province->provDescription,
+            'municipality' => $municipality->citymunDescription,
+            'barangay' => $barangay->brgyDescription,
         ]);
     }
     /**
@@ -129,8 +133,10 @@ class ProfileController extends Controller
         $profile->save();
 
         $user = $request->user();
-        $user->level = 2;
-        $user->save();
+        if ($user->level < 2) {
+            $user->level = 2;
+            $user->save();
+        }
 
         return redirect(route('profile.edit'));
     }

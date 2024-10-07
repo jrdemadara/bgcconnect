@@ -120,6 +120,8 @@ function dataURLToBlob(dataUrl: string): Blob {
 const props = usePage().props;
 const user = props.auth.user;
 
+console.log(props);
+
 const form = useForm({
     firstname: user.profile.firstname,
     middlename: user.profile.middlename,
@@ -412,7 +414,7 @@ onMounted(() => {
                     required
                     autofocus
                 >
-                    <option selected disabled>{{ props.province }}</option>
+                    <option selected>{{ props.province }}</option>
                     <option
                         v-for="province in provinces"
                         :key="province.provCode"
@@ -436,7 +438,7 @@ onMounted(() => {
                     required
                     autofocus
                 >
-                    <option selected disabled>
+                    <option selected>
                         {{ props.municipality }}
                     </option>
                     <option
@@ -464,7 +466,10 @@ onMounted(() => {
                     required
                     autofocus
                 >
-                    <option selected disabled>{{ props.barangay }}</option>
+                    <option selected disabled value="">
+                        {{ props.barangay }}
+                    </option>
+
                     <option
                         v-for="barangay in barangays"
                         :key="barangay.brgyCode"
