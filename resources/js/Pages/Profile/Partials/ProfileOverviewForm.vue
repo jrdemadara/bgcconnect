@@ -228,7 +228,7 @@ onMounted(() => {
             <div class="flex">
                 <Info class="text-orange-400 mr-1" :size="24" />
                 <p class="text-orange-500">
-                    Upload your valid id to proceed to level 3.
+                    Upload your valid id to proceed to level 4.
                 </p>
             </div>
             <Link
@@ -429,17 +429,14 @@ onMounted(() => {
             />
         </div>
 
-        <Link
+        <router-link
+            :to="user.level > 2 ? { name: 'raffle.index' } : '#'"
             :class="[
                 'flex justify-center items-center animate-pulse w-full h-16 mt-2 rounded-xl font-bold text-xl text-white bg-gradient-to-r from-pink-500 via-violet-500 to-blue-500',
             ]"
-            @click.prevent="
-                user.level <= 2
-                    ? raffleDisabled()
-                    : $router.push(route('raffle.index'))
-            "
+            @click.prevent="user.level <= 2 ? raffleDisabled() : null"
         >
             <Ticket class="mr-1" :size="32" />Submit your raffle entry
-        </Link>
+        </router-link>
     </div>
 </template>

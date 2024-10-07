@@ -32,6 +32,7 @@ class PasswordResetController extends Controller
 
             
 
+
             // Generate a random reset code
             $resetCode = $this->generateRandomString();
 
