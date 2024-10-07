@@ -65,7 +65,7 @@ const resetPassword = () => {
     toast.loading("Resetting password...");
     if (password.value == confirmPassword.value) {
         axios
-            .post("/forgot-password/reset", {
+            .post("/reset-password", {
                 phone: phone.value,
             })
             .then(function (response) {
