@@ -35,10 +35,6 @@ class ProfileController extends Controller
             ->select('firstname', 'lastname', 'avatar', 'province', 'municipality_city', 'barangay')
             ->first();
 
-        $province = Province::select('provDescription')->where('provCode', $profile->province)->first();
-        $municipality = Municipality::select('citymunDescription')->where('citymunCode', $profile->municipality_city)->first();
-        $barangay = Barangay::select('brgyDescription')->where('brgyCode', $profile->barangay)->first();
-
         // Fetch the latest raffle draw
         $draw = RaffleDraw::latest()->first();
 
@@ -66,6 +62,7 @@ class ProfileController extends Controller
         return Inertia::render('Profile/Profile', [
             'status' => session('status'),
             'avatar' => $avatarUrl,
+            'profile' => $profile,
             'draw' => $draw ? $draw->draw_date : null,
             'downline' => $downline,
             'all_downline' => !empty($allDownline) ? $allDownline[0]->downline_count : 0,
