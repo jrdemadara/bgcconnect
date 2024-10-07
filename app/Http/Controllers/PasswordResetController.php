@@ -13,7 +13,7 @@ class PasswordResetController extends Controller
 {
     public function index(): Response
     {
-        return Inertia::render('Auth/ResetPassword');
+        return Inertia::render('Auth/ForgotPassword');
     }
 
     public function checkPhone(Request $request)

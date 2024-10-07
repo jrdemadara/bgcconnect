@@ -22,7 +22,8 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/password-reset', [PasswordResetController::class, 'index'])->name('password-reset.index');
+Route::get('/forgot-password', [PasswordResetController::class, 'index'])->name('forgot-password');
+//Route::get('/password-reset', [PasswordResetController::class, 'index'])->name('password-reset.index');
 
 Route::get('/invite', [InviteController::class, 'index'])->name('invite.index');
 
