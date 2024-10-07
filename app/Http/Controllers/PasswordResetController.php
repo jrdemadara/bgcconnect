@@ -30,8 +30,10 @@ class PasswordResetController extends Controller
             $resetCodeKey = "reset_code:$user->id";
             $verification_code = Redis::get($resetCodeKey);
 
-            
-
+            if ($verification_code) {
+                // Delete the Redis key
+                Redis::del($resetCodeKey);
+            }
 
             // Generate a random reset code
             $resetCode = $this->generateRandomString();
