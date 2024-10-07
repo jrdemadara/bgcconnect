@@ -12,6 +12,7 @@ import { Id } from "vue3-toastify";
 
 const phone = ref("");
 const password = ref("");
+const confirmPassword = ref("");
 const resetCode = ref("");
 const loading = ref(false);
 const loadingToastId = ref(null);
@@ -27,7 +28,7 @@ const checkPhone = () => {
         .then(function (response) {
             console.log(response);
             toast.remove();
-            toast.success("Password reset successful.");
+            toast.success("Password reset code sent.");
             loading.value = false;
             pageState.value = "reset-code";
         })
@@ -43,8 +44,9 @@ const checkResetCode = () => {
     loading.value = true;
     loadingToastId.value = toast.loading("Requesting password reset code...");
     axios
-        .post("/forgot-password/check-phone", {
+        .post("/forgot-password/check-code", {
             phone: phone.value,
+            code: resetCode.value,
         })
         .then(function (response) {
             console.log(response);
@@ -65,7 +67,7 @@ const resetPassword = () => {
     loading.value = true;
     loadingToastId.value = toast.loading("Requesting password reset code...");
     axios
-        .post("/forgot-password/check-phone", {
+        .post("/forgot-password/reset", {
             phone: phone.value,
         })
         .then(function (response) {
@@ -101,7 +103,7 @@ const resetPassword = () => {
 
                     <TextInput
                         id="phone"
-                        type="phone"
+                        type="tel"
                         class="mt-1 block w-full"
                         v-model="phone"
                         required
@@ -170,15 +172,15 @@ const resetPassword = () => {
 
                 <div class="mt-4">
                     <InputLabel
-                        for="password_confirmation"
+                        for="confirmationPassword"
                         value="Confirm Password"
                     />
 
                     <TextInput
-                        id="password_confirmation"
+                        id="confirmationPassword"
                         type="password"
                         class="mt-1 block w-full"
-                        v-model="password_confirmation"
+                        v-model="confirmationPassword"
                         required
                         autocomplete="new-password"
                     />

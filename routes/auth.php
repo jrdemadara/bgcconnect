@@ -23,6 +23,8 @@ Route::middleware('guest')->group(function () {
 
     Route::get('/forgot-password', [PasswordResetController::class, 'index'])->name('forgot-password.index');
     Route::post('/forgot-password/check-phone', [PasswordResetController::class, 'checkPhone'])->name('forgot-password.check-phone');
+    Route::post('/forgot-password/check-code', [PasswordResetController::class, 'checkResetCode'])->name('forgot-password.check-code');
+    Route::post('/reset-password', [PasswordResetController::class, 'resetPassword'])->name('reset-password');
 });
 
 Route::middleware('auth')->group(function () {
