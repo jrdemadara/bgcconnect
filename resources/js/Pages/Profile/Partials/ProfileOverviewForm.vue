@@ -19,6 +19,13 @@ import {
 
 import { ModalsContainer, useModal } from "vue-final-modal";
 import ModalQR from "./QRModal.vue";
+import { toast } from "vue3-toastify";
+
+const loadingToastId = ref(null);
+
+const raffleDisabled = () => {
+    toast.warning("Elevate your level to qualify for the raffle.");
+};
 
 const photo = ref("");
 
@@ -426,11 +433,10 @@ onMounted(() => {
         <Link
             :class="[
                 'flex justify-center items-center animate-pulse w-full h-16 mt-2 rounded-xl font-bold text-xl text-white bg-gradient-to-r from-pink-500 via-violet-500 to-blue-500',
-                user.level < 3 ? 'cursor-not-allowed opacity-50' : '',
             ]"
             @click.prevent="
-                user.level < 3
-                    ? $event.stopPropagation()
+                user.level <= 2
+                    ? raffleDisabled()
                     : $router.push(route('raffle.index'))
             "
         >
