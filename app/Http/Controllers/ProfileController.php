@@ -48,18 +48,18 @@ class ProfileController extends Controller
         : '';
 
         $downline = User::where('referred_by', $user->id)->count();
-//         $allDownline = DB::select('
-//     WITH RECURSIVE referral_hierarchy AS (
-//         SELECT id, referred_by FROM users WHERE id = ?
-//         UNION ALL
-//         SELECT u.id, u.referred_by
-//         FROM users u
-//         INNER JOIN referral_hierarchy rh ON rh.id = u.referred_by
-//     )
-//     SELECT COUNT(*) AS downline_count
-//     FROM referral_hierarchy
-//     WHERE id != ?;
-// ', [$user->id, $user->id]);
+        $allDownline = DB::select('
+    WITH RECURSIVE referral_hierarchy AS (
+        SELECT id, referred_by FROM users WHERE id = ?
+        UNION ALL
+        SELECT u.id, u.referred_by
+        FROM users u
+        INNER JOIN referral_hierarchy rh ON rh.id = u.referred_by
+    )
+    SELECT COUNT(*) AS downline_count
+    FROM referral_hierarchy
+    WHERE id != ?;
+', [$user->id, $user->id]);
 
         $activitiesCount = ActivityAttendees::where('user_id', $user->id)->count();
 
@@ -72,12 +72,12 @@ class ProfileController extends Controller
             'avatar' => $avatarUrl,
             'draw' => $draw ? $draw->draw_date : null,
             'downline' => $downline,
-            // 'all_downline' => !empty($allDownline) ? $allDownline[0]->downline_count : 0,
+            'all_downline' => !empty($allDownline) ? $allDownline[0]->downline_count : 0,
             'activities' => $activitiesCount,
-            // 'points_comparison' => $this->getPointsChange($user->id),
-            // 'referral_comparison' => $this->getReferralChange($user->id),
-            // 'activity_comparison' => $this->getActivityChange($user->id),
-            // 'downlines_comparison' => $this->getDownlineChange($user->id),
+            'points_comparison' => $this->getPointsChange($user->id),
+            'referral_comparison' => $this->getReferralChange($user->id),
+            'activity_comparison' => $this->getActivityChange($user->id),
+            'downlines_comparison' => $this->getDownlineChange($user->id),
         ]);
     }
 

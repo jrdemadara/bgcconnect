@@ -429,7 +429,9 @@ onMounted(() => {
                 user.level <= 3 ? 'cursor-not-allowed opacity-50' : '',
             ]"
             @click.prevent="
-                user.level <= 3 ? null : $router.push(route('raffle.index'))
+                user.level <= 3
+                    ? $event.stopPropagation()
+                    : $router.push(route('raffle.index'))
             "
         >
             <Ticket class="mr-1" :size="32" />Submit your raffle entry
