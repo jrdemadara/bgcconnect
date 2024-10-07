@@ -11,7 +11,7 @@ defineProps<{
 }>();
 
 const form = useForm({
-    email: '',
+    phone: '',
 });
 
 const submit = () => {

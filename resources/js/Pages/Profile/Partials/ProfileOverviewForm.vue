@@ -426,10 +426,10 @@ onMounted(() => {
         <Link
             :class="[
                 'flex justify-center items-center animate-pulse w-full h-16 mt-2 rounded-xl font-bold text-xl text-white bg-gradient-to-r from-pink-500 via-violet-500 to-blue-500',
-                user.level <= 3 ? 'cursor-not-allowed opacity-50' : '',
+                user.level < 3 ? 'cursor-not-allowed opacity-50' : '',
             ]"
             @click.prevent="
-                user.level <= 3
+                user.level < 3
                     ? $event.stopPropagation()
                     : $router.push(route('raffle.index'))
             "
