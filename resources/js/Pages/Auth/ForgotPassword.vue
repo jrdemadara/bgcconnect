@@ -172,15 +172,15 @@ const resetPassword = () => {
 
                 <div class="mt-4">
                     <InputLabel
-                        for="confirmationPassword"
+                        for="confirmPassword"
                         value="Confirm Password"
                     />
 
                     <TextInput
-                        id="confirmationPassword"
+                        id="confirmPassword"
                         type="password"
                         class="mt-1 block w-full"
-                        v-model="confirmationPassword"
+                        v-model="confirmPassword"
                         required
                         autocomplete="new-password"
                     />
