@@ -8,6 +8,7 @@ import { Head, useForm } from "@inertiajs/vue3";
 import { ref } from "vue";
 import axios from "axios";
 import { toast } from "vue3-toastify";
+import { Id } from "vue3-toastify";
 
 const phone = ref("");
 const password = ref("");
@@ -25,14 +26,14 @@ const checkPhone = () => {
         })
         .then(function (response) {
             console.log(response);
-            toast.done(loadingToastId.value);
+            toast.remove();
             toast.success("Password reset successful.");
             loading.value = false;
             pageState.value = "reset-code";
         })
         .catch(function (error) {
             console.log(error);
-            toast.done(loadingToastId.value);
+            toast.remove();
             toast.error("Phone number does't match.");
             loading.value = false;
         });
@@ -130,7 +131,7 @@ const resetPassword = () => {
 
                     <TextInput
                         id="resetCode"
-                        type="phone"
+                        type="text"
                         class="mt-1 block w-full"
                         v-model="resetCode"
                         required
@@ -161,12 +162,10 @@ const resetPassword = () => {
                         id="password"
                         type="password"
                         class="mt-1 block w-full"
-                        v-model="form.password"
+                        v-model="password"
                         required
                         autocomplete="new-password"
                     />
-
-                    <InputError class="mt-2" :message="form.errors.password" />
                 </div>
 
                 <div class="mt-4">
@@ -179,14 +178,9 @@ const resetPassword = () => {
                         id="password_confirmation"
                         type="password"
                         class="mt-1 block w-full"
-                        v-model="form.password_confirmation"
+                        v-model="password_confirmation"
                         required
                         autocomplete="new-password"
-                    />
-
-                    <InputError
-                        class="mt-2"
-                        :message="form.errors.password_confirmation"
                     />
                 </div>
 
