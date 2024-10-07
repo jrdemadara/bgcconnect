@@ -67,6 +67,7 @@ const resetPassword = () => {
         axios
             .post("/reset-password", {
                 phone: phone.value,
+                password: password.value,
             })
             .then(function (response) {
                 console.log(response);
