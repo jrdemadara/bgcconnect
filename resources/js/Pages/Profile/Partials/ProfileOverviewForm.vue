@@ -429,14 +429,14 @@ onMounted(() => {
             />
         </div>
 
-        <router-link
-            :to="user.level > 2 ? { name: 'raffle.index' } : '#'"
+        <Link
+            :href="user.level > 2 ? route('raffle.index') : '#'"
             :class="[
                 'flex justify-center items-center animate-pulse w-full h-16 mt-2 rounded-xl font-bold text-xl text-white bg-gradient-to-r from-pink-500 via-violet-500 to-blue-500',
             ]"
             @click.prevent="user.level <= 2 ? raffleDisabled() : null"
         >
             <Ticket class="mr-1" :size="32" />Submit your raffle entry
-        </router-link>
+        </Link>
     </div>
 </template>
