@@ -1,21 +1,18 @@
 <script setup>
 import GuestLayout from "@/Layouts/GuestLayout.vue";
-import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
-import { Head, useForm } from "@inertiajs/vue3";
+import { Head } from "@inertiajs/vue3";
 import { ref } from "vue";
 import axios from "axios";
 import { toast } from "vue3-toastify";
-import { Id } from "vue3-toastify";
 
 const phone = ref("");
 const password = ref("");
 const confirmPassword = ref("");
 const resetCode = ref("");
 const loading = ref(false);
-const loadingToastId = ref(null);
 const pageState = ref("start");
 
 const checkPhone = () => {
