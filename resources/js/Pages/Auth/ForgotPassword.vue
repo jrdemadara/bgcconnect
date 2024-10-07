@@ -23,6 +23,7 @@ const checkPhone = () => {
             phone: phone.value,
         })
         .then(function (response) {
+            console.log(response);
             toast.remove();
             toast.success("Password reset code sent.");
             loading.value = false;
