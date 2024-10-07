@@ -33,8 +33,15 @@ class PasswordResetController extends Controller
             // Store the reset code in Redis
             Redis::setex("reset_code:{$user->id}", $verification_expiry, $resetCode);
 
+            Redis::publish('sms6', json_encode([
+                'phone' => $request->phone,
+                'reset_code' => $resetCode,
+            ]));
+
+            return response()->json(['success' => 'reset code sent.'], 200);
         }
 
+        return response()->json(['error' => 'phone not found'], 404);
     }
 
     public function store(Request $request)
