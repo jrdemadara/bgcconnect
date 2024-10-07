@@ -1,7 +1,6 @@
 <script setup>
 import { Link, usePage } from "@inertiajs/vue3";
 import { ref, computed, onMounted } from "vue";
-import { Inertia } from "@inertiajs/inertia";
 import {
     Badge,
     BadgeCheck,
@@ -24,12 +23,8 @@ import { toast } from "vue3-toastify";
 
 const loadingToastId = ref(null);
 
-const raffleDraw = () => {
-    if (user.level <= 2) {
-        toast.warning("Elevate your level to qualify for the raffle.");
-    } else {
-        Inertia.visit(route("raffle.index"));
-    }
+const raffleDisabled = () => {
+    toast.warning("Elevate your level to qualify for the raffle.");
 };
 
 const photo = ref("");
@@ -434,11 +429,14 @@ onMounted(() => {
             />
         </div>
 
-        <button
-            class="flex justify-center items-center animate-pulse w-full h-16 mt-2 rounded-xl font-bold text-xl text-white bg-gradient-to-r from-pink-500 via-violet-500 to-blue-500"
-            @click="raffleDraw"
+        <router-link
+            :to="user.level > 2 ? { name: 'raffle.index' } : '#'"
+            :class="[
+                'flex justify-center items-center animate-pulse w-full h-16 mt-2 rounded-xl font-bold text-xl text-white bg-gradient-to-r from-pink-500 via-violet-500 to-blue-500',
+            ]"
+            @click.prevent="user.level <= 2 ? raffleDisabled() : null"
         >
             <Ticket class="mr-1" :size="32" />Submit your raffle entry
-        </button>
+        </router-link>
     </div>
 </template>
