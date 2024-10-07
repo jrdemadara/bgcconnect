@@ -20,13 +20,12 @@ const pageState = ref("start");
 
 const checkPhone = () => {
     loading.value = true;
-    loadingToastId.value = toast.loading("Requesting password reset code...");
+    toast.loading("Requesting password reset code...");
     axios
         .post("/forgot-password/check-phone", {
             phone: phone.value,
         })
         .then(function (response) {
-            console.log(response);
             toast.remove();
             toast.success("Password reset code sent.");
             loading.value = false;
@@ -35,14 +34,14 @@ const checkPhone = () => {
         .catch(function (error) {
             console.log(error);
             toast.remove();
-            toast.error("Phone number does't match.");
+            toast.error("Phone number doesn't match.");
             loading.value = false;
         });
 };
 
 const checkResetCode = () => {
     loading.value = true;
-    loadingToastId.value = toast.loading("Requesting password reset code...");
+    toast.loading("Checking password reset code...");
     axios
         .post("/forgot-password/check-code", {
             phone: phone.value,
@@ -50,39 +49,43 @@ const checkResetCode = () => {
         })
         .then(function (response) {
             console.log(response);
-            toast.done(loadingToastId.value);
-            toast.success("Password reset successful.");
+            toast.remove();
+            toast.success("Reset Code Matched.");
             loading.value = false;
             pageState.value = "reset-code";
         })
         .catch(function (error) {
             console.log(error);
-            toast.done(loadingToastId.value);
-            toast.error("Phone number does't match.");
+            toast.remove();
+            toast.error("Phone number doesn't match.");
             loading.value = false;
         });
 };
 
 const resetPassword = () => {
     loading.value = true;
-    loadingToastId.value = toast.loading("Requesting password reset code...");
-    axios
-        .post("/forgot-password/reset", {
-            phone: phone.value,
-        })
-        .then(function (response) {
-            console.log(response);
-            toast.done(loadingToastId.value);
-            toast.success("Password reset successful.");
-            loading.value = false;
-            pageState.value = "reset-code";
-        })
-        .catch(function (error) {
-            console.log(error);
-            toast.done(loadingToastId.value);
-            toast.error("Phone number does't match.");
-            loading.value = false;
-        });
+    toast.loading("Requesting password reset code...");
+    if (password.value == confirmPassword.value) {
+        axios
+            .post("/forgot-password/reset", {
+                phone: phone.value,
+            })
+            .then(function (response) {
+                console.log(response);
+                toast.remove();
+                toast.success("Password reset successful.");
+                loading.value = false;
+                pageState.value = "reset-code";
+            })
+            .catch(function (error) {
+                console.log(error);
+                toast.done(loadingToastId.value);
+                toast.error("Phone number doesn't match.");
+                loading.value = false;
+            });
+    } else {
+        toast.error("Password doesn't match.");
+    }
 };
 </script>
 

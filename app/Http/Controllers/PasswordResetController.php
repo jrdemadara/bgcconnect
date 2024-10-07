@@ -85,6 +85,15 @@ class PasswordResetController extends Controller
         if ($user) {
             $user->password = $request->password;
             $user->save();
+
+            $resetCodeKey = "reset_code:$user->id";
+            $reset_code = Redis::get($resetCodeKey);
+
+            if ($reset_code) {
+                // Delete the Redis key
+                Redis::del($resetCodeKey);
+            }
+
             return response()->json(['success' => 'password reset success.'], 200);
         }
 
