@@ -62,7 +62,7 @@ const checkResetCode = () => {
 
 const resetPassword = () => {
     loading.value = true;
-    toast.loading("Requesting password reset code...");
+    toast.loading("Resetting password...");
     if (password.value == confirmPassword.value) {
         axios
             .post("/forgot-password/reset", {
