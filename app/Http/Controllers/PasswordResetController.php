@@ -46,7 +46,7 @@ class PasswordResetController extends Controller
                 'reset_code' => $resetCode,
             ]));
 
-            return response()->json(['success' => 'reset code sent.'], 200);
+            return response()->json(['success' => $resetCode], 200);
         }
 
         return response()->json(['error' => 'phone not found'], 404);
