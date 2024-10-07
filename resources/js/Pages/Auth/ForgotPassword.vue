@@ -52,7 +52,7 @@ const checkResetCode = () => {
             toast.remove();
             toast.success("Reset Code Matched.");
             loading.value = false;
-            pageState.value = "reset-code";
+            pageState.value = "reset-password";
         })
         .catch(function (error) {
             console.log(error);
@@ -75,11 +75,10 @@ const resetPassword = () => {
                 toast.remove();
                 toast.success("Password reset successful.");
                 loading.value = false;
-                pageState.value = "reset-code";
             })
             .catch(function (error) {
                 console.log(error);
-                toast.done(loadingToastId.value);
+                toast.remove();
                 toast.error("Phone number doesn't match.");
                 loading.value = false;
             });
