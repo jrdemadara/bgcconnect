@@ -4,7 +4,6 @@ use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\IDVerificationController;
 use App\Http\Controllers\InviteController;
-use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\PhoneVerificationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RaffleEntryController;
@@ -21,9 +20,6 @@ Route::get('/', function () {
         'phpVersion' => PHP_VERSION,
     ]);
 });
-
-Route::get('/forgot-password', [PasswordResetController::class, 'index'])->name('forgot-password');
-//Route::get('/password-reset', [PasswordResetController::class, 'index'])->name('password-reset.index');
 
 Route::get('/invite', [InviteController::class, 'index'])->name('invite.index');
 
