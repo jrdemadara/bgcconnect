@@ -55,7 +55,7 @@ class PasswordResetController extends Controller
     public function checkResetCode(Request $request)
     {
         $request->validate([
-            'phone' => $request->phone,
+            'phone' => 'required|string',
             'code' => 'required|string',
         ]);
 
