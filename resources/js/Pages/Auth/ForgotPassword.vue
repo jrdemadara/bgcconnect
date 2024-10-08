@@ -74,6 +74,7 @@ const resetPassword = () => {
                 toast.remove();
                 toast.success("Password reset successful.");
                 loading.value = false;
+                window.location.href = "/login";
             })
             .catch(function (error) {
                 console.log(error);
