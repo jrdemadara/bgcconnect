@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Settings;
 use App\Models\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
 use Inertia\Inertia;
@@ -74,7 +75,7 @@ class PasswordResetController extends Controller
         return response()->json(['error' => 'phone not found'], 404);
     }
 
-    public function resetPassword(Request $request)
+    public function resetPassword(Request $request): RedirectResponse
     {
         $request->validate([
             'phone' => 'required|string',
@@ -82,22 +83,23 @@ class PasswordResetController extends Controller
         ]);
 
         $user = User::where('phone', $request->phone)->first();
-        if ($user) {
-            $user->password = $request->password;
-            $user->save();
-
-            $resetCodeKey = "reset_code:$user->id";
-            $reset_code = Redis::get($resetCodeKey);
-
-            if ($reset_code) {
-                // Delete the Redis key
-                Redis::del($resetCodeKey);
-            }
-
-            return response()->json(['success' => 'password reset success.'], 200);
+        if (!$user) {
+            return response()->json(['error' => 'phone not found'], 404);
         }
 
-        return response()->json(['error' => 'phone not found'], 404);
+        $user->password = $request->password;
+        $user->save();
+
+        $resetCodeKey = "reset_code:$user->id";
+        $reset_code = Redis::get($resetCodeKey);
+
+        if ($reset_code) {
+            // Delete the Redis key
+            Redis::del($resetCodeKey);
+        }
+
+        return redirect()->intended(route('login', absolute: false));
+
     }
 
     private function generateRandomString()
