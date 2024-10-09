@@ -89,9 +89,9 @@ class ProfileController extends Controller
             'status' => session('status'),
             'user' => $user,
             'profile' => $profile,
-            'province' => $province->provDescription,
-            'municipality' => $municipality->citymunDescription,
-            'barangay' => $barangay->brgyDescription,
+            'province' => !empty($province) ? $province->provDescription : "",
+            'municipality' => !empty($municipality) ? $municipality->citymunDescription : "",
+            'barangay' => !empty($barangay) ? $barangay->brgyDescription : "",
         ]);
     }
     /**
