@@ -162,7 +162,7 @@ const closeMenu = () => {
                             <h2
                                 class="font-bold text-5xl text-center text-gray-800"
                             >
-                                Welcme to <br />
+                                Welcome to <br />
                                 <span class="text-blue-500">BGC</span>
                                 Connect
                             </h2>
