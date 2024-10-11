@@ -26,18 +26,21 @@ const isFilipino = ref(false);
 const termsAccept = ref(false);
 
 const submit = () => {
-    form.post(route("register"), {
-        onFinish: () => {
-            form.reset("password", "password_confirmation");
-        },
-        onSuccess: () => {
-            toast.success("Registration successful!");
-        },
-        onError: (error) => {
-            console.log(error);
-            toast.error("Registration failed. Please try again.");
-        },
-    });
+    if (form.code) {
+        form.post(route("register"), {
+            onFinish: () => {
+                form.reset("password", "password_confirmation");
+            },
+            onSuccess: () => {
+                toast.success("Registration successful!");
+            },
+            onError: (error) => {
+                toast.error("Registration failed. Please try again.");
+            },
+        });
+    } else {
+        toast.error("Please use a referral link to register.");
+    }
 };
 </script>
 
