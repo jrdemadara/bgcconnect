@@ -33,7 +33,8 @@ const submit = () => {
         onSuccess: () => {
             toast.success("Registration successful!");
         },
-        onError: () => {
+        onError: (error) => {
+            console.log(error);
             toast.error("Registration failed. Please try again.");
         },
     });
@@ -65,6 +66,7 @@ const submit = () => {
                         class="mt-1 block w-full uppercase text-gray-400"
                         v-model="form.code"
                         readonly
+                        required
                     />
                 </div>
             </div>
