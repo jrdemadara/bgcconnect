@@ -34,17 +34,20 @@ class RaffleEntryController extends Controller
         $draw = RaffleDraw::all()->first();
         $tier = RaffleTier::find($request->tier);
 
-        $entry = new RaffleEntry();
-        $entry->user_id = $user->id;
-        $entry->tier_id = $tier->id;
-        $entry->draw_id = $draw->id;
-        $entry->save();
+        if ($user->level > 3) {
+            $entry = new RaffleEntry();
+            $entry->user_id = $user->id;
+            $entry->tier_id = $tier->id;
+            $entry->draw_id = $draw->id;
+            $entry->save();
 
-        if ($entry->wasRecentlyCreated) {
-            $user->decrement('points', $tier->points);
+            if ($entry->wasRecentlyCreated) {
+                $user->decrement('points', $tier->points);
+            }
+
+            return response()->json(['success' => 'success'], 200);
         }
-
-        return response()->json(['success' => 'success'], 200);
+        return response()->json(['error' => 'level is not enough'], 400);
 
     }
 

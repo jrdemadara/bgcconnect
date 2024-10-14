@@ -46,7 +46,7 @@ const { text, copy, copied, isSupported } = useClipboard({ source });
             <div class="flex flex-col justify-center items-center w-3/4 mt-5">
                 <div class="flex justify-center items-center w-full space-x-2">
                     <div class="flex-grow h-0.5 bg-slate-100 rounded"></div>
-                    <p class="font-light text-xs text-slate-600">
+                    <p class="font-light text-xs text-slate-700">
                         or copy the code manually
                     </p>
                     <div class="flex-grow h-0.5 bg-slate-100 rounded"></div>

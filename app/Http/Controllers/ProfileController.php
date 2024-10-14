@@ -130,9 +130,11 @@ class ProfileController extends Controller
         $profile->save();
 
         $user = $request->user();
-        if ($user->level < 2) {
-            $user->level = 2;
-            $user->save();
+        if ($user->level !== 4) {
+            if ($user->level < 2) {
+                $user->level = 2;
+                $user->save();
+            }
         }
 
         return redirect(route('profile.edit'));
