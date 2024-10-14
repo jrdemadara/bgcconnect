@@ -107,7 +107,7 @@ const checkLocation = (code) => {
                                         longitude: longitude,
                                     })
                                     .then(function (response) {
-                                        console.log(
+                                        toast.success(
                                             "Success! Thank you for coming."
                                         );
                                     })
