@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Activities;
 use App\Models\ActivityAttendees;
-use App\Models\Settings;
 use App\Models\User;
 use function Pest\Laravel\json;
 use Illuminate\Http\Request;
@@ -61,31 +60,27 @@ class ActivityController extends Controller
             'longitude' => 'required',
         ]);
 
-        $settings = Settings::find(1);
-
-        $activity_points = $settings->activity_points;
-
         // Get the authenticated user's ID
         $id = Auth::id();
 
-        $activity = Activities::where('code', $request->code)->pluck('id')->first();
+        $activity = Activities::where('code', $request->code)->first();
 
         // Check if the user has already attended this activity at current day
         $isAttended = ActivityAttendees::where('user_id', $id)
-            ->where('activity_id', $activity)
+            ->where('activity_id', $activity->id)
             ->whereDate('created_at', '=', now())
             ->exists();
 
         if (!$isAttended) {
             // Add the user to the activity attendees
             ActivityAttendees::create([
-                'activity_id' => $activity,
+                'activity_id' => $activity->id,
                 'user_id' => $id,
             ]);
 
             // Increment the user's points
             $user = User::find($id);
-            $user->increment('points', $activity_points); // Adds 10 points to the existing value
+            $user->increment('points', $activity->points); // Adds 10 points to the existing value
 
             return response()->json([
                 'message' => 'success',

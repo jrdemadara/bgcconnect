@@ -4,6 +4,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head } from "@inertiajs/vue3";
 import { QrcodeStream, QrcodeDropZone, QrcodeCapture } from "vue-qrcode-reader";
 import { getDistance } from "geolib";
+import { toast } from "vue3-toastify";
 
 const isLocation = ref(true);
 const latitude = ref("");
@@ -62,44 +63,8 @@ function onDetect(detectedCodes) {
     checkLocation(code[0]);
 }
 
-const checkActivity = (code) => {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                latitude.value = position.coords.latitude;
-                longitude.value = position.coords.longitude;
-                isLocation.value = true;
-                vibrateDevice();
-                axios
-                    .post("/activity", {
-                        code: code,
-                        latitude: latitude,
-                        longitude: longitude,
-                    })
-                    .then(function (response) {
-                        console.log(response);
-                    })
-                    .catch(function (error) {
-                        console.log(error);
-                    });
-            },
-            () => {
-                isLocation.value = false;
-            },
-            {
-                enableHighAccuracy: true, // Enable high accuracy mode
-                timeout: 5000, // Timeout after 5 seconds
-                maximumAge: 0, // No caching
-            }
-        );
-    } else {
-        isLocation.value = false;
-    }
-};
-
 // Method to check if the user location is within the radius
 const checkLocation = (code) => {
-    console.log(code);
     axios
         .get("/activity/location", {
             params: {
@@ -107,7 +72,7 @@ const checkLocation = (code) => {
             },
         })
         .then(function (response) {
-            if (response.status == 200) {
+            if (response.status === 200) {
                 const centerLatitude = response.data.centerLatitude;
                 const centerLongitude = response.data.centerLongitude;
                 const centerRadius = response.data.radius;
@@ -148,7 +113,7 @@ const checkLocation = (code) => {
                                         console.log(error);
                                     });
                             } else {
-                                console.log("You're out of the range.");
+                                toast.warning("You're out of the range.");
                             }
                         },
                         () => {
@@ -166,7 +131,7 @@ const checkLocation = (code) => {
             }
         })
         .catch(function (error) {
-            console.log(error);
+            toast.error("Something went wrong, Please try again.");
         });
 };
 
@@ -184,8 +149,8 @@ const app = createApp({
     },
 });
 
-//app.use(QrcodeStream);
-//app.mount("#app");
+// app.use(QrcodeStream);
+// app.mount("#app");
 
 onMounted(() => {
     //getProvinces();
