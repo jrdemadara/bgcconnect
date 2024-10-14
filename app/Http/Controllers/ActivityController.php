@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Activities;
 use App\Models\ActivityAttendees;
 use App\Models\User;
-use function Pest\Laravel\json;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;

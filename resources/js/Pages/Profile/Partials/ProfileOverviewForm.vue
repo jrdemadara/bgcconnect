@@ -154,17 +154,17 @@ onMounted(() => {
                 <BadgeCheck class="text-green-700 mr-0.5" :size="16" />
                 verified
             </span>
-            <button
+            <Link
                 v-show="user.level > 1"
+                :href="route('qrcode.index')"
                 class="flex justify-center items-center mt-2 text-gray-900 dark:text-white"
-                @click="() => open()"
             >
                 <QrCode
                     class="text-gray-900 dark:text-white mt-1 mr-1"
                     :size="20"
                 />
                 <span class="underline cursor-default">Show my QR</span>
-            </button>
+            </Link>
 
             <ModalsContainer />
         </div>

@@ -6,6 +6,7 @@ use App\Http\Controllers\IDVerificationController;
 use App\Http\Controllers\InviteController;
 use App\Http\Controllers\PhoneVerificationController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\QRCodeController;
 use App\Http\Controllers\RaffleEntryController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Redis;
@@ -33,6 +34,8 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::post('/profile/photo', [ProfileController::class, 'updatePhoto'])->name('profile.photo');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::get('/qrcode', [QRCodeController::class, 'index'])->name('qrcode.index');
 
     Route::get('/verify', [PhoneVerificationController::class, 'index'])->name('verify.index');
     Route::get('/verify/send', [PhoneVerificationController::class, 'send'])->name('verify.send');
