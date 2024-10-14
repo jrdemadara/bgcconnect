@@ -68,7 +68,6 @@ const submit = () => {
                         type="text"
                         class="mt-1 block w-full uppercase text-gray-400"
                         v-model="form.code"
-                        readonly
                         required
                     />
                 </div>
