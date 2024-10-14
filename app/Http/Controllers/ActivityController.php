@@ -16,7 +16,6 @@ class ActivityController extends Controller
         $user = Auth::user();
 
         return Inertia::render('Activity', [
-            'isPhoneVerified' => $user->phone_verified_at ?: true, false,
             'status' => session('status'),
         ]);
     }
@@ -61,6 +60,7 @@ class ActivityController extends Controller
 
         // Get the authenticated user's ID
         $id = Auth::id();
+        $user = User::find($id);
 
         $activity = Activities::where('code', $request->code)->first();
 
@@ -70,24 +70,30 @@ class ActivityController extends Controller
             ->whereDate('created_at', '=', now())
             ->exists();
 
-        if (!$isAttended) {
-            // Add the user to the activity attendees
-            ActivityAttendees::create([
-                'activity_id' => $activity->id,
-                'user_id' => $id,
-            ]);
+        if ($user->level > 2) {
+            if (!$isAttended) {
+                // Add the user to the activity attendees
+                ActivityAttendees::create([
+                    'activity_id' => $activity->id,
+                    'user_id' => $id,
+                ]);
 
-            // Increment the user's points
-            $user = User::find($id);
-            $user->increment('points', $activity->points); // Adds 10 points to the existing value
+                // Increment the user's points
+                $user->increment('points', $activity->points);
 
-            return response()->json([
-                'message' => 'success',
-            ], 200);
+                return response()->json([
+                    'message' => 'success',
+                ], 200);
+            } else {
+                return response()->json([
+                    'message' => 'already attended',
+                ], 401);
+            }
         } else {
             return response()->json([
-                'message' => 'already attended',
+                'message' => 'You are not elegible for activity.',
             ], 401);
+
         }
 
         // If the activity is not found or the date range does not match
