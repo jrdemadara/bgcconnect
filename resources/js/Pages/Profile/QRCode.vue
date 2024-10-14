@@ -53,13 +53,13 @@ const { text, copy, copied, isSupported } = useClipboard({ source });
                 </div>
                 <div class="flex mt-5 w-full space-x-2">
                     <div
-                        class="flex justify-start items-center w-full h-8 px-2 rounded text-sm font-medium ring-1 ring-slate-200 text-black"
+                        class="flex justify-start items-center w-full h-10 px-2 rounded text-sm font-medium ring-1 ring-slate-200 text-black"
                     >
                         {{ props.qrcode }}
                     </div>
                     <div
                         @click="copy(source)"
-                        class="flex items-center justify-center w-10 h-8 rounded text-sm font-semibold ring-1 ring-slate-200 text-black"
+                        class="flex items-center justify-center w-10 h-10 rounded text-sm font-semibold ring-1 ring-slate-200 text-black"
                     >
                         <span v-if="!copied">
                             <Copy class="text-slate-800 mr-0.5" :size="16"
@@ -71,7 +71,7 @@ const { text, copy, copied, isSupported } = useClipboard({ source });
                 </div>
                 <Link
                     :href="route('profile.index')"
-                    class="flex justify-center items-center px-2 mt-5 border rounded-lg w-full h-9 bg-blue-600 text-white"
+                    class="flex justify-center items-center px-2 mt-5 border rounded-lg w-full h-10 bg-blue-600 text-white"
                 >
                     I'm done
                 </Link>
