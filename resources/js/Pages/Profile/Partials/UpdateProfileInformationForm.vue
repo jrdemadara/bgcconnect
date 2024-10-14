@@ -19,6 +19,8 @@ let stream: MediaStream | null = null; // To hold the media stream
 
 const cameraState = ref("start");
 
+const addressChange = ref(false);
+
 const provinces = ref<{ provCode: string; provDescription: string }[]>([]);
 const municipalities = ref<
     { citymunCode: string; citymunDescription: string }[]
@@ -120,8 +122,6 @@ function dataURLToBlob(dataUrl: string): Blob {
 const props = usePage().props;
 const user = props.auth.user;
 
-console.log(props);
-
 const form = useForm({
     firstname: user.profile.firstname,
     middlename: user.profile.middlename,
@@ -150,11 +150,15 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.patch(route("profile.update"), {
-        onSuccess: () => {
-            updatePhoto;
-        },
-    });
+    if (user.level !== 4) {
+        form.patch(route("profile.update"), {
+            onSuccess: () => {
+                updatePhoto;
+            },
+        });
+    } else {
+        toast.error("Level 4 users is not allowed to update profile.");
+    }
 };
 const updatePhoto = async () => {
     if (profilePhoto.value instanceof File) {
@@ -401,8 +405,14 @@ onMounted(() => {
         </div>
 
         <div class="w-full h-0.5 mt-4 bg-gray-100 dark:bg-gray-600"></div>
-        <p class="font-medium text-lg">Address</p>
-        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+
+        <div class="flex justify-between items-center">
+            <p class="font-medium text-lg">Address</p>
+            <p @click="addressChange = true" class="underline text-blue-500">
+                Update My Address
+            </p>
+        </div>
+        <div v-if="addressChange" class="grid grid-cols-1 sm:grid-cols-4 gap-4">
             <div>
                 <InputLabel for="province" value="Province" />
 
@@ -414,7 +424,6 @@ onMounted(() => {
                     required
                     autofocus
                 >
-                    <option selected>{{ props.province }}</option>
                     <option
                         v-for="province in provinces"
                         :key="province.provCode"
@@ -438,9 +447,6 @@ onMounted(() => {
                     required
                     autofocus
                 >
-                    <option selected>
-                        {{ props.municipality }}
-                    </option>
                     <option
                         v-for="municipality in municipalities"
                         :key="municipality.citymunCode"
@@ -466,10 +472,6 @@ onMounted(() => {
                     required
                     autofocus
                 >
-                    <option selected disabled value="">
-                        {{ props.barangay }}
-                    </option>
-
                     <option
                         v-for="barangay in barangays"
                         :key="barangay.brgyCode"
@@ -495,6 +497,59 @@ onMounted(() => {
                 />
 
                 <InputError class="mt-2" :message="form.errors.street" />
+            </div>
+        </div>
+
+        <div
+            v-if="!addressChange"
+            class="grid grid-cols-1 sm:grid-cols-4 gap-4"
+        >
+            <div>
+                <InputLabel for="province" value="Province" />
+
+                <input
+                    id="street"
+                    type="text"
+                    class="mt-1 block w-full capitalize border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 focus:border-blue-500 dark:focus:border-blue-600 focus:ring-blue-500 dark:focus:ring-blue-500 rounded-md shadow-sm"
+                    :value="props.province"
+                    readonly
+                />
+            </div>
+
+            <div>
+                <InputLabel for="municipality" value="Municipality/City" />
+
+                <input
+                    id="street"
+                    type="text"
+                    class="mt-1 block w-full capitalize border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 focus:border-blue-500 dark:focus:border-blue-600 focus:ring-blue-500 dark:focus:ring-blue-500 rounded-md shadow-sm"
+                    :value="props.municipality"
+                    readonly
+                />
+            </div>
+
+            <div>
+                <InputLabel for="barangay" value="Barangay" />
+
+                <input
+                    id="street"
+                    type="text"
+                    class="mt-1 block w-full capitalize border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 focus:border-blue-500 dark:focus:border-blue-600 focus:ring-blue-500 dark:focus:ring-blue-500 rounded-md shadow-sm"
+                    :value="props.barangay"
+                    readonly
+                />
+            </div>
+
+            <div>
+                <InputLabel for="street" value="Purok/Sitio" />
+
+                <input
+                    id="street"
+                    type="text"
+                    class="mt-1 block w-full capitalize border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 focus:border-blue-500 dark:focus:border-blue-600 focus:ring-blue-500 dark:focus:ring-blue-500 rounded-md shadow-sm"
+                    :value="form.street"
+                    readonly
+                />
             </div>
         </div>
 
