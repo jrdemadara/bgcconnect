@@ -25,11 +25,11 @@ const { text, copy, copied, isSupported } = useClipboard({ source });
     <Head title="Profile" />
 
     <AuthenticatedLayout>
-        <div class="flex flex-col justify-center items-center py-6 bg-white">
+        <div class="flex flex-col items-center py-6 h-screen bg-white">
             <div class="rounded-lg p-2 ring-1 ring-slate-200">
                 <ScanQrCode class="text-black mr-0.5" :size="26" />
             </div>
-            <h2 class="font-bold text-lg mt-4">Scan QR code</h2>
+            <h2 class="font-bold text-xl mt-4">Scan QR code</h2>
             <p class="font-light text-xs mt-1 text-slate-700">
                 Scan this QR code to refer or invite anyone.
             </p>
@@ -37,7 +37,7 @@ const { text, copy, copied, isSupported } = useClipboard({ source });
             <qrcode-vue
                 :value="value"
                 :level="level"
-                :size="200"
+                :size="250"
                 :margin="2"
                 class="ring-1 ring-slate-200 rounded-lg mt-4"
                 :render-as="renderAs"
@@ -53,7 +53,7 @@ const { text, copy, copied, isSupported } = useClipboard({ source });
                 </div>
                 <div class="flex mt-5 w-full space-x-2">
                     <div
-                        class="flex justify-start items-center w-full h-10 px-2 rounded text-sm font-medium ring-1 ring-slate-200 text-black"
+                        class="flex justify-start items-center w-full h-10 px-2 rounded font-bold ring-1 ring-slate-200 text-black"
                     >
                         {{ props.qrcode }}
                     </div>
@@ -71,7 +71,7 @@ const { text, copy, copied, isSupported } = useClipboard({ source });
                 </div>
                 <Link
                     :href="route('profile.index')"
-                    class="flex justify-center items-center px-2 mt-5 border rounded-lg w-full h-10 bg-blue-600 text-white"
+                    class="flex justify-center items-center px-2 mt-5 border rounded-lg w-full h-12 bg-blue-600 text-white"
                 >
                     I'm done
                 </Link>
