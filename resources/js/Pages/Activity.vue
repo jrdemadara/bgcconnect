@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, createApp, onMounted } from "vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { Head } from "@inertiajs/vue3";
+import { Link, Head } from "@inertiajs/vue3";
 import { QrcodeStream, QrcodeDropZone, QrcodeCapture } from "vue-qrcode-reader";
 import { getDistance } from "geolib";
 import { toast } from "vue3-toastify";
@@ -107,10 +107,20 @@ const checkLocation = (code) => {
                                         longitude: longitude,
                                     })
                                     .then(function (response) {
-                                        console.log(response);
+                                        console.log(
+                                            "Success! Thank you for coming."
+                                        );
                                     })
                                     .catch(function (error) {
-                                        console.log(error);
+                                        if (error.status == 401) {
+                                            toast.error(
+                                                "Your are already attended."
+                                            );
+                                        } else {
+                                            toast.error(
+                                                "Something went wrong, Please try again."
+                                            );
+                                        }
                                     });
                             } else {
                                 toast.warning("You're out of the range.");
@@ -169,7 +179,9 @@ onMounted(() => {
             </h2>
         </template>
 
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6 bg-white">
+        <div
+            class="flex flex-col justify-center items-center max-w-7xl mx-auto py-4 sm:px-6 lg:px-8 space-y-10 mt-0 sm:mt-8 bg-white"
+        >
             <div class="flex flex-col justify-center items-center w-full px-4">
                 <p class="font-bold text-lg my-4">
                     Point the camera to the QR Code
@@ -191,6 +203,12 @@ onMounted(() => {
                     ></qrcode-stream>
                 </div>
             </div>
+            <Link
+                :href="route('profile.index')"
+                class="inline-flex justify-center items-center w-full h-10 px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest transition ease-in-out duration-150 bg-blue-600 text-white"
+            >
+                Done
+            </Link>
         </div>
     </AuthenticatedLayout>
 </template>
