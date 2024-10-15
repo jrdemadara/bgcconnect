@@ -1,13 +1,32 @@
-<script setup lang="ts">
-import { ref } from "vue";
-import ApplicationLogo from "@/Components/ApplicationLogo.vue";
+<script setup>
+import { ref, onMounted } from "vue";
 import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
 import NavLink from "@/Components/NavLink.vue";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
-import { Link } from "@inertiajs/vue3";
+import { Link, usePage } from "@inertiajs/vue3";
+import { useClipboard } from "@vueuse/core";
+import { Head } from "@inertiajs/vue3";
+import axios from "axios";
 
 const showingNavigationDropdown = ref(false);
+const code = ref("");
+const level = ref("");
+const firstname = ref("");
+
+const getUser = async () => {
+    const response = await axios.get("/user");
+
+    if (response.status === 200) {
+        code.value = response.data.user_code;
+        level.value = response.data.level;
+        firstname.value = response.data.firstname;
+    }
+};
+
+onMounted(() => {
+    getUser();
+});
 </script>
 
 <template>
@@ -37,10 +56,24 @@ const showingNavigationDropdown = ref(false);
                                 class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"
                             >
                                 <NavLink
-                                    :href="route('dashboard')"
-                                    :active="route().current('dashboard')"
+                                    :href="route('profile.index')"
+                                    :active="route().current('profile.index')"
                                 >
-                                    Dashboard
+                                    Profile Overview
+                                </NavLink>
+                                <NavLink
+                                    v-if="level > 2"
+                                    :href="route('activity.index')"
+                                    :active="route().current('activity.index')"
+                                >
+                                    Scan Activity
+                                </NavLink>
+                                <NavLink
+                                    v-if="level > 2"
+                                    :href="route('raffle.index')"
+                                    :active="route().current('raffle.index')"
+                                >
+                                    Raffle Entry
                                 </NavLink>
                             </div>
                         </div>
@@ -55,16 +88,8 @@ const showingNavigationDropdown = ref(false);
                                                 type="button"
                                                 class="capitalize inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150"
                                             >
-                                                <span
-                                                    v-if="
-                                                        $page.props.auth.user
-                                                            .profile
-                                                    "
-                                                >
-                                                    {{
-                                                        $page.props.auth.user
-                                                            .profile.firstname
-                                                    }}
+                                                <span class="font-semibold">
+                                                    Hello, {{ firstname }}!
                                                 </span>
                                                 <svg
                                                     class="ms-2 -me-0.5 h-4 w-4"
@@ -84,31 +109,33 @@ const showingNavigationDropdown = ref(false);
 
                                     <template #content>
                                         <DropdownLink
+                                            class="flex flex-col"
                                             :href="route('profile.index')"
                                         >
-                                            Referral Code:
+                                            <span class="capitalize">
+                                                {{ firstname }}
+                                            </span>
                                             <span
-                                                class="text-green-500 font-bold"
+                                                class="text-green-600 font-bold"
                                             >
-                                                {{
-                                                    $page.props.auth.user.code
-                                                }}</span
+                                                {{ code }}</span
                                             >
                                         </DropdownLink>
                                         <hr />
-
                                         <DropdownLink
-                                            :href="route('profile.index')"
+                                            v-if="level > 3"
+                                            :href="route('profile.edit')"
+                                            method="get"
+                                            as="button"
                                         >
-                                            Profile Overview
+                                            My Digital ID
                                         </DropdownLink>
                                         <DropdownLink
-                                            v-if="
-                                                $page.props.auth.user.level > 2
-                                            "
-                                            :href="route('activity.index')"
+                                            :href="route('profile.edit')"
+                                            method="get"
+                                            as="button"
                                         >
-                                            Scan Activity
+                                            Update Profile
                                         </DropdownLink>
                                         <DropdownLink
                                             :href="route('logout')"
@@ -175,10 +202,24 @@ const showingNavigationDropdown = ref(false);
                 >
                     <div class="pt-2 pb-3 space-y-1">
                         <ResponsiveNavLink
-                            :href="route('dashboard')"
-                            :active="route().current('dashboard')"
+                            :href="route('profile.index')"
+                            :active="route().current('profile.index')"
                         >
-                            Dashboard
+                            Profile Overview
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            v-if="level > 2"
+                            :href="route('activity.index')"
+                            :active="route().current('activity.index')"
+                        >
+                            Scan Activity
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            v-if="level > 2"
+                            :href="route('raffle.index')"
+                            :active="route().current('raffle.index')"
+                        >
+                            Raffle Entry
                         </ResponsiveNavLink>
                     </div>
 
@@ -190,28 +231,32 @@ const showingNavigationDropdown = ref(false);
                             <div
                                 class="font-medium text-base text-gray-800 dark:text-gray-200 capitalize"
                             >
-                                <span v-if="$page.props.auth.user.profile">
-                                    {{
-                                        $page.props.auth.user.profile.firstname
-                                    }}
+                                <span v-if="firstname">
+                                    {{ firstname }}
                                 </span>
                             </div>
                             <div
-                                class="font-medium text-sm text-gray-500 capitalize"
+                                class="font-medium text-sm text-green-600 capitalize"
                             >
-                                {{ $page.props.auth.user.code }}
+                                {{ code }}
                             </div>
                         </div>
 
                         <div class="mt-3 space-y-1">
-                            <ResponsiveNavLink :href="route('profile.index')">
-                                Profile Overview
+                            <ResponsiveNavLink
+                                v-if="level > 3"
+                                :href="route('profile.edit')"
+                                method="get"
+                                as="button"
+                            >
+                                My Digital ID
                             </ResponsiveNavLink>
                             <ResponsiveNavLink
-                                v-if="$page.props.auth.user.level > 2"
-                                :href="route('activity.index')"
+                                :href="route('profile.edit')"
+                                method="get"
+                                as="button"
                             >
-                                Scan Activity
+                                Update Profile
                             </ResponsiveNavLink>
                             <ResponsiveNavLink
                                 :href="route('logout')"

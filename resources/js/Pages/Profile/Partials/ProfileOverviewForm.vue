@@ -6,6 +6,7 @@ import {
     BadgeCheck,
     CalendarCheck2,
     ChevronsDown,
+    IdCard,
     Info,
     Network,
     QrCode,
@@ -20,8 +21,6 @@ import {
 import { ModalsContainer, useModal } from "vue-final-modal";
 import ModalQR from "./QRModal.vue";
 import { toast } from "vue3-toastify";
-
-const loadingToastId = ref(null);
 
 const raffleDisabled = () => {
     toast.warning("Elevate your level to qualify for the raffle.");
@@ -123,14 +122,8 @@ onMounted(() => {
             />
         </div>
 
-        <Link
-            :href="route('profile.edit')"
-            class="flex justify-center items-center mt-2 text-blue-500 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
-        >
-            Profile <SquareArrowUpRight class="ml-1" :size="16" />
-        </Link>
         <h4
-            class="flex justify-center items-center font-medium text-xl dark:text-white capitalize"
+            class="flex justify-center items-center font-medium text-xl mt-2 dark:text-white capitalize"
         >
             {{ props.profile.firstname }}
             {{ props.profile.lastname }}
@@ -139,7 +132,6 @@ onMounted(() => {
         <div
             class="flex flex-col items-center text-gray-600 dark:text-gray-400"
         >
-            {{ user.code }}
             <span
                 v-show="!user.phone_verified_at"
                 class="flex justify-center items-center w-fit px-2 py-0.5 mt-1 font-medium text-sm rounded-full text-red-700 bg-red-200"

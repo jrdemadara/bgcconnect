@@ -74,6 +74,21 @@ class ProfileController extends Controller
         ]);
     }
 
+    public function getUser()
+    {
+        $user = Auth::user();
+        $firstname = Profile::where('user_id', $user->id)
+            ->pluck('firstname')
+            ->first();
+
+        return response()->json([
+            'user_code' => $user->code,
+            'level' => $user->level,
+            'firstname' => $firstname,
+
+        ]);
+    }
+
     // Display the user's profile form for edit.
     public function edit(Request $request): Response
     {

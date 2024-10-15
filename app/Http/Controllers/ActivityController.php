@@ -34,7 +34,7 @@ class ActivityController extends Controller
 
         if ($activity) {
             $location = json_decode($activity->location, true);
-            $radius = $location['Radius']; // Radius in meters
+            $radius = $location['Radius'];
             $centerLatitude = $location['Latitude'];
             $centerLongitude = $location['Longitude'];
 

@@ -857,33 +857,6 @@ onMounted(() => {
 
                 <InputError class="mt-2" :message="form.errors.facebook" />
             </div>
-            <div>
-                <InputLabel for="affiliation" value="Affiliation" />
-
-                <TextInput
-                    id="street"
-                    type="text"
-                    class="mt-1 block w-full uppercase"
-                    v-model="form.affiliation"
-                    autocomplete="affiliation"
-                />
-
-                <InputError class="mt-2" :message="form.errors.affiliation" />
-            </div>
-
-            <div>
-                <InputLabel for="facebook" value="Facebook Profile" />
-
-                <TextInput
-                    id="facebook"
-                    type="text"
-                    class="mt-1 block w-full"
-                    v-model="form.facebook"
-                    autocomplete="facebook"
-                />
-
-                <InputError class="mt-2" :message="form.errors.facebook" />
-            </div>
         </div>
 
         <div
