@@ -124,7 +124,7 @@ onMounted(() => {
                                         <hr />
                                         <DropdownLink
                                             v-if="level > 3"
-                                            :href="route('profile.edit')"
+                                            :href="route('digital-id.index')"
                                             method="get"
                                             as="button"
                                         >
@@ -245,7 +245,8 @@ onMounted(() => {
                         <div class="mt-3 space-y-1">
                             <ResponsiveNavLink
                                 v-if="level > 3"
-                                :href="route('profile.edit')"
+                                :href="route('digital-id.index')"
+                                :active="route().current('digital-id.index')"
                                 method="get"
                                 as="button"
                             >
@@ -253,6 +254,7 @@ onMounted(() => {
                             </ResponsiveNavLink>
                             <ResponsiveNavLink
                                 :href="route('profile.edit')"
+                                :active="route().current('profile.edit')"
                                 method="get"
                                 as="button"
                             >

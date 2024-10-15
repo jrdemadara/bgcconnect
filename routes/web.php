@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\AddressController;
+use App\Http\Controllers\DigitalIdController;
 use App\Http\Controllers\IDVerificationController;
 use App\Http\Controllers\InviteController;
 use App\Http\Controllers\PhoneVerificationController;
@@ -55,6 +56,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/raffle', [RaffleEntryController::class, 'index'])->name('raffle.index');
     Route::post('/raffle', [RaffleEntryController::class, 'store'])->name('raffle.store');
+
+    Route::get('/digital-id', [DigitalIdController::class, 'index'])->name('digital-id.index');
 
 });
 
