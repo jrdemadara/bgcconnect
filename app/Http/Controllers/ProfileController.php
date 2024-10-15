@@ -81,10 +81,13 @@ class ProfileController extends Controller
             ->pluck('firstname')
             ->first();
 
+        $drawExists = RaffleDraw::latest()->exists();
+
         return response()->json([
             'user_code' => $user->code,
             'level' => $user->level,
             'firstname' => $firstname,
+            'draw_date' => $drawExists,
 
         ]);
     }

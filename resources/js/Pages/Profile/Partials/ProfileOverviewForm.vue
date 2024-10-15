@@ -68,12 +68,13 @@ const updateImageSrc = () => {
     }
 };
 
-const formattedDate = ref(formatDate(props.draw));
+const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const options = { year: "numeric", month: "long", day: "2-digit" };
+    return date.toLocaleDateString("en-US", options);
+};
 
-function formatDate(dateString) {
-    const options = { year: "numeric", month: "long", day: "numeric" };
-    return new Date(dateString).toLocaleDateString("en-US", options);
-}
+const drawDate = props.draw ? formatDate(props.draw) : null;
 
 onMounted(() => {
     updateImageSrc();
@@ -81,7 +82,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="flex flex-col justify-center items-center mt-4">
+    <div class="flex flex-col justify-center items-center mt-4 sm:px-52">
         <div class="relative">
             <img
                 class="w-48 rounded-xl border-2 border-gray-300"
@@ -405,28 +406,43 @@ onMounted(() => {
         </div>
         <div class="w-full h-0.5 mt-4 bg-gray-100 dark:bg-gray-600"></div>
 
-        <div class="flex flex-col justify-center items-center mt-10">
+        <div class="flex flex-col justify-center items-center mt-10 w-full">
             <div
                 class="flex flex-col justify-center items-center border-4 border-dotted border-orange-200 rounded-lg p-4 w-full text-lg text-center text-gray-600 dark:text-white"
             >
                 Next draw:
 
-                <span class="font-bold text-xl text-orange-500">
-                    {{ props.draw }}</span
+                <span
+                    v-if="drawDate"
+                    class="font-bold text-2xl sm:text-3xl text-orange-500"
+                >
+                    {{ drawDate }}</span
+                >
+                <span
+                    v-else="!drawDate"
+                    class="font-bold text-2xl sm:text-3xl text-slate-500"
+                >
+                    No Upcoming Draw Posted</span
                 >
             </div>
             <ChevronsDown
+                v-if="drawDate"
                 class="animate-bounce mt-2 text-blue-500"
                 :size="42"
             />
         </div>
 
         <Link
-            :href="user.level > 2 ? route('raffle.index') : '#'"
+            :href="user.level > 2 && drawDate ? route('raffle.index') : '#'"
+            class="flex justify-center items-center w-full h-16 mt-2 rounded-xl font-bold text-xl text-white"
             :class="[
-                'flex justify-center items-center animate-pulse w-full h-16 mt-2 rounded-xl font-bold text-xl text-white bg-gradient-to-r from-pink-500 via-violet-500 to-blue-500',
+                drawDate
+                    ? 'animate-pulse bg-gradient-to-r from-pink-500 via-violet-500 to-blue-500'
+                    : 'bg-slate-500 opacity-30',
             ]"
-            @click.prevent="user.level <= 2 ? raffleDisabled() : null"
+            @click.prevent="
+                user.level <= 2 || !drawDate ? raffleDisabled() : null
+            "
         >
             <Ticket class="mr-1" :size="32" />Submit your raffle entry
         </Link>

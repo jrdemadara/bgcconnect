@@ -13,6 +13,7 @@ const showingNavigationDropdown = ref(false);
 const code = ref("");
 const level = ref("");
 const firstname = ref("");
+const drawDate = ref(false);
 
 const getUser = async () => {
     const response = await axios.get("/user");
@@ -21,6 +22,7 @@ const getUser = async () => {
         code.value = response.data.user_code;
         level.value = response.data.level;
         firstname.value = response.data.firstname;
+        drawDate.value = response.data.draw_date;
     }
 };
 
@@ -70,7 +72,9 @@ onMounted(() => {
                                 </NavLink>
                                 <NavLink
                                     v-if="level > 2"
-                                    :href="route('raffle.index')"
+                                    :href="
+                                        drawDate ? route('raffle.index') : '#'
+                                    "
                                     :active="route().current('raffle.index')"
                                 >
                                     Raffle Entry
@@ -216,7 +220,7 @@ onMounted(() => {
                         </ResponsiveNavLink>
                         <ResponsiveNavLink
                             v-if="level > 2"
-                            :href="route('raffle.index')"
+                            :href="drawDate ? route('raffle.index') : '#'"
                             :active="route().current('raffle.index')"
                         >
                             Raffle Entry
