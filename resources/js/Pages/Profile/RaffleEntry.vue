@@ -1,6 +1,7 @@
 <script setup>
 import { usePage, Link } from "@inertiajs/vue3";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
+
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head } from "@inertiajs/vue3";
 import axios from "axios";
@@ -18,6 +19,14 @@ const tiers = props.tier;
 const tierStarter = tiers[0];
 const tierPremium = tiers[1];
 const tierPrestige = tiers[2];
+
+const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const options = { year: "numeric", month: "long", day: "2-digit" };
+    return date.toLocaleDateString("en-US", options);
+};
+
+const drawDate = props.draw_date ? formatDate(props.draw_date) : null;
 
 const selectTierStarter = async () => {
     if (user.points >= tierStarter.points) {
@@ -62,6 +71,30 @@ const submit = () => {
             toast.error("Something went wrong, Try again!");
         });
 };
+
+const position = ref(window.innerWidth); // Start position from the right
+const speed = 2; // Speed of the running text
+let animationFrameId;
+
+const animateText = () => {
+    position.value -= speed;
+
+    const textWidth = document.querySelector(".inline-block").offsetWidth;
+
+    if (position.value < -textWidth) {
+        position.value = window.innerWidth;
+    }
+
+    animationFrameId = requestAnimationFrame(animateText);
+};
+
+onMounted(() => {
+    animationFrameId = requestAnimationFrame(animateText);
+});
+
+onUnmounted(() => {
+    cancelAnimationFrame(animationFrameId);
+});
 </script>
 
 <template>
@@ -87,7 +120,17 @@ const submit = () => {
                 </p>
             </div>
         </template>
-
+        <div
+            class="w-full p-2 bg-gradient-to-r from-pink-500 via-violet-500 to-blue-500"
+        >
+            <div
+                class="inline-block whitespace-nowrap font- text-2xl text-white"
+                :style="{ transform: `translateX(${position}px)` }"
+            >
+                Upcoming draw date:
+                <span class="font-bold">{{ drawDate }}</span>
+            </div>
+        </div>
         <div class="p-4">
             <div
                 v-if="pageState == 'start'"

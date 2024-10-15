@@ -15,11 +15,13 @@ class RaffleEntryController extends Controller
     {
         $user = Auth::user();
 
+        $drawDate = RaffleDraw::latest()->first();
         $tier = RaffleTier::with('prizes')->get();
         $entries = RaffleEntry::where('user_id', $user->id)->count();
         return Inertia::render('Profile/RaffleEntry', [
             'tier' => $tier,
             'entries' => $entries,
+            'draw_date' => $drawDate ? $drawDate->draw_date : null,
         ]);
     }
 
