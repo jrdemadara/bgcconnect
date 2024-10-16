@@ -325,8 +325,7 @@ onMounted(() => {
                                 class="text-red-600 mr-1"
                                 :size="22"
                             />
-                            {{ Math.abs(props.referral_comparison) }}% than last
-                            month
+                            {{ props.referral_comparison }}% than last month
                         </span>
                     </div>
                 </div>
