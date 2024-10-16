@@ -3,23 +3,33 @@ import { ref, onMounted } from "vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, Link, usePage } from "@inertiajs/vue3";
 import { Check, CheckCheck, Copy, IdCard, ScanQrCode } from "lucide-vue-next";
+import SecondaryButton from "@/Components/SecondaryButton.vue";
 
 const photo = ref("");
 const props = usePage().props;
-console.log(props);
 
-const updateImageSrc = () => {
-    const storedImage = localStorage.getItem("digitalID");
-    const digitalId = props.digital_id;
-    if (storedImage) {
-        photo.value = storedImage;
-    } else {
-        photo.value = digitalId;
-    }
+const downloadImage = () => {
+    // Create a link element
+    const link = document.createElement("a");
+
+    // Set the download attribute with a filename
+    link.download = "my_digital_id.png";
+
+    // Set the href to the base64 image string
+    link.href = photo.value;
+
+    // Append the link to the body
+    document.body.appendChild(link);
+
+    // Programmatically click the link to trigger the download
+    link.click();
+
+    // Remove the link from the document
+    document.body.removeChild(link);
 };
 
 onMounted(() => {
-    updateImageSrc();
+    photo.value = props.digital_id;
 });
 </script>
 
@@ -42,6 +52,7 @@ onMounted(() => {
                 :src="photo"
                 alt="digital id"
             />
+
             <h4
                 class="mt-6 font-semibold text-xl text-red-500 text-center"
                 v-else
@@ -49,6 +60,9 @@ onMounted(() => {
                 Your Digital ID is currently being processed.
             </h4>
 
+            <SecondaryButton class="mt-4" @click="downloadImage"
+                >Download ID</SecondaryButton
+            >
             <Link
                 :href="route('profile.index')"
                 class="flex justify-center items-center px-2 mt-6 border rounded-lg w-full h-12 bg-blue-600 text-white"
