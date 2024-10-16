@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Activities;
 use App\Models\ActivityAttendees;
-use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -82,8 +81,7 @@ class ActivityController extends Controller
                 // Increment the user's points
                 $user->increment('points', $activity->points);
 
-                Transaction::create([
-                    'user_id' => $user->id,
+                $user->transactions()->create([
                     'points_earned' => $activity->points,
                     'description' => "earned from activity:" . $activity->name,
                 ]);
