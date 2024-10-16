@@ -96,21 +96,30 @@ class ProfileController extends Controller
     public function edit(Request $request): Response
     {
         $user = Auth::user();
-
         $profile = $user->profile;
 
+        // Use an empty object as a fallback if the profile is null
+        $profile = $profile ?? (object) [
+            'province' => null,
+            'municipality_city' => null,
+            'barangay' => null,
+        ];
+
+        // Fetch province, municipality, and barangay descriptions
         $province = Province::select('provDescription')->where('provCode', $profile->province)->first();
         $municipality = Municipality::select('citymunDescription')->where('citymunCode', $profile->municipality_city)->first();
         $barangay = Barangay::select('brgyDescription')->where('brgyCode', $profile->barangay)->first();
 
+        // Render the view, ensuring that we handle potential null values
         return Inertia::render('Profile/Edit', [
             'status' => session('status'),
             'user' => $user,
             'profile' => $profile,
-            'province' => !empty($province) ? $province->provDescription : "",
-            'municipality' => !empty($municipality) ? $municipality->citymunDescription : "",
-            'barangay' => !empty($barangay) ? $barangay->brgyDescription : "",
+            'province' => $province->provDescription ?? '', // Safely access description or return empty
+            'municipality' => $municipality->citymunDescription ?? '',
+            'barangay' => $barangay->brgyDescription ?? '',
         ]);
+
     }
     /**
      * Update the user's profile information.
