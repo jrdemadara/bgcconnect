@@ -368,9 +368,7 @@ class ProfileController extends Controller
             SELECT id, referred_by, created_at
             FROM users
             WHERE referred_by = ?
-
             UNION ALL
-
             SELECT u.id, u.referred_by, u.created_at
             FROM users u
             INNER JOIN referral_hierarchy rh ON rh.id = u.referred_by
@@ -385,9 +383,7 @@ class ProfileController extends Controller
             SELECT id, referred_by, created_at
             FROM users
             WHERE referred_by = ?
-
             UNION ALL
-
             SELECT u.id, u.referred_by, u.created_at
             FROM users u
             INNER JOIN referral_hierarchy rh ON rh.id = u.referred_by
@@ -407,8 +403,13 @@ class ProfileController extends Controller
 
         // Calculate percentage change
         if ($previousCount == 0) {
-            $percentageChange = $currentCount > 0 ? 100 : 0; // 100% increase if previous count is 0
+            if ($currentCount > 0) {
+                $percentageChange = 100; // 100% increase if previous count is 0 and current count > 0
+            } else {
+                $percentageChange = 0; // No change if both counts are 0
+            }
         } else {
+            // Ensure the division is safe
             $percentageChange = (($currentCount - $previousCount) / $previousCount) * 100;
         }
 
