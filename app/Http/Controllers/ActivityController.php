@@ -81,6 +81,11 @@ class ActivityController extends Controller
                 // Increment the user's points
                 $user->increment('points', $activity->points);
 
+                $user->transactions()->create([
+                    'points_earned' => $activity->points,
+                    'description' => "earned from activity:" . $activity->name,
+                ]);
+
                 return response()->json([
                     'message' => 'success',
                 ], 200);

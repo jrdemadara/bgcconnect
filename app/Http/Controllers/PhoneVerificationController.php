@@ -144,7 +144,7 @@ class PhoneVerificationController extends Controller
         // Optionally, log the transaction
         $user->transactions()->create([
             'points_earned' => $points,
-            'description' => 'Referral bonus',
+            'description' => 'referral bonus',
         ]);
     }
 
