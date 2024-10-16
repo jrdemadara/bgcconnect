@@ -141,6 +141,7 @@ class ProfileController extends Controller
         $profile->tribe = Str::lower($request->tribe);
         $profile->industry_sector = Str::lower($request->industry_sector);
         $profile->occupation = Str::lower($request->occupation);
+        $profile->position = Str::lower($request->position);
         $profile->income_level = $request->income_level;
         $profile->affiliation = Str::lower($request->affiliation);
         $profile->facebook = Str::lower($request->facebook);
@@ -185,6 +186,38 @@ class ProfileController extends Controller
 
         // Update the profile with the new avatar path
         $profile->avatar = $path;
+        $profile->save();
+
+        return response()->json(['success' => 'Upload successful'], 200);
+    }
+
+    public function updateSignature(Request $request)
+    {
+        // Validate request inputs
+        $request->validate([
+            'signature' => 'required|file|mimes:jpeg,jpg|max:2048',
+        ]);
+
+        $id = Auth::id();
+
+        // Fetch the user's profile
+        $profile = Profile::findOrFail($id); // Use findOrFail for better error handling
+
+        // Delete existing avatar if it exists
+        if ($profile->esig && Storage::disk('s3')->exists($profile->esig)) {
+            Storage::disk('s3')->delete($profile->esig);
+        }
+
+        // Store the new avatar in S3
+        $path = $request->file('signature')->store('signature');
+
+        // Check if the file upload was successful
+        if (!$path) {
+            return response()->json(['error' => 'File upload failed'], 500);
+        }
+
+        // Update the profile with the new avatar path
+        $profile->esig = $path;
         $profile->save();
 
         return response()->json(['success' => 'Upload successful'], 200);

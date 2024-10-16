@@ -8,6 +8,7 @@ export interface Profile {
     id_type: string;
     id_card_front: string;
     id_card_back: string;
+    esig: string;
     region: string;
     province: string;
     municipality_city: string;
@@ -21,6 +22,7 @@ export interface Profile {
     tribe: string;
     industry_sector: string;
     occupation: string;
+    position: string;
     income_level: string;
     affiliation: string;
     facebook: string;

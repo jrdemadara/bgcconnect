@@ -35,6 +35,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::post('/profile/photo', [ProfileController::class, 'updatePhoto'])->name('profile.photo');
+    Route::post('/profile/signature', [ProfileController::class, 'updateSignature'])->name('profile.signature');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/qrcode', [QRCodeController::class, 'index'])->name('qrcode.index');

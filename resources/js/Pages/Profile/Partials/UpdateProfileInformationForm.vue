@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { reactive, ref, onMounted } from "vue";
 import axios from "axios";
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
@@ -13,7 +13,9 @@ import { toast } from "vue3-toastify";
 const video = ref<HTMLVideoElement | null>(null);
 const canvas = ref<HTMLCanvasElement | null>(null);
 const photo = ref<string | null>(null);
+const esig = ref<string | null>(null);
 const profilePhoto = ref<File | null>(null);
+const signaturePhoto = ref<File | null>(null);
 const captureSoundSrc = cameraSound; // Use the imported sound file
 let stream: MediaStream | null = null; // To hold the media stream
 
@@ -143,6 +145,7 @@ const form = useForm({
 
     industry_sector: user.profile.industry_sector,
     occupation: user.profile.occupation,
+    position: user.profile.position,
     income_level: user.profile.income_level,
 
     affiliation: user.profile.affiliation,
@@ -154,6 +157,7 @@ const submit = () => {
         form.patch(route("profile.update"), {
             onSuccess: () => {
                 updatePhoto;
+                updateSignature;
             },
         });
     } else {
@@ -186,7 +190,41 @@ const updatePhoto = async () => {
             reader.readAsDataURL(profilePhoto.value);
 
             if (response.data.success) {
-                toast.success("Profile is successfully updated.");
+                //toast.success("Profile is successfully updated.");
+            }
+        } catch (error) {
+            toast.error("Something went wrong, Please try again!");
+        }
+    }
+};
+
+const updateSignature = async () => {
+    if (signaturePhoto.value instanceof File) {
+        const formData = new FormData();
+        formData.append("signature", signaturePhoto.value);
+
+        try {
+            const response = await axios.post("/profile/signature", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+
+            // Convert profilePhoto (File) to Base64 and save it in localStorage
+            const reader = new FileReader();
+            reader.onload = function () {
+                const base64String = reader.result as string;
+                if (base64String) {
+                    // Save the base64 image to localStorage
+                    localStorage.setItem("signaturePhoto", base64String);
+                    // Update the img tag with the saved image
+                    updateImageSrc();
+                }
+            };
+            reader.readAsDataURL(signaturePhoto.value);
+
+            if (response.data.success) {
+                //toast.success("Profile is successfully updated.");
             }
         } catch (error) {
             toast.error("Something went wrong, Please try again!");
@@ -196,9 +234,16 @@ const updatePhoto = async () => {
 
 const updateImageSrc = () => {
     const storedImage = localStorage.getItem("profilePhoto");
+    const signatureImage = localStorage.getItem("signaturePhoto");
 
+    console.log(storedImage);
+    console.log(signatureImage);
     if (storedImage) {
         photo.value = storedImage;
+    }
+
+    if (signatureImage) {
+        esig.value = signatureImage;
     }
 };
 
@@ -269,6 +314,33 @@ const getBarangay = (municipality: String) => {
         .finally(function () {
             // always executed
         });
+};
+
+const state = reactive({
+    count: 0,
+    option: {
+        penColor: "rgb(0, 0, 0)",
+        backgroundColor: "rgb(255,255,255)",
+    },
+    disabled: false,
+});
+
+// @ts-ignore: Unreachable code error
+const save = () => {
+ 
+    signaturePhoto.value.save("image/png");
+    console.log(signaturePhoto.value);
+    // signature.value = t
+};
+
+const clear = () => {
+    // @ts-ignore: Unreachable code error
+    signaturePhoto.value.clear();
+};
+
+const undo = () => {
+    // @ts-ignore: Unreachable code error
+    signaturePhoto.value.undo();
 };
 
 onMounted(() => {
@@ -801,6 +873,20 @@ onMounted(() => {
             </div>
 
             <div>
+                <InputLabel for="position" value="Position" />
+
+                <TextInput
+                    id="position"
+                    type="text"
+                    class="mt-1 block w-full uppercase"
+                    v-model="form.position"
+                    autocomplete="position"
+                />
+
+                <InputError class="mt-2" :message="form.errors.position" />
+            </div>
+
+            <div>
                 <InputLabel for="income_level" value="Income Level" />
 
                 <select
@@ -856,6 +942,23 @@ onMounted(() => {
                 />
 
                 <InputError class="mt-2" :message="form.errors.facebook" />
+            </div>
+        </div>
+        <hr />
+        <div class="flex flex-col w-full space-y-2">
+            <p class="font-medium text-lg">E-Signature</p>
+            <Vue3Signature
+                ref="signaturePhoto"
+                :sigOption="state.option"
+                :disabled="state.disabled"
+                :h="'150px'"
+                class="ring-1 h-52 ring-slate-300"
+            ></Vue3Signature>
+            <div class="grid grid-cols-2 gap-4 items-center">
+                <SecondaryButton class="sm:w-52" @click="save()"
+                    >Save</SecondaryButton
+                >
+                <SecondaryButton @click="undo()">Undo</SecondaryButton>
             </div>
         </div>
 

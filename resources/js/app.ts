@@ -3,6 +3,7 @@ import { createInertiaApp } from "@inertiajs/vue3";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { ZiggyVue } from "../../vendor/tightenco/ziggy";
 import { createVfm } from "vue-final-modal";
+import Vue3Signature from "vue3-signature";
 
 import "./bootstrap";
 import "../css/app.css";
@@ -30,6 +31,7 @@ createInertiaApp({
             .use(ZiggyVue)
             .use(vfm)
             .use(Vue3Toastify, { autoClose: 3000 } as ToastContainerOptions)
+            .use(Vue3Signature)
             .mount(el);
     },
     progress: {
