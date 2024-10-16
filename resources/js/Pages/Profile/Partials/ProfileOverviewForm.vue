@@ -33,7 +33,7 @@ const raffleDisabled = () => {
     }
 
     if (!drawDate) {
-        toast.error("No upcoming date.");
+        toast.error("There is no upcoming draw.");
     }
 };
 const completionPercentage = computed(() => {
