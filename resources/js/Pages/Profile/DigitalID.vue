@@ -27,7 +27,7 @@ onMounted(() => {
     <Head title="Profile" />
 
     <AuthenticatedLayout>
-        <div class="flex flex-col items-center px-12 py-6 h-screen bg-white">
+        <div class="flex flex-col items-center px-4 py-6 h-screen bg-white">
             <div class="rounded-lg p-2 ring-1 ring-slate-200">
                 <IdCard class="text-black mr-0.5" :size="26" />
             </div>
@@ -38,7 +38,7 @@ onMounted(() => {
 
             <img
                 v-if="photo"
-                class="rounded-xl border-2 w-2/3 mt-6 border-gray-300"
+                class="rounded-xl border-2 w-full mt-6 border-gray-300 pt-2.5 pl-1 pr-1"
                 :src="photo"
                 alt="digital id"
             />
