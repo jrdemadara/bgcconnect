@@ -9,8 +9,6 @@ use App\Http\Controllers\PhoneVerificationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QRCodeController;
 use App\Http\Controllers\RaffleEntryController;
-use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -18,8 +16,6 @@ Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
     ]);
 });
 
@@ -59,24 +55,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/raffle', [RaffleEntryController::class, 'store'])->name('raffle.store');
 
     Route::get('/digital-id', [DigitalIdController::class, 'index'])->name('digital-id.index');
-
-});
-
-Route::get('/publish', function () {
-    $channel = 'sms';
-// Create an array with the data you want to send
-    $data = [
-        'phone_number' => '123-456-7890',
-        'verification_code' => 'ABC123',
-    ];
-
-// Encode the array as JSON
-    $message = json_encode($data);
-
-// Publish the JSON message to the channel
-    Redis::publish($channel, "ok");
-
-    return 'Message published!';
 
 });
 

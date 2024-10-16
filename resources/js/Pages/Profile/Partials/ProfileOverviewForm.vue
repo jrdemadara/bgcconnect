@@ -22,14 +22,20 @@ import { ModalsContainer, useModal } from "vue-final-modal";
 import ModalQR from "./QRModal.vue";
 import { toast } from "vue3-toastify";
 
-const raffleDisabled = () => {
-    toast.warning("Elevate your level to qualify for the raffle.");
-};
-
 const photo = ref("");
 
 const props = usePage().props;
 const user = props.auth.user;
+
+const raffleDisabled = () => {
+    if (user.level <= 2) {
+        toast.error("Elevate your level to qualify for the raffle.");
+    }
+
+    if (!drawDate) {
+        toast.error("No upcoming date.");
+    }
+};
 const completionPercentage = computed(() => {
     switch (user.level) {
         case 1:
@@ -440,9 +446,7 @@ onMounted(() => {
                     ? 'animate-pulse bg-gradient-to-r from-pink-500 via-violet-500 to-blue-500'
                     : 'bg-slate-500 opacity-30',
             ]"
-            @click.prevent="
-                user.level <= 2 || !drawDate ? raffleDisabled() : null
-            "
+            @click.prevent="raffleDisabled()"
         >
             <Ticket class="mr-1" :size="32" />Submit your raffle entry
         </Link>
