@@ -342,12 +342,12 @@ const save = () => {
 
 const clear = () => {
     // @ts-ignore: Unreachable code error
-    signaturePhoto.value.clear();
+    esig.value.clear();
 };
 
 const undo = () => {
     // @ts-ignore: Unreachable code error
-    signaturePhoto.value.undo();
+    esig.value.undo();
 };
 
 onMounted(() => {
@@ -965,7 +965,7 @@ onMounted(() => {
                 <SecondaryButton class="sm:w-52" @click="save()"
                     >Save</SecondaryButton
                 >
-                <SecondaryButton @click="undo()">Undo</SecondaryButton>
+                <SecondaryButton @click="clear()">Clear</SecondaryButton>
             </div>
         </div>
 
