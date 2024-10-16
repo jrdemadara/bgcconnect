@@ -10,12 +10,15 @@ import { Link, useForm, usePage } from "@inertiajs/vue3";
 import cameraSound from "../../../../sound/camera.mp3";
 import { toast } from "vue3-toastify";
 
+const esig = ref(null);
+
 const video = ref<HTMLVideoElement | null>(null);
 const canvas = ref<HTMLCanvasElement | null>(null);
 const photo = ref<string | null>(null);
-const esig = ref<string | null>(null);
+
 const profilePhoto = ref<File | null>(null);
 const signaturePhoto = ref<File | null>(null);
+
 const captureSoundSrc = cameraSound; // Use the imported sound file
 let stream: MediaStream | null = null; // To hold the media stream
 
@@ -156,8 +159,12 @@ const submit = () => {
     if (user.level !== 4) {
         form.patch(route("profile.update"), {
             onSuccess: () => {
-                updatePhoto;
-                updateSignature;
+                updatePhoto();
+                updateSignature();
+                toast.success("Profile is successfully updated.");
+            },
+            onError: () => {
+                toast.error("Something went wrong, Please try again.");
             },
         });
     } else {
@@ -190,7 +197,7 @@ const updatePhoto = async () => {
             reader.readAsDataURL(profilePhoto.value);
 
             if (response.data.success) {
-                //toast.success("Profile is successfully updated.");
+                // toast.success("Photo is successfully updated.");
             }
         } catch (error) {
             toast.error("Something went wrong, Please try again!");
@@ -202,7 +209,6 @@ const updateSignature = async () => {
     if (signaturePhoto.value instanceof File) {
         const formData = new FormData();
         formData.append("signature", signaturePhoto.value);
-
         try {
             const response = await axios.post("/profile/signature", formData, {
                 headers: {
@@ -224,9 +230,10 @@ const updateSignature = async () => {
             reader.readAsDataURL(signaturePhoto.value);
 
             if (response.data.success) {
-                //toast.success("Profile is successfully updated.");
+                // toast.success("Signature is successfully updated.");
             }
         } catch (error) {
+            console.log(error);
             toast.error("Something went wrong, Please try again!");
         }
     }
@@ -234,16 +241,9 @@ const updateSignature = async () => {
 
 const updateImageSrc = () => {
     const storedImage = localStorage.getItem("profilePhoto");
-    const signatureImage = localStorage.getItem("signaturePhoto");
 
-    console.log(storedImage);
-    console.log(signatureImage);
     if (storedImage) {
         photo.value = storedImage;
-    }
-
-    if (signatureImage) {
-        esig.value = signatureImage;
     }
 };
 
@@ -268,7 +268,7 @@ const getProvinces = () => {
         })
         .catch(function (error) {
             // handle error
-            console.log(error);
+            //console.log(error);
         })
         .finally(function () {
             // always executed
@@ -288,7 +288,7 @@ const getMunicipalities = (province: String) => {
         })
         .catch(function (error) {
             // handle error
-            console.log(error);
+            //console.log(error);
         })
         .finally(function () {
             // always executed
@@ -309,7 +309,7 @@ const getBarangay = (municipality: String) => {
         })
         .catch(function (error) {
             // handle error
-            console.log(error);
+            //console.log(error);
         })
         .finally(function () {
             // always executed
@@ -327,10 +327,17 @@ const state = reactive({
 
 // @ts-ignore: Unreachable code error
 const save = () => {
- 
-    signaturePhoto.value.save("image/png");
-    console.log(signaturePhoto.value);
-    // signature.value = t
+    // @ts-ignore: Unreachable code error
+    let sig = esig.value.save("image/png");
+    // Convert base64 to Blob
+    const blob = dataURLToBlob(sig);
+
+    // If you specifically need a File object, convert the Blob to a File
+    signaturePhoto.value = new File([blob], "signature.png", {
+        type: "image/png",
+    });
+
+    toast.info("Signature is set.");
 };
 
 const clear = () => {
@@ -948,7 +955,7 @@ onMounted(() => {
         <div class="flex flex-col w-full space-y-2">
             <p class="font-medium text-lg">E-Signature</p>
             <Vue3Signature
-                ref="signaturePhoto"
+                ref="esig"
                 :sigOption="state.option"
                 :disabled="state.disabled"
                 :h="'150px'"

@@ -195,7 +195,7 @@ class ProfileController extends Controller
     {
         // Validate request inputs
         $request->validate([
-            'signature' => 'required|file|mimes:jpeg,jpg|max:2048',
+            'signature' => 'required|file|mimes:png|max:2048',
         ]);
 
         $id = Auth::id();
