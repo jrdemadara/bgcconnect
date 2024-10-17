@@ -516,7 +516,7 @@ onMounted(() => {
             </div>
 
             <div>
-                <InputLabel for="municipality" value="Municipality/City" />
+                <InputLabel for="municipality" value="City/Municipality" />
 
                 <select
                     @change="handleMunicipality()"
@@ -564,7 +564,7 @@ onMounted(() => {
             </div>
 
             <div>
-                <InputLabel for="street" value="Purok/Sitio" />
+                <InputLabel for="street" value="Street/Purok/Sitio" />
 
                 <TextInput
                     id="street"
@@ -596,7 +596,7 @@ onMounted(() => {
             </div>
 
             <div>
-                <InputLabel for="municipality" value="Municipality/City" />
+                <InputLabel for="municipality" value="City/Municipality" />
 
                 <input
                     id="street"
@@ -620,7 +620,7 @@ onMounted(() => {
             </div>
 
             <div>
-                <InputLabel for="street" value="Purok/Sitio" />
+                <InputLabel for="street" value="Street/Purok/Sitio" />
 
                 <input
                     id="street"
@@ -705,12 +705,11 @@ onMounted(() => {
                     <option value="AB-">AB-</option>
                     <option value="O+">O+</option>
                     <option value="O-">O-</option>
-                    <option value="Bombay (Oh)">Bombay (Oh)</option>
-                    <option value="Rh-null">Rh-null</option>
                     <option value="A1B+">A1B+</option>
                     <option value="A1B-">A1B-</option>
                     <option value="A3B+">A3B+</option>
                     <option value="A3B-">A3B-</option>
+                    <option value="Rh-null">Rh-null</option>
                 </select>
 
                 <InputError class="mt-2" :message="form.errors.blood_type" />
@@ -747,28 +746,47 @@ onMounted(() => {
                     required
                     autofocus
                 >
-                    <option value="tagalog">Tagalog</option>
-                    <option value="cebuano">Cebuano</option>
-                    <option value="ilocano">Ilocano</option>
-                    <option value="bisaya">Bisaya</option>
-                    <option value="hiligaynon">Hiligaynon</option>
-                    <option value="bicolano">Bicolano</option>
-                    <option value="kapampangan">Kapampangan</option>
-                    <option value="pangasinense">Pangasinense</option>
-                    <option value="waray">Waray</option>
-                    <option value="maranao">Maranao</option>
-                    <option value="sama">Sama</option>
-                    <option value="tausug">Tausug</option>
-                    <option value="yakan">Yakan</option>
-                    <option value="ifugao">Ifugao</option>
-                    <option value="kalinga">Kalinga</option>
-                    <option value="bontoc">Bontoc</option>
-                    <option value="igurot">Igorot</option>
-                    <option value="lumad">Lumad</option>
-                    <option value="badjao">Badjao</option>
-                    <option value="ivatan">Ivatan</option>
-                    <option value="mangyan">Mangyan</option>
-                    <option value="palawan">Palawan</option>
+                    <option value="Maguindanaon">Maguindanaon</option>
+                    <option value="Maranao">Maranao</option>
+                    <option value="Tausug">Tausug</option>
+                    <option value="Yakan">Yakan</option>
+                    <option value="Sama-Bajau">Sama-Bajau</option>
+                    <option value="Iranun">Iranun</option>
+                    <option value="Sangil">Sangil</option>
+                    <option value="Kalagan">Kalagan</option>
+                    <option value="Palawani">Palawani</option>
+                    <option value="Molbog">Molbog</option>
+                    <option value="Jama Mapun">Jama Mapun</option>
+                    <option value="Badjao">Badjao</option>
+                    <option value="Kagayano">Kagayano</option>
+
+                    <option value="Manobo">Manobo</option>
+                    <option value="T'boli">T'boli</option>
+                    <option value="Bagobo">Bagobo</option>
+                    <option value="Higaonon">Higaonon</option>
+                    <option value="B'laan">B'laan</option>
+                    <option value="Mandaya">Mandaya</option>
+                    <option value="Tiruray (Teduray)">Tiruray (Teduray)</option>
+                    <option value="Subanen">Subanen</option>
+                    <option value="Bukidnon">Bukidnon</option>
+                    <option value="Mamanwa">Mamanwa</option>
+                    <option value="Matigsalug">Matigsalug</option>
+                    <option value="Dibabawon">Dibabawon</option>
+                    <option value="Banwaon">Banwaon</option>
+                    <option value="Tagakaulo">Tagakaulo</option>
+                    <option value="Kaulo">Kaulo</option>
+
+                    <option value="Cebuano">Cebuano</option>
+                    <option value="Ilocano">Ilocano</option>
+                    <option value="Tagalog">Tagalog</option>
+                    <option value="Hiligaynon (Ilonggo)">
+                        Hiligaynon (Ilonggo)
+                    </option>
+                    <option value="Bicolano">Bicolano</option>
+                    <option value="Kapampangan">Kapampangan</option>
+                    <option value="Waray">Waray</option>
+                    <option value="Pangasinense">Pangasinense</option>
+                    <option value="Chavacano">Chavacano</option>
                     <option value="other">Other</option>
                 </select>
 

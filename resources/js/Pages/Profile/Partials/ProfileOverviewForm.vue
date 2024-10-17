@@ -93,7 +93,7 @@ onMounted(() => {
             <img
                 class="w-48 rounded-xl border-2 border-gray-300"
                 :class="!photo ? 'h-44' : ''"
-                :src="photo || '../../../../image/male.jpg'"
+                :src="photo || ''"
                 alt="profile photo"
             />
 
@@ -325,7 +325,8 @@ onMounted(() => {
                                 class="text-red-600 mr-1"
                                 :size="22"
                             />
-                            {{ props.referral_comparison }}% than last month
+                            {{ Math.abs(props.referral_comparison) }}% than last
+                            month
                         </span>
                     </div>
                 </div>
