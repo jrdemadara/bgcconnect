@@ -114,7 +114,7 @@ const checkLocation = (code) => {
                                     .catch(function (error) {
                                         if (error.status === 401) {
                                             const errorMessage =
-                                                error.data?.message;
+                                                error.response.data?.message;
                                             toast.error(errorMessage);
                                         } else {
                                             toast.error(
@@ -142,7 +142,7 @@ const checkLocation = (code) => {
         })
         .catch(function (error) {
             if (error.status === 404) {
-                const errorMessage = error.data?.message;
+                const errorMessage = error.response.data?.message;
                 toast.error(errorMessage);
             } else {
                 toast.error("Something went wrong, Please try again.");
