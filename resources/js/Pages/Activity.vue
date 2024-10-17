@@ -112,10 +112,10 @@ const checkLocation = (code) => {
                                         );
                                     })
                                     .catch(function (error) {
-                                        if (error.status == 401) {
-                                            toast.error(
-                                                "Your are already attended."
-                                            );
+                                        if (error.status === 401) {
+                                            const errorMessage =
+                                                error.data?.message;
+                                            toast.error(errorMessage);
                                         } else {
                                             toast.error(
                                                 "Something went wrong, Please try again."
@@ -141,7 +141,12 @@ const checkLocation = (code) => {
             }
         })
         .catch(function (error) {
-            toast.error("Something went wrong, Please try again.");
+            if (error.status === 404) {
+                const errorMessage = error.data?.message;
+                toast.error(errorMessage);
+            } else {
+                toast.error("Something went wrong, Please try again.");
+            }
         });
 };
 

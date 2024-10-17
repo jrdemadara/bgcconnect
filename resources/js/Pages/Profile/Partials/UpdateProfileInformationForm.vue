@@ -981,7 +981,7 @@ onMounted(() => {
             ></Vue3Signature>
             <div class="grid grid-cols-2 gap-4 items-center">
                 <SecondaryButton class="sm:w-52" @click="save()"
-                    >Save</SecondaryButton
+                    >Set</SecondaryButton
                 >
                 <SecondaryButton @click="clear()">Clear</SecondaryButton>
             </div>

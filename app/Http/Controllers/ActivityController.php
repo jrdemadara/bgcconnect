@@ -45,7 +45,7 @@ class ActivityController extends Controller
             ], 200);
         }
         return response()->json([
-            'message' => 'activity not found',
+            'message' => 'Activity not found!',
         ], 404);
     }
 
@@ -91,7 +91,7 @@ class ActivityController extends Controller
                 ], 200);
             } else {
                 return response()->json([
-                    'message' => 'already attended',
+                    'message' => 'You are already attended',
                 ], 401);
             }
         } else {

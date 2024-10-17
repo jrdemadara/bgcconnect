@@ -60,12 +60,12 @@ onMounted(() => {
                 Your Digital ID is currently being processed.
             </h4>
 
-            <SecondaryButton class="mt-4" @click="downloadImage"
+            <SecondaryButton class="mt-6" @click="downloadImage"
                 >Download ID</SecondaryButton
             >
             <Link
                 :href="route('profile.index')"
-                class="flex justify-center items-center px-2 mt-6 border rounded-lg w-full h-12 bg-blue-600 text-white"
+                class="flex justify-center items-center px-2 mt-4 border rounded-lg w-full h-12 bg-blue-600 text-white"
             >
                 I'm done
             </Link>
