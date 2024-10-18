@@ -937,10 +937,10 @@ onMounted(() => {
 
         <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
             <div>
-                <InputLabel for="affiliation" value="Party-list" />
+                <InputLabel for="affiliation" value="Partylist" />
 
                 <TextInput
-                    id="street"
+                    id="affiliation"
                     type="text"
                     class="mt-1 block w-full uppercase"
                     v-model="form.affiliation"
