@@ -937,7 +937,7 @@ onMounted(() => {
 
         <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
             <div>
-                <InputLabel for="affiliation" value="Affiliation" />
+                <InputLabel for="affiliation" value="Party-list" />
 
                 <TextInput
                     id="street"
