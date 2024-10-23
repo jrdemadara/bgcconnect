@@ -15,6 +15,7 @@ const esig = ref(null);
 const video = ref<HTMLVideoElement | null>(null);
 const canvas = ref<HTMLCanvasElement | null>(null);
 const photo = ref<string | null>(null);
+const signature = ref<string | null>(null);
 
 const profilePhoto = ref<File | null>(null);
 const signaturePhoto = ref<File | null>(null);
@@ -25,6 +26,7 @@ let stream: MediaStream | null = null; // To hold the media stream
 const cameraState = ref("start");
 
 const addressChange = ref(false);
+const signatureChange = ref(false);
 
 const provinces = ref<{ provCode: string; provDescription: string }[]>([]);
 const municipalities = ref<
@@ -154,7 +156,6 @@ const form = useForm({
     affiliation: user.profile.affiliation,
     facebook: user.profile.facebook,
 });
-console.log(form.tribe);
 
 const submit = () => {
     if (user.level !== 4) {
@@ -234,17 +235,21 @@ const updateSignature = async () => {
                 // toast.success("Signature is successfully updated.");
             }
         } catch (error) {
-            console.log(error);
             toast.error("Something went wrong, Please try again!");
         }
     }
 };
 
 const updateImageSrc = () => {
-    const storedImage = localStorage.getItem("profilePhoto");
+    const storedPhoto = localStorage.getItem("profilePhoto");
+    const storedSignature = localStorage.getItem("signaturePhoto");
 
-    if (storedImage) {
-        photo.value = storedImage;
+    if (storedPhoto) {
+        photo.value = storedPhoto;
+    }
+
+    if (storedSignature) {
+        signature.value = storedSignature;
     }
 };
 
@@ -338,7 +343,7 @@ const save = () => {
         type: "image/png",
     });
 
-    toast.info("Signature is set.");
+    toast.success("Signature is set.");
 };
 
 const clear = () => {
@@ -968,7 +973,7 @@ onMounted(() => {
             </div>
         </div>
         <hr />
-        <div class="flex flex-col w-full space-y-2">
+        <div v-if="signatureChange" class="flex flex-col w-full space-y-2">
             <p class="font-medium text-lg">E-Signature</p>
             <Vue3Signature
                 ref="esig"
@@ -978,10 +983,24 @@ onMounted(() => {
                 class="ring-1 h-52 ring-slate-300"
             ></Vue3Signature>
             <div class="grid grid-cols-2 gap-4 items-center">
-                <SecondaryButton class="sm:w-52" @click="save()"
-                    >Set</SecondaryButton
-                >
+                <SecondaryButton @click="save()">Set</SecondaryButton>
                 <SecondaryButton @click="clear()">Clear</SecondaryButton>
+            </div>
+        </div>
+
+        <div v-if="!signatureChange" class="flex flex-col w-full space-y-2">
+            <p class="font-medium text-lg">E-Signature</p>
+            <img
+                v-if="signature"
+                :src="signature"
+                alt="Signature"
+                class="ring-1 h-52 ring-slate-300"
+            />
+
+            <div class="grid grid-cols-2 gap-4 items-center">
+                <SecondaryButton class="sm:w-52" @click="signatureChange = true"
+                    >Change my Signature</SecondaryButton
+                >
             </div>
         </div>
 
@@ -1002,7 +1021,7 @@ onMounted(() => {
                 class="sm:w-52 mt-4"
                 @click="updatePhoto"
                 :disabled="form.processing"
-                >Save</PrimaryButton
+                >Save Changes</PrimaryButton
             >
 
             <Transition
