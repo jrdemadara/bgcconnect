@@ -364,7 +364,7 @@ onMounted(() => {
 
 <template>
     <header>
-        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
+        <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100">
             Profile Information
         </h2>
 
@@ -473,7 +473,7 @@ onMounted(() => {
 
                 <select
                     id="extension"
-                    class="mt-1 block w-full capitalize rounded shadow-sm border border-gray-300"
+                    class="mt-1 block w-full capitalize border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 focus:border-blue-500 dark:focus:border-blue-600 focus:ring-blue-500 dark:focus:ring-blue-500 rounded-md shadow-sm"
                     v-model="form.extension"
                     autofocus
                 >
@@ -492,7 +492,9 @@ onMounted(() => {
         <div class="w-full h-0.5 mt-4 bg-gray-100 dark:bg-gray-600"></div>
 
         <div class="flex justify-between items-center">
-            <p class="font-medium text-lg">Address</p>
+            <p class="font-bold text-lg text-gray-700 dark:text-gray-300">
+                Address
+            </p>
             <p @click="addressChange = true" class="underline text-blue-500">
                 Update My Address
             </p>
@@ -504,7 +506,7 @@ onMounted(() => {
                 <select
                     @change="handleProvince()"
                     id="province"
-                    class="mt-1 block w-full rounded shadow-sm border border-gray-300"
+                    class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 focus:border-blue-500 dark:focus:border-blue-600 focus:ring-blue-500 dark:focus:ring-blue-500 rounded-md shadow-sm"
                     v-model="form.province"
                     required
                     autofocus
@@ -527,7 +529,7 @@ onMounted(() => {
                 <select
                     @change="handleMunicipality()"
                     id="municipality"
-                    class="mt-1 block w-full capitalize rounded shadow-sm border border-gray-300"
+                    class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 focus:border-blue-500 dark:focus:border-blue-600 focus:ring-blue-500 dark:focus:ring-blue-500 rounded-md shadow-sm"
                     v-model="form.municipality_city"
                     required
                     autofocus
@@ -552,7 +554,7 @@ onMounted(() => {
 
                 <select
                     id="barangay"
-                    class="mt-1 block w-full capitalize rounded shadow-sm border border-gray-300"
+                    class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 focus:border-blue-500 dark:focus:border-blue-600 focus:ring-blue-500 dark:focus:ring-blue-500 rounded-md shadow-sm"
                     v-model="form.barangay"
                     required
                     autofocus
@@ -640,7 +642,9 @@ onMounted(() => {
 
         <div class="w-full h-0.5 mt-4 bg-gray-100 dark:bg-gray-600"></div>
 
-        <p class="font-medium text-lg">Personal Information</p>
+        <p class="font-bold text-lg text-gray-700 dark:text-gray-300">
+            Personal Information
+        </p>
 
         <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
             <div>
@@ -648,7 +652,7 @@ onMounted(() => {
 
                 <select
                     id="gender"
-                    class="mt-1 block w-full capitalize rounded shadow-sm border border-gray-300"
+                    class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 focus:border-blue-500 dark:focus:border-blue-600 focus:ring-blue-500 dark:focus:ring-blue-500 rounded-md shadow-sm"
                     v-model="form.gender"
                     required
                     autofocus
@@ -666,7 +670,7 @@ onMounted(() => {
                 <input
                     type="date"
                     id="birthdate"
-                    class="mt-1 block w-full capitalize rounded shadow-sm border border-gray-300"
+                    class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 focus:border-blue-500 dark:focus:border-blue-600 focus:ring-blue-500 dark:focus:ring-blue-500 rounded-md shadow-sm"
                     v-model="form.birthdate"
                     required
                     autofocus
@@ -680,7 +684,7 @@ onMounted(() => {
 
                 <select
                     id="civil_status"
-                    class="mt-1 block w-full capitalize rounded shadow-sm border border-gray-300"
+                    class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 focus:border-blue-500 dark:focus:border-blue-600 focus:ring-blue-500 dark:focus:ring-blue-500 rounded-md shadow-sm"
                     v-model="form.civil_status"
                     required
                     autofocus
@@ -698,7 +702,7 @@ onMounted(() => {
 
                 <select
                     id="blood_type"
-                    class="mt-1 block w-full capitalize rounded shadow-sm border border-gray-300"
+                    class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 focus:border-blue-500 dark:focus:border-blue-600 focus:ring-blue-500 dark:focus:ring-blue-500 rounded-md shadow-sm"
                     v-model="form.blood_type"
                     required
                     autofocus
@@ -726,7 +730,7 @@ onMounted(() => {
 
                 <select
                     id="religion"
-                    class="mt-1 block w-full capitalize rounded shadow-sm border border-gray-300"
+                    class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 focus:border-blue-500 dark:focus:border-blue-600 focus:ring-blue-500 dark:focus:ring-blue-500 rounded-md shadow-sm"
                     v-model="form.religion"
                     required
                     autofocus
@@ -747,7 +751,7 @@ onMounted(() => {
 
                 <select
                     id="tribe"
-                    class="mt-1 block w-full capitalize rounded shadow-sm border border-gray-300"
+                    class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 focus:border-blue-500 dark:focus:border-blue-600 focus:ring-blue-500 dark:focus:ring-blue-500 rounded-md shadow-sm"
                     v-model="form.tribe"
                     required
                     autofocus
@@ -798,7 +802,9 @@ onMounted(() => {
         </div>
 
         <div class="w-full h-0.5 mt-4 bg-gray-100 dark:bg-gray-600"></div>
-        <p class="font-medium text-lg">Socioeconomic Information</p>
+        <p class="font-bold text-lg text-gray-700 dark:text-gray-300">
+            Socioeconomic Information
+        </p>
 
         <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
             <div>
@@ -806,7 +812,7 @@ onMounted(() => {
 
                 <select
                     id="tribe"
-                    class="mt-1 block w-full capitalize rounded shadow-sm border border-gray-300"
+                    class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 focus:border-blue-500 dark:focus:border-blue-600 focus:ring-blue-500 dark:focus:ring-blue-500 rounded-md shadow-sm"
                     v-model="form.industry_sector"
                     required
                     autofocus
@@ -857,7 +863,7 @@ onMounted(() => {
 
                 <select
                     id="occupation"
-                    class="mt-1 block w-full capitalize rounded shadow-sm border border-gray-300"
+                    class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 focus:border-blue-500 dark:focus:border-blue-600 focus:ring-blue-500 dark:focus:ring-blue-500 rounded-md shadow-sm"
                     v-model="form.occupation"
                     required
                     autofocus
@@ -919,7 +925,7 @@ onMounted(() => {
 
                 <select
                     id="income_level"
-                    class="mt-1 block w-full capitalize rounded shadow-sm border border-gray-300"
+                    class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 focus:border-blue-500 dark:focus:border-blue-600 focus:ring-blue-500 dark:focus:ring-blue-500 rounded-md shadow-sm"
                     v-model="form.income_level"
                     required
                     autofocus
@@ -939,7 +945,7 @@ onMounted(() => {
         </div>
 
         <div class="w-full h-0.5 mt-4 bg-gray-100 dark:bg-gray-600"></div>
-        <p class="font-medium text-lg">
+        <p class="font-bold text-lg text-gray-700 dark:text-gray-300">
             Other <small class="text-gray-600">(optional)</small>
         </p>
 
@@ -974,7 +980,9 @@ onMounted(() => {
         </div>
         <hr />
         <div v-if="signatureChange" class="flex flex-col w-full space-y-2">
-            <p class="font-medium text-lg">E-Signature</p>
+            <p class="font-bold text-lg text-gray-700 dark:text-gray-300">
+                E-Signature
+            </p>
             <Vue3Signature
                 ref="esig"
                 :sigOption="state.option"
