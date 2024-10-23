@@ -154,6 +154,7 @@ const form = useForm({
     affiliation: user.profile.affiliation,
     facebook: user.profile.facebook,
 });
+console.log(form.tribe);
 
 const submit = () => {
     if (user.level !== 4) {
@@ -746,43 +747,45 @@ onMounted(() => {
                     required
                     autofocus
                 >
-                    <option>B'laan</option>
-                    <option>Bagobo</option>
-                    <option>Bajau</option>
-                    <option>Banwaon</option>
-                    <option>Bicolano</option>
-                    <option>Bukidnon</option>
-                    <option>Cebuano</option>
-                    <option>Chavacan</option>
-                    <option>Dibabawon</option>
-                    <option>Higaonon</option>
-                    <option>Hiligaynon (Ilonggo)</option>
-                    <option>Ilocano</option>
-                    <option>Iranun</option>
-                    <option>Jama Mapun</option>
-                    <option>Kalagan</option>
-                    <option>Kalibugan</option>
-                    <option>Kapampangan</option>
-                    <option>Kaulo</option>
-                    <option>Maguindanaon</option>
-                    <option>Mamanwa</option>
-                    <option>Mandaya</option>
-                    <option>Manobo</option>
-                    <option>Maranao</option>
-                    <option>Matigsalug</option>
-                    <option>Molbog</option>
-                    <option>Palawani</option>
-                    <option>Pangasinense</option>
-                    <option>Sama</option>
-                    <option>Sangil</option>
-                    <option>Subanen</option>
-                    <option>T'boli</option>
-                    <option>Tagakaulo</option>
-                    <option>Tagalog</option>
-                    <option>Tausug</option>
-                    <option>Tiruray (Teduray)</option>
-                    <option>Waray</option>
-                    <option>Yakan</option>
+                    <option value="b'laan">B'laan</option>
+                    <option value="bagobo">Bagobo</option>
+                    <option value="bajau">Bajau</option>
+                    <option value="banwaon">Banwaon</option>
+                    <option value="bicolano">Bicolano</option>
+                    <option value="bukidnon">Bukidnon</option>
+                    <option value="cebuano">Cebuano</option>
+                    <option value="chavacan">Chavacan</option>
+                    <option value="dibabawon">Dibabawon</option>
+                    <option value="higaonon">Higaonon</option>
+                    <option value="hiligaynon (ilonggo)">
+                        Hiligaynon (Ilonggo)
+                    </option>
+                    <option value="ilocano">Ilocano</option>
+                    <option value="iranun">Iranun</option>
+                    <option value="jama mapun">Jama Mapun</option>
+                    <option value="kalagan">Kalagan</option>
+                    <option value="kalibugan">Kalibugan</option>
+                    <option value="kapampangan">Kapampangan</option>
+                    <option value="kaulo">Kaulo</option>
+                    <option value="maguindanaon">Maguindanaon</option>
+                    <option value="mamanwa">Mamanwa</option>
+                    <option value="mandaya">Mandaya</option>
+                    <option value="manobo">Manobo</option>
+                    <option value="maranao">Maranao</option>
+                    <option value="matigsalug">Matigsalug</option>
+                    <option value="molbog">Molbog</option>
+                    <option value="palawani">Palawani</option>
+                    <option value="pangasinense">Pangasinense</option>
+                    <option value="sama">Sama</option>
+                    <option value="sangil">Sangil</option>
+                    <option value="subanen">Subanen</option>
+                    <option value="t'boli">T'boli</option>
+                    <option value="tagakaulo">Tagakaulo</option>
+                    <option value="tagalog">Tagalog</option>
+                    <option value="tausug">Tausug</option>
+                    <option value="tiruray (teduray)">Tiruray (Teduray)</option>
+                    <option value="waray">Waray</option>
+                    <option value="yakan">Yakan</option>
                 </select>
 
                 <InputError class="mt-2" :message="form.errors.tribe" />
