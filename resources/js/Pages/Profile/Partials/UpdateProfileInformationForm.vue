@@ -1006,7 +1006,9 @@ onMounted(() => {
             />
 
             <div class="grid grid-cols-2 gap-4 items-center">
-                <SecondaryButton class="sm:w-52" @click="signatureChange = true"
+                <SecondaryButton
+                    class="w-full sm:w-52"
+                    @click="signatureChange = true"
                     >Change my Signature</SecondaryButton
                 >
             </div>
