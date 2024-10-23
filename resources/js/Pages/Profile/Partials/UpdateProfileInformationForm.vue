@@ -174,69 +174,81 @@ const submit = () => {
     }
 };
 const updatePhoto = async () => {
-    if (profilePhoto.value instanceof File) {
-        const formData = new FormData();
-        formData.append("avatar", profilePhoto.value);
+    if (profilePhoto.value) {
+        if (profilePhoto.value instanceof File) {
+            const formData = new FormData();
+            formData.append("avatar", profilePhoto.value);
 
-        try {
-            const response = await axios.post("/profile/photo", formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            });
+            try {
+                const response = await axios.post("/profile/photo", formData, {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                });
 
-            // Convert profilePhoto (File) to Base64 and save it in localStorage
-            const reader = new FileReader();
-            reader.onload = function () {
-                const base64String = reader.result as string;
-                if (base64String) {
-                    // Save the base64 image to localStorage
-                    localStorage.setItem("profilePhoto", base64String);
-                    // Update the img tag with the saved image
-                    updateImageSrc();
+                // Convert profilePhoto (File) to Base64 and save it in localStorage
+                const reader = new FileReader();
+                reader.onload = function () {
+                    const base64String = reader.result as string;
+                    if (base64String) {
+                        // Save the base64 image to localStorage
+                        localStorage.setItem("profilePhoto", base64String);
+                        // Update the img tag with the saved image
+                        updateImageSrc();
+                    }
+                };
+                reader.readAsDataURL(profilePhoto.value);
+
+                if (response.data.success) {
+                    // toast.success("Photo is successfully updated.");
                 }
-            };
-            reader.readAsDataURL(profilePhoto.value);
-
-            if (response.data.success) {
-                // toast.success("Photo is successfully updated.");
+            } catch (error) {
+                toast.error("Something went wrong, Please try again!");
             }
-        } catch (error) {
-            toast.error("Something went wrong, Please try again!");
         }
+    } else {
+        toast.warning("Please capture your profile photo.");
     }
 };
 
 const updateSignature = async () => {
-    if (signaturePhoto.value instanceof File) {
-        const formData = new FormData();
-        formData.append("signature", signaturePhoto.value);
-        try {
-            const response = await axios.post("/profile/signature", formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            });
+    if (signaturePhoto.value) {
+        if (signaturePhoto.value instanceof File) {
+            const formData = new FormData();
+            formData.append("signature", signaturePhoto.value);
+            try {
+                const response = await axios.post(
+                    "/profile/signature",
+                    formData,
+                    {
+                        headers: {
+                            "Content-Type": "multipart/form-data",
+                        },
+                    }
+                );
 
-            // Convert profilePhoto (File) to Base64 and save it in localStorage
-            const reader = new FileReader();
-            reader.onload = function () {
-                const base64String = reader.result as string;
-                if (base64String) {
-                    // Save the base64 image to localStorage
-                    localStorage.setItem("signaturePhoto", base64String);
-                    // Update the img tag with the saved image
-                    updateImageSrc();
+                // Convert profilePhoto (File) to Base64 and save it in localStorage
+                const reader = new FileReader();
+                reader.onload = function () {
+                    const base64String = reader.result as string;
+                    if (base64String) {
+                        // Save the base64 image to localStorage
+                        localStorage.setItem("signaturePhoto", base64String);
+                        // Update the img tag with the saved image
+                        updateImageSrc();
+                    }
+                };
+                reader.readAsDataURL(signaturePhoto.value);
+
+                if (response.data.success) {
+                    // toast.success("Signature is successfully updated.");
                 }
-            };
-            reader.readAsDataURL(signaturePhoto.value);
-
-            if (response.data.success) {
-                // toast.success("Signature is successfully updated.");
+            } catch (error) {
+                toast.error("Something went wrong, Please try again!");
             }
-        } catch (error) {
-            toast.error("Something went wrong, Please try again!");
         }
+    } else {
+        toast.warning("Please set your signature.");
     }
 };
 
