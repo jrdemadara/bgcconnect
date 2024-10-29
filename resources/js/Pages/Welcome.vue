@@ -82,33 +82,20 @@ const closeMenu = () => {
         </div>
         <!-- Mobile Navigation Menu -->
 
-        <nav
-            v-if="isMenuOpen && canLogin"
-            class="flex flex-col space-y-2 md:hidden p-4"
-        >
+        <nav v-if="isMenuOpen" class="flex flex-col space-y-2 md:hidden p-4">
             <Link
-                v-if="$page.props.auth.user"
-                :href="route('dashboard')"
+                :href="route('login')"
                 class="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white"
             >
-                Dashboard
+                Log in
             </Link>
-            <template v-else>
-                <Link
-                    :href="route('login')"
-                    class="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white"
-                >
-                    Log in
-                </Link>
 
-                <Link
-                    v-if="canRegister"
-                    :href="route('register')"
-                    class="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white"
-                >
-                    Register
-                </Link>
-            </template>
+            <Link
+                :href="route('register')"
+                class="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white"
+            >
+                Register
+            </Link>
         </nav>
     </header>
 
@@ -134,7 +121,6 @@ const closeMenu = () => {
                                 collaborate through activities and events.
                             </p>
                             <Link
-                                v-if="canRegister"
                                 :href="route('register')"
                                 class="rounded-md w-full py-2 font-medium text-center text-lg mt-4 bg-blue-500 text-white hover:bg-blue-600"
                             >
@@ -175,7 +161,6 @@ const closeMenu = () => {
                             </p>
 
                             <Link
-                                v-if="canRegister"
                                 :href="route('register')"
                                 class="rounded-md w-full py-2 font-medium text-center text-lg mt-4 bg-blue-500 text-white hover:bg-blue-600"
                             >
