@@ -165,8 +165,9 @@ const submit = () => {
                 updateSignature();
                 toast.success("Profile is successfully updated.");
             },
-            onError: () => {
+            onError: (e) => {
                 toast.error("Something went wrong, Please try again.");
+                console.log(e);
             },
         });
     } else {
@@ -919,20 +920,6 @@ onMounted(() => {
             </div>
 
             <div>
-                <InputLabel for="position" value="Position" />
-
-                <TextInput
-                    id="position"
-                    type="text"
-                    class="mt-1 block w-full uppercase"
-                    v-model="form.position"
-                    autocomplete="position"
-                />
-
-                <InputError class="mt-2" :message="form.errors.position" />
-            </div>
-
-            <div>
                 <InputLabel for="income_level" value="Income Level" />
 
                 <select
@@ -963,17 +950,74 @@ onMounted(() => {
 
         <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
             <div>
+                <InputLabel for="position" value="BGC Position" />
+
+                <select
+                    id="position"
+                    class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 focus:border-blue-500 dark:focus:border-blue-600 focus:ring-blue-500 dark:focus:ring-blue-500 rounded-md shadow-sm"
+                    v-model="form.position"
+                    required
+                    autofocus
+                >
+                    <option value="member">MEMBER</option>
+                    <option value="president">PRESIDENT</option>
+                    <option value="chairperson">CHAIRPERSON</option>
+                    <option value="secretary general">SECRETARY GENERAL</option>
+                    <option value="vice president and public relation officer">
+                        VICE PRESIDENT AND PUBLIC RELATION OFFICER
+                    </option>
+                    <option value="treasurer">TREASURER</option>
+                    <option value="auditor">AUDITOR</option>
+                    <option value="general party committee">
+                        GENERAL PARTY COMMITTEE
+                    </option>
+                    <option value="membership committee">
+                        MEMBERSHIP COMMITTEE
+                    </option>
+                    <option value="national committee">
+                        NOMINATION COMMITTEE
+                    </option>
+                    <option value="finance committee">FINANCE COMMITTEE</option>
+                    <option value="arbitration committee">
+                        ARBITRATION COMMITTEE
+                    </option>
+                    <option value="women's committee">WOMEN'S COMMITTEE</option>
+                    <option value="youth committee">YOUTH COMMITTEE</option>
+                    <option value="discipline committee">
+                        DISCIPLINE COMMITTEE
+                    </option>
+                    <option value="advocacy and communication committee">
+                        ADVOCACY AND COMMUNICATION COMMITTEE
+                    </option>
+                    <option value="election committee">
+                        ELECTION COMMITTEE
+                    </option>
+                </select>
+                <InputError class="mt-2" :message="form.errors.position" />
+            </div>
+            <div>
                 <InputLabel for="affiliation" value="Partylist" />
 
-                <TextInput
+                <select
                     id="affiliation"
-                    type="text"
-                    class="mt-1 block w-full uppercase"
+                    class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 focus:border-blue-500 dark:focus:border-blue-600 focus:ring-blue-500 dark:focus:ring-blue-500 rounded-md shadow-sm"
                     v-model="form.affiliation"
-                    autocomplete="affiliation"
-                />
+                    required
+                    autofocus
+                >
+                    <option value="siap partylist">SIAP PARTYLIST</option>
+                    <option value="bpp partylist">BPP PARTYLIST</option>
+                    <option value="salaam partylist">SALAAM PARTYLIST</option>
+                    <option value="al-ittihad ukb partylist">
+                        AL-ITTIHAD UKB PARTYLIST
+                    </option>
+                </select>
 
-                <InputError class="mt-2" :message="form.errors.affiliation" />
+                <div v-if="form.errors.affiliation">
+                    <p class="text-sm text-red-600 dark:text-red-400">
+                        Select a partylist
+                    </p>
+                </div>
             </div>
 
             <div>
