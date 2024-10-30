@@ -21,7 +21,9 @@
     },
     "dependencies": {
         "@chenfengyuan/vue-qrcode": "^2.0.0",
+        "@types/d3": "^7.4.3",
         "@types/geolib": "^2.0.3",
+        "d3": "^7.9.0",
         "geolib": "^3.3.4",
         "lucide-vue-next": "^0.441.0",
         "qrcode": "^1.5.4",

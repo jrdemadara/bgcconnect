@@ -304,6 +304,7 @@ onMounted(() => {
                         {{ props.downline }}
                     </h2>
                 </div>
+
                 <div class="flex justify-between">
                     <p class="text-gray-600 dark:text-gray-100">Referrals</p>
                     <div class="flex dark:text-gray-100">
@@ -332,7 +333,8 @@ onMounted(() => {
                 </div>
             </div>
 
-            <div
+            <Link
+                :href="route('downlines')"
                 class="flex flex-col h-32 rounded-xl p-4 shadow-md bg-gradient-to-r from-violet-50 to-gray-100 dark:from-gray-600 dark:to-gray-700"
             >
                 <div class="flex justify-between h-full">
@@ -369,7 +371,7 @@ onMounted(() => {
                         </span>
                     </div>
                 </div>
-            </div>
+            </Link>
 
             <div
                 class="flex flex-col h-32 rounded-xl p-4 shadow-md bg-gradient-to-r from-red-50 to-gray-100 dark:from-gray-600 dark:to-gray-700"
