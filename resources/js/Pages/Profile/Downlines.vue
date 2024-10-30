@@ -15,11 +15,11 @@ const chartRef = ref(null);
 
 const createChart = (data) => {
     // Specify the chart’s dimensions
-    const width = 2800; // Increased width for zoomability
-    const height = 2800; // Increased height for zoomability
+    const width = 1700; // Increased width for zoomability
+    const height = 1700; // Increased height for zoomability
     const cx = width * 0.5; // center x
     const cy = height * 0.5; // center y
-    const radius = Math.min(width, height) / 2 - 30; // radius for the radial tree layout
+    const radius = Math.min(width, height) / 1.2; // radius for the radial tree layout
 
     // Create a radial tree layout
     const tree = d3
@@ -49,16 +49,6 @@ const createChart = (data) => {
         .attr("height", height)
         .attr("viewBox", [-cx, -cy, width, height])
         .attr("style", "width: 100%; height: auto; font: 10px sans-serif;");
-
-    // Append zoom behavior
-    const zoom = d3
-        .zoom()
-        .scaleExtent([0.5, 3]) // Set the zoom scale limits
-        .on("zoom", (event) => {
-            svg.attr("transform", event.transform); // Apply zoom transformation
-        });
-    // Add zoom behavior to the SVG container
-    svg.call(zoom);
 
     // Append links
     svg.append("g")
@@ -143,8 +133,8 @@ watch(
             <p class="font-light text-xs mt-1 text-slate-700">
                 Your downline network visualization.
             </p>
-            <div class="w-full max-w-1200px max-h-800px">
-                <div ref="chartRef" class="chart"></div>
+            <div class="w-full scroll-smooth max-w-1200px max-h-800px">
+                <div ref="chartRef" class="w-full h-full"></div>
             </div>
         </div>
     </AuthenticatedLayout>

@@ -42,7 +42,8 @@ class DownlinesController extends Controller
             FROM users u
             INNER JOIN referral_hierarchy rh ON rh.id = u.referred_by
         )
-        SELECT rh.id, rh.referred_by, p.lastname AS full_name
+        SELECT rh.id, rh.referred_by,
+               CONCAT(p.lastname, " ", p.firstname) AS full_name
         FROM referral_hierarchy rh
         INNER JOIN profiles p ON rh.id = p.user_id
         WHERE rh.id != ?;
