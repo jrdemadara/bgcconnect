@@ -1005,6 +1005,7 @@ onMounted(() => {
                     required
                     autofocus
                 >
+                    <option value="bgc partylist">BGC PARTYLIST</option>
                     <option value="siap partylist">SIAP PARTYLIST</option>
                     <option value="bpp partylist">BPP PARTYLIST</option>
                     <option value="salaam partylist">SALAAM PARTYLIST</option>
