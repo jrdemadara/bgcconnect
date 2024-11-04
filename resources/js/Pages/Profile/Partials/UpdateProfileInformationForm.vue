@@ -508,8 +508,12 @@ onMounted(() => {
             <p class="font-bold text-lg text-gray-700 dark:text-gray-300">
                 Address
             </p>
-            <p @click="addressChange = true" class="underline text-blue-500">
-                Update My Address
+            <p
+                @click="addressChange = true"
+                class="animate-bounce underline cursor-pointer text-blue-500"
+            >
+                <span v-if="user.level == 1">Select my address</span>
+                <span v-else="user.level > 1">Update my address</span>
             </p>
         </div>
         <div v-if="addressChange" class="grid grid-cols-1 sm:grid-cols-4 gap-4">
