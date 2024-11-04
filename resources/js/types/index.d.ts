@@ -34,7 +34,7 @@ export interface User {
     level: number;
     phone_verified_at: string;
     reffered_by: string;
-    id_check: boolean;
+    id_status: number;
     profile: Profile;
 }
 

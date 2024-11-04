@@ -223,7 +223,7 @@ onMounted(() => {
         </div>
 
         <div
-            v-show="user.level == 3 && !user.id_check"
+            v-show="user.level == 3 && user.id_status == 0"
             class="flex flex-col sm:flex-row justify-between items-center w-full rounded-xl p-2 sm:p-4 bg-orange-100"
         >
             <div class="flex">
@@ -242,7 +242,7 @@ onMounted(() => {
         </div>
 
         <div
-            v-show="user.id_check"
+            v-show="user.id_status == 1"
             class="flex flex-col items-center w-full rounded-xl p-2 mt-3 bg-orange-100"
         >
             <div class="flex w-full">
