@@ -79,6 +79,12 @@ class PhoneVerificationController extends Controller
             'level' => 3,
         ]);
 
+        $user->increment('points', 30);
+        $user->transactions()->create([
+            'points_earned' => 30,
+            'description' => 'phone verification bonus',
+        ]);
+
         // If user has referrer, create transaction
         $referrer = $user->referred_by;
 

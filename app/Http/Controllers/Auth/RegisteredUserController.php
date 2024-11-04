@@ -48,7 +48,13 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
             'code' => $this->generateRandomString(),
             'referred_by' => $referrer,
+            'points',
+        ]);
 
+        $user->increment('points', 10);
+        $user->transactions()->create([
+            'points_earned' => 10,
+            'description' => 'registration bonus',
         ]);
 
         if ($referrer) {

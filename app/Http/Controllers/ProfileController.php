@@ -128,7 +128,9 @@ class ProfileController extends Controller
     {
         $request->user()->fill($request->validated());
 
-        $user = Auth::user();
+        $id = Auth::id();
+        $user = User::findOrFail($id);
+
         $profile = $user->profile;
 
         $profile->lastname = Str::lower($request->lastname);
@@ -154,14 +156,20 @@ class ProfileController extends Controller
         $profile->income_level = $request->income_level;
         $profile->affiliation = Str::lower($request->affiliation);
         $profile->facebook = Str::lower($request->facebook);
-        $profile->user_id = $request->user()->id;
+        $profile->user_id = $id;
         $profile->save();
 
-        $user = $request->user();
         if ($user->level !== 4) {
             if ($user->level < 2) {
                 $user->level = 2;
+                $user->increment('points', 20);
                 $user->save();
+
+                $user->transactions()->create([
+                    'points_earned' => 20,
+                    'description' => 'profile completion bonus',
+                ]);
+
             }
         }
 
