@@ -191,7 +191,8 @@ onMounted(() => {
             <div class="flex">
                 <Info class="text-orange-400 mr-1" :size="24" />
                 <p class="text-orange-500">
-                    Complete your profile and elevate to level 2.
+                    Complete your profile to reach Level 2 and earn a 20-point
+                    bonus!
                 </p>
             </div>
             <Link
@@ -209,7 +210,8 @@ onMounted(() => {
             <div class="flex">
                 <Info class="text-orange-400 mr-1" :size="24" />
                 <p class="text-orange-500">
-                    Verify your phone number to proceed to level 3.
+                    Verify your phone number to reach Level 3 and earn a
+                    30-point bonus!
                 </p>
             </div>
             <Link
@@ -227,7 +229,8 @@ onMounted(() => {
             <div class="flex">
                 <Info class="text-orange-400 mr-1" :size="24" />
                 <p class="text-orange-500">
-                    Upload your valid id to proceed to level 4.
+                    Verify your valid id to reach Level 4 and earn a 40-point
+                    bonus!
                 </p>
             </div>
             <Link
