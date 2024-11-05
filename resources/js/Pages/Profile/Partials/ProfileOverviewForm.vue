@@ -84,6 +84,7 @@ const drawDate = props.draw ? formatDate(props.draw) : null;
 
 onMounted(() => {
     updateImageSrc();
+    console.log(props.points_comparison);
 });
 </script>
 
@@ -274,23 +275,24 @@ onMounted(() => {
                         <span
                             :class="[
                                 'flex items-center font-medium rounded-full px-2 mr-1',
-                                props.points_comparison >= 0
+                                props.points_comparison.includes('+')
                                     ? 'text-green-700 bg-green-200'
                                     : 'text-red-700 bg-red-200',
                             ]"
                         >
                             <TrendingUp
-                                v-if="props.points_comparison >= 0"
+                                v-if="props.points_comparison.includes('+')"
                                 class="text-green-600 mr-1"
                                 :size="22"
                             />
                             <TrendingDown
-                                v-else
+                                v-else-if="
+                                    props.points_comparison.includes('-')
+                                "
                                 class="text-red-600 mr-1"
                                 :size="22"
                             />
-                            {{ Math.abs(props.points_comparison) }}% than last
-                            month
+                            {{ props.points_comparison }}% than last month
                         </span>
                     </div>
                 </div>
@@ -314,23 +316,24 @@ onMounted(() => {
                         <span
                             :class="[
                                 'flex items-center font-medium rounded-full px-2 mr-1',
-                                props.referral_comparison >= 0
+                                props.referral_comparison.includes('+')
                                     ? 'text-green-700 bg-green-200'
                                     : 'text-red-700 bg-red-200',
                             ]"
                         >
                             <TrendingUp
-                                v-if="props.referral_comparison >= 0"
+                                v-if="props.referral_comparison.includes('+')"
                                 class="text-green-600 mr-1"
                                 :size="22"
                             />
                             <TrendingDown
-                                v-else
+                                v-else-if="
+                                    props.referral_comparison.includes('-')
+                                "
                                 class="text-red-600 mr-1"
                                 :size="22"
                             />
-                            {{ Math.abs(props.referral_comparison) }}% than last
-                            month
+                            {{ props.referral_comparison }}% than last month
                         </span>
                     </div>
                 </div>
@@ -369,8 +372,7 @@ onMounted(() => {
                                 class="text-red-600 mr-1"
                                 :size="22"
                             />
-                            {{ Math.abs(props.downlines_comparison) }}% than
-                            last month
+                            {{ props.downlines_comparison }}% than last month
                         </span>
                     </div>
                 </div>

@@ -425,7 +425,7 @@ class ProfileController extends Controller
         $sign = $percentageChange >= 0 ? '+' : '-';
         $percentageChange = abs($percentageChange); // Get the absolute value for display
 
-        return $sign . number_format($percentageChange, 0) . '%'; // Return the result
+        return $sign . number_format($percentageChange, 0); // Return the result
     }
 
 }
