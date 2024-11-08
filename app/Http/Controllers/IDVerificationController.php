@@ -28,44 +28,54 @@ class IDVerificationController extends Controller
             'idPhotoBack' => 'required|file|mimes:jpeg,jpg|max:5000',
         ]);
 
+        $id = Auth::id();
+        $user = User::findOrFail($id);
+
         // Get authenticated user's profile
         $profile = Profile::findOrFail(Auth::id());
 
-        // Delete existing ID photos from S3 if they exist
-        foreach (['id_card_front', 'id_card_back'] as $card) {
-            // Check if the property is not null before calling exists
-            if ($profile->$card && Storage::disk('s3')->exists($profile->$card)) {
-                Storage::disk('s3')->delete($profile->$card);
+        if ($user->level == 3) {
+            // Delete existing ID photos from S3 if they exist
+            foreach (['id_card_front', 'id_card_back'] as $card) {
+                // Check if the property is not null before calling exists
+                if ($profile->$card && Storage::disk('s3')->exists($profile->$card)) {
+                    Storage::disk('s3')->delete($profile->$card);
+                }
             }
+
+            // Store new ID photos in S3
+            $profile->id_card_front = $request->file('idPhotoFront')->store('idfront', 's3');
+            $profile->id_card_back = $request->file('idPhotoBack')->store('idback', 's3');
+
+            // Check if file uploads were successful
+            if (!$profile->id_card_front || !$profile->id_card_back) {
+                return response()->json(['error' => 'File upload failed'], 500);
+            }
+
+            // Update profile with new data
+            $profile->id_type = $request->idType;
+            $profile->save();
+
+            // Update user ID check status
+            $user = User::findOrFail(Auth::id());
+            $user->id_status = 1;
+            $user->save();
+
+            Redis::publish('sms0', json_encode([
+                'id' => $user->id,
+            ]));
+
+            // Return response with uploaded file paths
+            return response()->json([
+                'front' => $profile->id_card_front,
+                'back' => $profile->id_card_back,
+            ], 200);
+
+        } else {
+            return response()->json(['error' => 'unauthorized'], 401);
+
         }
 
-        // Store new ID photos in S3
-        $profile->id_card_front = $request->file('idPhotoFront')->store('idfront', 's3');
-        $profile->id_card_back = $request->file('idPhotoBack')->store('idback', 's3');
-
-        // Check if file uploads were successful
-        if (!$profile->id_card_front || !$profile->id_card_back) {
-            return response()->json(['error' => 'File upload failed'], 500);
-        }
-
-        // Update profile with new data
-        $profile->id_type = $request->idType;
-        $profile->save();
-
-        // Update user ID check status
-        $user = User::findOrFail(Auth::id());
-        $user->id_status = 1;
-        $user->save();
-
-        Redis::publish('sms0', json_encode([
-            'id' => $user->id,
-        ]));
-
-        // Return response with uploaded file paths
-        return response()->json([
-            'front' => $profile->id_card_front,
-            'back' => $profile->id_card_back,
-        ], 200);
     }
 
     public function getIDPhoto(Request $request)

@@ -338,7 +338,6 @@ onMounted(() => {
                     </div>
                 </div>
             </div>
-
             <Link
                 :href="route('downlines')"
                 class="flex flex-col h-32 rounded-xl p-4 shadow-md bg-gradient-to-r from-violet-50 to-gray-100 dark:from-gray-600 dark:to-gray-700"
