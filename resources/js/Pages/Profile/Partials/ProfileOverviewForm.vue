@@ -205,7 +205,7 @@ onMounted(() => {
         </div>
 
         <div
-            v-show="user.level === 2"
+            v-show="user.level == 2"
             class="flex flex-col sm:flex-row justify-between items-center w-full rounded-xl p-2 sm:p-4 bg-orange-100"
         >
             <div class="flex">

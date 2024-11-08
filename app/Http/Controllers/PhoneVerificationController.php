@@ -26,77 +26,88 @@ class PhoneVerificationController extends Controller
 
         $phone = $user->phone;
 
-        $settings = Settings::find(1);
+        if ($user->level == 2) {
+            $settings = Settings::find(1);
 
-        $last_channel = $settings->last_channel;
-        $channel_size = $settings->channel_size;
-        $verification_expiry = $settings->verification_expiry;
+            $last_channel = $settings->last_channel;
+            $channel_size = $settings->channel_size;
+            $verification_expiry = $settings->verification_expiry;
 
-        // Generate a random verification code
-        $verificationCode = $this->generateRandomString();
+            // Generate a random verification code
+            $verificationCode = $this->generateRandomString();
 
-        // Store the verification code in Redis with an expiration of 1 hour
-        Redis::setex("verification_code:{$user->id}", $verification_expiry, $verificationCode);
+            // Store the verification code in Redis with an expiration of 1 hour
+            Redis::setex("verification_code:{$user->id}", $verification_expiry, $verificationCode);
 
-        // Determine the next channel (ensure it loops back to '1' after '5')
-        $next_channel = ($last_channel % $channel_size) + 1; // Assuming you have 5 channels (sms1, sms2, ..., sms5)
+            // Determine the next channel (ensure it loops back to '1' after '5')
+            $next_channel = ($last_channel % $channel_size) + 1; // Assuming you have 5 channels (sms1, sms2, ..., sms5)
 
-        // Prepare and publish the message to the next SMS channel
-        Redis::publish('sms' . $next_channel, json_encode([
-            'phone_number' => $phone,
-            'verification_code' => $verificationCode,
-        ]));
+            // Prepare and publish the message to the next SMS channel
+            Redis::publish('sms' . $next_channel, json_encode([
+                'phone_number' => $phone,
+                'verification_code' => $verificationCode,
+            ]));
 
-        // Update the last channel in the database
-        $settings->last_channel = $next_channel;
-        $settings->save();
+            // Update the last channel in the database
+            $settings->last_channel = $next_channel;
+            $settings->save();
 
-        return response()->json(['message' => 'sent'], 200);
+            return response()->json(['message' => 'sent'], 200);
+
+        }
+        return response()->json(['message' => 'Unauthorized'], 401);
+
     }
 
     public function verify(Request $request)
     {
+        $user = Auth::user();
 
-        $settings = Settings::find(1);
+        if ($user->level == 2) {
+            $settings = Settings::find(1);
 
-        $multilevel_size = $settings->multilevel_size;
-        $direct_points = $settings->direct_points;
-        $downline_points = $settings->downline_points;
+            $multilevel_size = $settings->multilevel_size;
+            $direct_points = $settings->direct_points;
+            $downline_points = $settings->downline_points;
 
-        $id = Auth::id();
-        $verificationCodeKey = "verification_code:$id";
-        $verification_code = Redis::get($verificationCodeKey);
+            $id = Auth::id();
+            $verificationCodeKey = "verification_code:$id";
+            $verification_code = Redis::get($verificationCodeKey);
 
-        // Validate the verification code
-        if (!$verification_code || $request->verification_code !== $verification_code) {
-            return response()->json(['error' => 'Invalid verification code.'], 400);
+            // Validate the verification code
+            if (!$verification_code || $request->verification_code !== $verification_code) {
+                return response()->json(['error' => 'Invalid verification code.'], 400);
+            }
+
+            // Update user verification status
+            $user = User::findOrFail($id);
+            $user->update([
+                'phone_verified_at' => now(),
+                'level' => 3,
+            ]);
+
+            $user->increment('points', 30);
+            $user->transactions()->create([
+                'points_earned' => 30,
+                'description' => 'phone verification bonus',
+            ]);
+
+            // If user has referrer, create transaction
+            $referrer = $user->referred_by;
+
+            if ($referrer) {
+                // distribute points
+                $this->distributeReferralPoints($user, $multilevel_size, $direct_points, $downline_points);
+            }
+
+            // Delete the Redis key
+            Redis::del($verificationCodeKey);
+
+            return response()->json(['message' => 'Verification successful.'], 200);
+
         }
+        return response()->json(['message' => 'Unauthorized'], 401);
 
-        // Update user verification status
-        $user = User::findOrFail($id);
-        $user->update([
-            'phone_verified_at' => now(),
-            'level' => 3,
-        ]);
-
-        $user->increment('points', 30);
-        $user->transactions()->create([
-            'points_earned' => 30,
-            'description' => 'phone verification bonus',
-        ]);
-
-        // If user has referrer, create transaction
-        $referrer = $user->referred_by;
-
-        if ($referrer) {
-            // distribute points
-            $this->distributeReferralPoints($user, $multilevel_size, $direct_points, $downline_points);
-        }
-
-        // Delete the Redis key
-        Redis::del($verificationCodeKey);
-
-        return response()->json(['message' => 'Verification successful.'], 200);
     }
 
     public function distributeReferralPoints(User $newUser, int $multilevel_size, int $direct_points, int $downline_points)
