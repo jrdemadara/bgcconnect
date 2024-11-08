@@ -81,6 +81,18 @@ const capturePhoto = () => {
                 type: "image/jpeg",
             });
 
+            const reader = new FileReader();
+            reader.onload = function () {
+                const base64String = reader.result as string;
+                if (base64String) {
+                    // Save the base64 image to localStorage
+                    localStorage.setItem("profilePhoto", base64String);
+                    // Update the img tag with the saved image
+                    updateImageSrc();
+                }
+            };
+            reader.readAsDataURL(profilePhoto.value);
+
             // Play the capture sound
             const audioElement = document.querySelector(
                 "audio"
@@ -135,7 +147,6 @@ const form = useForm({
     lastname: user.profile.lastname,
     extension: user.profile.extension,
 
-    region: user.profile.region,
     province: user.profile.province,
     municipality_city: user.profile.municipality_city,
     barangay: user.profile.barangay,
@@ -159,110 +170,98 @@ const form = useForm({
 
 const submit = () => {
     if (user.level !== 4) {
-        form.patch(route("profile.update"), {
-            onSuccess: () => {
-                updatePhoto();
-                updateSignature();
-                toast.success("Profile is successfully updated.");
-            },
-            onError: (e) => {
-                toast.error("Something went wrong, Please try again.");
-                console.log(e);
-            },
-        });
+        console.log(profilePhoto.value);
+        if (profilePhoto.value && signaturePhoto.value) {
+            form.patch(route("profile.update"), {
+                onSuccess: () => {
+                    updatePhoto();
+                    updateSignature();
+                    toast.success("Profile is successfully updated.");
+                },
+                onError: (e) => {
+                    toast.error("Something went wrong, Please try again.");
+                    console.log(e);
+                },
+            });
+        } else {
+            toast.warning(
+                "Please capture your profile photo or set your signature."
+            );
+        }
     } else {
         toast.error("Level 4 users is not allowed to update profile.");
     }
 };
+
 const updatePhoto = async () => {
-    if (profilePhoto.value) {
-        if (profilePhoto.value instanceof File) {
-            const formData = new FormData();
-            formData.append("avatar", profilePhoto.value);
+    if (profilePhoto.value instanceof File) {
+        const formData = new FormData();
+        formData.append("avatar", profilePhoto.value);
 
-            try {
-                const response = await axios.post("/profile/photo", formData, {
-                    headers: {
-                        "Content-Type": "multipart/form-data",
-                    },
-                });
+        try {
+            const response = await axios.post("/profile/photo", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
 
-                // Convert profilePhoto (File) to Base64 and save it in localStorage
-                const reader = new FileReader();
-                reader.onload = function () {
-                    const base64String = reader.result as string;
-                    if (base64String) {
-                        // Save the base64 image to localStorage
-                        localStorage.setItem("profilePhoto", base64String);
-                        // Update the img tag with the saved image
-                        updateImageSrc();
-                    }
-                };
-                reader.readAsDataURL(profilePhoto.value);
-
-                if (response.data.success) {
-                    // toast.success("Photo is successfully updated.");
-                }
-            } catch (error) {
-                toast.error("Something went wrong, Please try again!");
+            if (response.data.success) {
+                // toast.success("Photo is successfully updated.");
             }
+        } catch (error) {
+            toast.error("Something went wrong, Please try again!");
         }
-    } else {
-        toast.warning("Please capture your profile photo.");
     }
 };
 
 const updateSignature = async () => {
-    if (signaturePhoto.value) {
-        if (signaturePhoto.value instanceof File) {
-            const formData = new FormData();
-            formData.append("signature", signaturePhoto.value);
-            try {
-                const response = await axios.post(
-                    "/profile/signature",
-                    formData,
-                    {
-                        headers: {
-                            "Content-Type": "multipart/form-data",
-                        },
-                    }
-                );
+    console.log(signaturePhoto.value);
+    if (signaturePhoto.value instanceof File) {
+        const formData = new FormData();
+        formData.append("signature", signaturePhoto.value);
+        try {
+            const response = await axios.post("/profile/signature", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
 
-                // Convert profilePhoto (File) to Base64 and save it in localStorage
-                const reader = new FileReader();
-                reader.onload = function () {
-                    const base64String = reader.result as string;
-                    if (base64String) {
-                        // Save the base64 image to localStorage
-                        localStorage.setItem("signaturePhoto", base64String);
-                        // Update the img tag with the saved image
-                        updateImageSrc();
-                    }
-                };
-                reader.readAsDataURL(signaturePhoto.value);
-
-                if (response.data.success) {
-                    // toast.success("Signature is successfully updated.");
-                }
-            } catch (error) {
-                toast.error("Something went wrong, Please try again!");
+            if (response.data.success) {
+                // toast.success("Signature is successfully updated.");
             }
+        } catch (error) {
+            toast.error("Something went wrong, Please try again!");
         }
-    } else {
-        toast.warning("Please set your signature.");
     }
 };
 
 const updateImageSrc = () => {
     const storedPhoto = localStorage.getItem("profilePhoto");
     const storedSignature = localStorage.getItem("signaturePhoto");
-
     if (storedPhoto) {
         photo.value = storedPhoto;
+
+        // Convert base64 to Blob
+        const blob = dataURLToBlob(storedPhoto);
+
+        // If you specifically need a File object, convert the Blob to a File
+        profilePhoto.value = new File([blob], "photo.jpeg", {
+            type: "image/jpeg",
+        });
+        console.log(profilePhoto.value);
     }
 
     if (storedSignature) {
         signature.value = storedSignature;
+
+        // Convert base64 to Blob
+        const blob = dataURLToBlob(storedSignature);
+
+        // If you specifically need a File object, convert the Blob to a File
+        signaturePhoto.value = new File([blob], "signature.png", {
+            type: "image/png",
+        });
+        console.log(signaturePhoto.value);
     }
 };
 
@@ -319,7 +318,7 @@ const getBarangay = (municipality: String) => {
     axios
         .get("/barangays", {
             params: {
-                municipality: selectedMunicipality.value,
+                municipality: municipality,
             },
         })
         .then(function (response) {
@@ -356,6 +355,19 @@ const save = () => {
         type: "image/png",
     });
 
+    // Convert profilePhoto (File) to Base64 and save it in localStorage
+    const reader = new FileReader();
+    reader.onload = function () {
+        const base64String = reader.result as string;
+        if (base64String) {
+            // Save the base64 image to localStorage
+            localStorage.setItem("signaturePhoto", base64String);
+            // Update the img tag with the saved image
+            updateImageSrc();
+        }
+    };
+    reader.readAsDataURL(signaturePhoto.value);
+
     toast.success("Signature is set.");
 };
 
@@ -371,6 +383,14 @@ const undo = () => {
 
 onMounted(() => {
     getProvinces();
+    if (form.province) {
+        getMunicipalities(form.province);
+    }
+
+    if (form.municipality_city) {
+        getBarangay(form.municipality_city);
+    }
+
     updateImageSrc();
 });
 </script>
@@ -504,19 +524,10 @@ onMounted(() => {
 
         <div class="w-full h-0.5 mt-4 bg-gray-100 dark:bg-gray-600"></div>
 
-        <div class="flex justify-between items-center">
-            <p class="font-bold text-lg text-gray-700 dark:text-gray-300">
-                Address
-            </p>
-            <p
-                @click="addressChange = true"
-                class="animate-bounce underline cursor-pointer text-blue-500"
-            >
-                <span v-if="user.level == 1">Select my address</span>
-                <span v-else="user.level > 1">Update my address</span>
-            </p>
-        </div>
-        <div v-if="addressChange" class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+        <p class="font-bold text-lg text-gray-700 dark:text-gray-300">
+            Address
+        </p>
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
             <div>
                 <InputLabel for="province" value="Province" />
 
@@ -601,59 +612,6 @@ onMounted(() => {
                 />
 
                 <InputError class="mt-2" :message="form.errors.street" />
-            </div>
-        </div>
-
-        <div
-            v-if="!addressChange"
-            class="grid grid-cols-1 sm:grid-cols-4 gap-4"
-        >
-            <div>
-                <InputLabel for="province" value="Province" />
-
-                <input
-                    id="street"
-                    type="text"
-                    class="mt-1 block w-full capitalize border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 focus:border-blue-500 dark:focus:border-blue-600 focus:ring-blue-500 dark:focus:ring-blue-500 rounded-md shadow-sm"
-                    :value="props.province"
-                    readonly
-                />
-            </div>
-
-            <div>
-                <InputLabel for="municipality" value="City/Municipality" />
-
-                <input
-                    id="street"
-                    type="text"
-                    class="mt-1 block w-full capitalize border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 focus:border-blue-500 dark:focus:border-blue-600 focus:ring-blue-500 dark:focus:ring-blue-500 rounded-md shadow-sm"
-                    :value="props.municipality"
-                    readonly
-                />
-            </div>
-
-            <div>
-                <InputLabel for="barangay" value="Barangay" />
-
-                <input
-                    id="street"
-                    type="text"
-                    class="mt-1 block w-full capitalize border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 focus:border-blue-500 dark:focus:border-blue-600 focus:ring-blue-500 dark:focus:ring-blue-500 rounded-md shadow-sm"
-                    :value="props.barangay"
-                    readonly
-                />
-            </div>
-
-            <div>
-                <InputLabel for="street" value="Street/Purok/Sitio" />
-
-                <input
-                    id="street"
-                    type="text"
-                    class="mt-1 block w-full capitalize border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 focus:border-blue-500 dark:focus:border-blue-600 focus:ring-blue-500 dark:focus:ring-blue-500 rounded-md shadow-sm"
-                    :value="form.street"
-                    readonly
-                />
             </div>
         </div>
 
@@ -1058,7 +1016,9 @@ onMounted(() => {
         </div>
 
         <div v-if="!signatureChange" class="flex flex-col w-full space-y-2">
-            <p class="font-medium text-lg">E-Signature</p>
+            <p class="font-medium text-lg text-gray-700 dark:text-gray-300">
+                E-Signature
+            </p>
             <img
                 v-if="signature"
                 :src="signature"
@@ -1080,16 +1040,11 @@ onMounted(() => {
                 class="w-full sm:w-52 mt-0 sm:mt-4"
                 :href="route('profile.index')"
             >
-                <SecondaryButton
-                    @click="updatePhoto"
-                    :disabled="form.processing"
+                <SecondaryButton :disabled="form.processing"
                     >Back</SecondaryButton
                 >
             </Link>
-            <PrimaryButton
-                class="sm:w-52 mt-4"
-                @click="updatePhoto"
-                :disabled="form.processing"
+            <PrimaryButton class="sm:w-52 mt-4" :disabled="form.processing"
                 >Save Changes</PrimaryButton
             >
 

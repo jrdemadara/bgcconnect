@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProfileUpdateRequest;
 use App\Models\ActivityAttendees;
 use App\Models\Barangay;
-use App\Models\Municipality;
 use App\Models\Profile;
 use App\Models\Province;
 use App\Models\RaffleDraw;
@@ -105,28 +103,44 @@ class ProfileController extends Controller
             'barangay' => null,
         ];
 
-        // Fetch province, municipality, and barangay descriptions
-        $province = Province::select('provDescription')->where('provCode', $profile->province)->first();
-        $municipality = Municipality::select('citymunDescription')->where('citymunCode', $profile->municipality_city)->first();
-        $barangay = Barangay::select('brgyDescription')->where('brgyCode', $profile->barangay)->first();
-
         // Render the view, ensuring that we handle potential null values
         return Inertia::render('Profile/Edit', [
             'status' => session('status'),
             'user' => $user,
             'profile' => $profile,
-            'province' => $province->provDescription ?? '', // Safely access description or return empty
-            'municipality' => $municipality->citymunDescription ?? '',
-            'barangay' => $barangay->brgyDescription ?? '',
+            'province' => $profile->province ?? '', // Safely access description or return empty
+            'municipality' => $profile->municipality_city ?? '',
+            'barangay' => $profile->barangay ?? '',
         ]);
 
     }
     /**
      * Update the user's profile information.
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update(Request $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+
+        $request->validate([
+            'lastname' => 'required|string|max:191',
+            'firstname' => 'required|string|max:191',
+            'middlename' => 'required|string|max:191',
+            'province' => 'required|string|max:191',
+            'municipality_city' => 'required|string|max:191',
+            'barangay' => 'required|string|max:191',
+            'street' => 'required|string|max:191',
+            'gender' => 'required|string|max:191',
+            'birthdate' => 'required|string|max:191',
+            'civil_status' => 'required|string|max:191',
+            'blood_type' => 'required|string|max:191',
+            'religion' => 'required|string|max:191',
+            'tribe' => 'required|string|max:191',
+            'industry_sector' => 'required|string|max:191',
+            'occupation' => 'required|string|max:191',
+            'position' => 'required|string|max:191',
+            'income_level' => 'required|string|max:191',
+            'affiliation' => 'required|string|max:191',
+            'facebook' => 'required|string|max:191',
+        ]);
 
         $id = Auth::id();
         $user = User::findOrFail($id);
@@ -136,24 +150,26 @@ class ProfileController extends Controller
         $profile->lastname = Str::lower($request->lastname);
         $profile->firstname = Str::lower($request->firstname);
         $profile->middlename = Str::lower($request->middlename);
-        $profile->extension = Str::lower($request->extension);
+        $profile->extension = $request->extension ? Str::lower($request->extension) : "";
         $profile->precinct_number = Str::lower($request->precinct_number);
 
-        $profile->region = $request->region;
         $profile->province = $request->province;
         $profile->municipality_city = $request->municipality_city;
         $profile->barangay = $request->barangay;
         $profile->street = Str::lower($request->street);
+
         $profile->gender = Str::lower($request->gender);
         $profile->birthdate = $request->birthdate;
         $profile->civil_status = Str::lower($request->civil_status);
         $profile->blood_type = $request->blood_type;
         $profile->religion = Str::lower($request->religion);
         $profile->tribe = Str::lower($request->tribe);
+
         $profile->industry_sector = Str::lower($request->industry_sector);
         $profile->occupation = Str::lower($request->occupation);
-        $profile->position = Str::lower($request->position);
         $profile->income_level = $request->income_level;
+
+        $profile->position = Str::lower($request->position);
         $profile->affiliation = Str::lower($request->affiliation);
         $profile->facebook = Str::lower($request->facebook);
         $profile->user_id = $id;
