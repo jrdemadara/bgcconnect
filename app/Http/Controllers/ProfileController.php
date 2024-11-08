@@ -147,35 +147,35 @@ class ProfileController extends Controller
 
         $profile = $user->profile;
 
-        $profile->lastname = Str::lower($request->lastname);
-        $profile->firstname = Str::lower($request->firstname);
-        $profile->middlename = Str::lower($request->middlename);
-        $profile->extension = $request->extension ? Str::lower($request->extension) : "";
-        $profile->precinct_number = Str::lower($request->precinct_number);
+        if ($user->level < 4) {
+            $profile->lastname = Str::lower($request->lastname);
+            $profile->firstname = Str::lower($request->firstname);
+            $profile->middlename = Str::lower($request->middlename);
+            $profile->extension = $request->extension ? Str::lower($request->extension) : "";
+            $profile->precinct_number = Str::lower($request->precinct_number);
 
-        $profile->province = $request->province;
-        $profile->municipality_city = $request->municipality_city;
-        $profile->barangay = $request->barangay;
-        $profile->street = Str::lower($request->street);
+            $profile->province = $request->province;
+            $profile->municipality_city = $request->municipality_city;
+            $profile->barangay = $request->barangay;
+            $profile->street = Str::lower($request->street);
 
-        $profile->gender = Str::lower($request->gender);
-        $profile->birthdate = $request->birthdate;
-        $profile->civil_status = Str::lower($request->civil_status);
-        $profile->blood_type = $request->blood_type;
-        $profile->religion = Str::lower($request->religion);
-        $profile->tribe = Str::lower($request->tribe);
+            $profile->gender = Str::lower($request->gender);
+            $profile->birthdate = $request->birthdate;
+            $profile->civil_status = Str::lower($request->civil_status);
+            $profile->blood_type = $request->blood_type;
+            $profile->religion = Str::lower($request->religion);
+            $profile->tribe = Str::lower($request->tribe);
 
-        $profile->industry_sector = Str::lower($request->industry_sector);
-        $profile->occupation = Str::lower($request->occupation);
-        $profile->income_level = $request->income_level;
+            $profile->industry_sector = Str::lower($request->industry_sector);
+            $profile->occupation = Str::lower($request->occupation);
+            $profile->income_level = $request->income_level;
 
-        $profile->position = Str::lower($request->position);
-        $profile->affiliation = Str::lower($request->affiliation);
-        $profile->facebook = Str::lower($request->facebook);
-        $profile->user_id = $id;
-        $profile->save();
+            $profile->position = Str::lower($request->position);
+            $profile->affiliation = Str::lower($request->affiliation);
+            $profile->facebook = Str::lower($request->facebook);
+            $profile->user_id = $id;
+            $profile->save();
 
-        if ($user->level !== 4) {
             if ($user->level < 2) {
                 $user->level = 2;
                 $user->increment('points', 20);

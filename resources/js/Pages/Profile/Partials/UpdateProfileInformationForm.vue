@@ -169,8 +169,7 @@ const form = useForm({
 });
 
 const submit = () => {
-    if (user.level !== 4) {
-        console.log(profilePhoto.value);
+    if (user.level < 4) {
         if (profilePhoto.value && signaturePhoto.value) {
             form.patch(route("profile.update"), {
                 onSuccess: () => {
