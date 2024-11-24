@@ -6,8 +6,8 @@ export default defineConfig({
     server: {
         host: true,
         hmr: {
-            //!host: "192.168.50.210", // for local deployment
-            host: "localhost", // for production deployment
+            host: "192.168.50.210", // for local deployment
+            //! host: "localhost", // for production deployment
         },
     },
 

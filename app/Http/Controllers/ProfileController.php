@@ -136,9 +136,9 @@ class ProfileController extends Controller
             'tribe' => 'required|string|max:191',
             'livelihood' => 'required|string|max:191',
 
-            'industry_sector' => 'sometimes|string|max:191',
-            'occupation' => 'sometimes|string|max:191',
-            'income_level' => 'sometimes|string|max:191',
+            'industry_sector' => 'nullable|string|max:191',
+            'occupation' => 'nullable|string|max:191',
+            'income_level' => 'nullable|string|max:191',
 
             'position' => 'required|string|max:191',
             'affiliation' => 'required|string|max:191',
