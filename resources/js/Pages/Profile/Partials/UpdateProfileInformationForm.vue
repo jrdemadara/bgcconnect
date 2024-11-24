@@ -158,6 +158,7 @@ const form = useForm({
     blood_type: user.profile.blood_type,
     religion: user.profile.religion,
     tribe: user.profile.tribe,
+    livelihood: user.profile.livelihood,
 
     industry_sector: user.profile.industry_sector,
     occupation: user.profile.occupation,
@@ -773,11 +774,23 @@ onMounted(() => {
 
                 <InputError class="mt-2" :message="form.errors.tribe" />
             </div>
+
+            <div>
+                <InputLabel for="livelihood" value="Livelihood" />
+                <TextInput
+                    id="livelihood"
+                    type="text"
+                    class="mt-1 block w-full capitalize"
+                    v-model="form.livelihood"
+                    autocomplete="livelihood"
+                />
+                <InputError class="mt-2" :message="form.errors.livelihood" />
+            </div>
         </div>
 
         <div class="w-full h-0.5 mt-4 bg-gray-100 dark:bg-gray-600"></div>
         <p class="font-bold text-lg text-gray-700 dark:text-gray-300">
-            Socioeconomic Information
+            Socioeconomic Information <small>(optional)</small>
         </p>
 
         <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
@@ -788,7 +801,6 @@ onMounted(() => {
                     id="tribe"
                     class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 focus:border-blue-500 dark:focus:border-blue-600 focus:ring-blue-500 dark:focus:ring-blue-500 rounded-md shadow-sm"
                     v-model="form.industry_sector"
-                    required
                     autofocus
                 >
                     <option value="agriculture">Agriculture</option>
@@ -839,7 +851,6 @@ onMounted(() => {
                     id="occupation"
                     class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 focus:border-blue-500 dark:focus:border-blue-600 focus:ring-blue-500 dark:focus:ring-blue-500 rounded-md shadow-sm"
                     v-model="form.occupation"
-                    required
                     autofocus
                 >
                     <option value="accountant">Accountant</option>
@@ -887,7 +898,6 @@ onMounted(() => {
                     id="income_level"
                     class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 focus:border-blue-500 dark:focus:border-blue-600 focus:ring-blue-500 dark:focus:ring-blue-500 rounded-md shadow-sm"
                     v-model="form.income_level"
-                    required
                     autofocus
                 >
                     <option value="below-10000">Below ₱10,000</option>

@@ -36,6 +36,7 @@ return new class extends Migration
             $table->string('blood_type')->nullable();
             $table->string('religion')->nullable();
             $table->string('tribe')->nullable();
+
             $table->string('industry_sector')->nullable();
             $table->string('occupation')->nullable();
             $table->string('income_level')->nullable();

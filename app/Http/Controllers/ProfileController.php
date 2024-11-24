@@ -134,10 +134,13 @@ class ProfileController extends Controller
             'blood_type' => 'required|string|max:191',
             'religion' => 'required|string|max:191',
             'tribe' => 'required|string|max:191',
-            'industry_sector' => 'required|string|max:191',
-            'occupation' => 'required|string|max:191',
+            'livelihood' => 'required|string|max:191',
+
+            'industry_sector' => 'sometimes|string|max:191',
+            'occupation' => 'sometimes|string|max:191',
+            'income_level' => 'sometimes|string|max:191',
+
             'position' => 'required|string|max:191',
-            'income_level' => 'required|string|max:191',
             'affiliation' => 'required|string|max:191',
             'facebook' => 'required|string|max:191',
         ]);
@@ -165,6 +168,7 @@ class ProfileController extends Controller
             $profile->blood_type = $request->blood_type;
             $profile->religion = Str::lower($request->religion);
             $profile->tribe = Str::lower($request->tribe);
+            $profile->livelihood = Str::lower($request->livelihood);
 
             $profile->industry_sector = Str::lower($request->industry_sector);
             $profile->occupation = Str::lower($request->occupation);

@@ -20,6 +20,7 @@ export interface Profile {
     blood_type: string;
     religion: string;
     tribe: string;
+    livelihood: string;
     industry_sector: string;
     occupation: string;
     position: string;

@@ -31,6 +31,7 @@ class Profile extends Model
         'blood_type',
         'religion',
         'tribe',
+        'livelihood',
         'industry_sector',
         'occupation',
         'income_level',

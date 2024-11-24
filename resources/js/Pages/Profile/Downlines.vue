@@ -15,8 +15,8 @@ const chartRef = ref(null);
 
 const createChart = (data) => {
     // Specify the chart’s dimensions
-    const width = 1700; // Increased width for zoomability
-    const height = 1700; // Increased height for zoomability
+    const width = 1800; // Increased width for zoomability
+    const height = 1800; // Increased height for zoomability
     const cx = width * 0.5; // center x
     const cy = height * 0.5; // center y
     const radius = Math.min(width, height) / 1.2; // radius for the radial tree layout
