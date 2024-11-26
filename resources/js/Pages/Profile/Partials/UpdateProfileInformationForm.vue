@@ -180,7 +180,6 @@ const submit = () => {
                 },
                 onError: (e) => {
                     toast.error("Something went wrong, Please try again.");
-                    console.log(e);
                 },
             });
         } else {

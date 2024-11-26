@@ -206,7 +206,7 @@ class ProfileController extends Controller
         $id = Auth::id();
 
         // Fetch the user's profile
-        $profile = Profile::findOrFail($id); // Use findOrFail for better error handling
+        $profile = Profile::where('user_id', $id)->first();
 
         // Delete existing avatar if it exists
         if ($profile->avatar && Storage::disk('s3')->exists($profile->avatar)) {
@@ -238,7 +238,7 @@ class ProfileController extends Controller
         $id = Auth::id();
 
         // Fetch the user's profile
-        $profile = Profile::findOrFail($id); // Use findOrFail for better error handling
+        $profile = Profile::where('user_id', $id)->first();
 
         // Delete existing avatar if it exists
         if ($profile->esig && Storage::disk('s3')->exists($profile->esig)) {
