@@ -32,7 +32,8 @@ class IDVerificationController extends Controller
         $user = User::findOrFail($id);
 
         // Get authenticated user's profile
-        $profile = Profile::findOrFail(Auth::id());
+        //$profile = Profile::findOrFail(Auth::id());//! YAWA KAAAAAA!
+        $profile = Profile::where('user_id', $id)->first();
 
         if ($user->level == 3) {
             // Delete existing ID photos from S3 if they exist
