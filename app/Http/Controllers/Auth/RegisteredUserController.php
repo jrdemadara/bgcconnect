@@ -65,10 +65,10 @@ class RegisteredUserController extends Controller
         ]);
 
         // Create the referral record
-        $user->referrals()->create([
-            'referrer_id' => $referrer,
-            'referred_id' => $user->id,
-        ]);
+        $referral = new Referrals();
+        $referral->referrer_id = $referrer;
+        $referral->referred_id = $user->id;
+        $referral->save();
 
         // Create the user profile
         Profile::create([
