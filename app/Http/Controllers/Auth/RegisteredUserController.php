@@ -11,6 +11,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rules;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -36,46 +37,52 @@ class RegisteredUserController extends Controller
             'code' => 'required|string|max:255',
             'firstname' => 'required|string|max:255',
             'lastname' => 'required|string|max:255',
-            'phone' => 'required|string|max:11|unique:' . User::class,
+            'phone' => 'required|string|max:11|unique:users',
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-
         ]);
 
-        $referrer = User::where('code', $request->code)->pluck('id')->first();
+        // Check if the referrer exists
+        $referrer = User::where('code', Str::lower($request->code))->pluck('id')->first();
 
+        if (!$referrer) {
+            return redirect()->back()->withErrors(['code' => 'No referrer found']);
+        }
+
+        // Create the user
         $user = User::create([
             'phone' => $request->phone,
             'password' => Hash::make($request->password),
             'code' => $this->generateRandomString(),
             'referred_by' => $referrer,
-            'points',
+            'points' => 10, // Registration bonus points
         ]);
 
-        $user->increment('points', 10);
+        // Log the transaction
         $user->transactions()->create([
             'points_earned' => 10,
-            'description' => 'registration bonus',
+            'description' => 'Registration bonus',
         ]);
 
-        if ($referrer) {
-            // Create referral
-            $referral = new Referrals();
-            $referral->referrer_id = $referrer;
-            $referral->referred_id = $user->id;
-            $referral->save();
-        }
+        // Create the referral record
+        $user->referrals()->create([
+            'referrer_id' => $referrer,
+        ]);
 
+        // Create the user profile
         Profile::create([
             'firstname' => $request->firstname,
             'lastname' => $request->lastname,
             'user_id' => $user->id,
         ]);
 
+        // Trigger the registered event
         event(new Registered($user));
 
+        // Log in the user
         Auth::login($user);
 
-        return redirect(route('profile.index', absolute: false));
+        // Redirect to the profile page
+        return redirect()->route('profile.index');
     }
 
     private function generateRandomString()
