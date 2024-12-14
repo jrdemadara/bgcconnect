@@ -67,6 +67,7 @@ class RegisteredUserController extends Controller
         // Create the referral record
         $user->referrals()->create([
             'referrer_id' => $referrer,
+            'referred_id' => $user->id,
         ]);
 
         // Create the user profile
