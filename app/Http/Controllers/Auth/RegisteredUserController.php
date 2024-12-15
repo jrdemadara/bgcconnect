@@ -42,11 +42,10 @@ class RegisteredUserController extends Controller
         ]);
 
         // Check if the referrer exists
-        $referrer = User::where('code', Str::lower($request->code))->pluck('id')->first();
+        $referrer = User::where('code', $request->code)->pluck('id')->first();
 
-        if (!$referrer) {
-            return response()->json(['error' => 'File upload failed'], 404);
-
+        if ($referrer) {
+            return response()->json(['error' => 'referrer not found'], 404);
         }
 
         // Create the user
