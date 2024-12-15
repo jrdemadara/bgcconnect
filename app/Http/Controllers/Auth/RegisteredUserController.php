@@ -44,8 +44,9 @@ class RegisteredUserController extends Controller
         // Check if the referrer exists
         $referrer = User::where('code', $request->code)->pluck('id')->first();
 
-        if ($referrer) {
-            return response()->json(['error' => 'referrer not found'], 404);
+        if (empty($referrer)) {
+            return redirect()->back()->withErrors(['code' => 'Referrer not found. Please make sure the code is correct.']);
+
         }
 
         // Create the user
@@ -57,29 +58,29 @@ class RegisteredUserController extends Controller
             'points' => 10, // Registration bonus points
         ]);
 
-        // Log the transaction
+// Log the transaction
         $user->transactions()->create([
             'points_earned' => 10,
             'description' => 'Registration bonus',
         ]);
 
-        // Create the referral record
+// Create the referral record
         $referral = new Referrals();
         $referral->referrer_id = $referrer;
         $referral->referred_id = $user->id;
         $referral->save();
 
-        // Create the user profile
+// Create the user profile
         Profile::create([
             'firstname' => $request->firstname,
             'lastname' => $request->lastname,
             'user_id' => $user->id,
         ]);
 
-        // Trigger the registered event
+// Trigger the registered event
         event(new Registered($user));
 
-        // Log in the user
+// Log in the user
         Auth::login($user);
 
         // Redirect to the profile page
