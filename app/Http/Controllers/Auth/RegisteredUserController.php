@@ -46,7 +46,6 @@ class RegisteredUserController extends Controller
 
         if (empty($referrer)) {
             return redirect()->back()->withErrors(['code' => 'Referrer not found. Please make sure the code is correct.']);
-
         }
 
         // Create the user

@@ -1,6 +1,10 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { Head, Link } from "@inertiajs/vue3";
+
+onMounted(() => {
+    localStorage.clear();
+});
 
 defineProps<{
     canLogin?: boolean;
