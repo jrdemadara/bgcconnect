@@ -156,7 +156,8 @@ const resetPassword = () => {
 
         <div v-if="pageState == 'reset-password'">
             <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
-                A password reset code has been sent to your phone number.
+                Kindly create a new password to secure your account. Make sure
+                it is strong and unique!
             </div>
             <form @submit.prevent="resetPassword">
                 <div class="mt-4">
