@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Log;
 use App\Models\Profile;
 use App\Models\Referrals;
 use App\Models\User;
@@ -10,7 +11,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules;
 use Inertia\Inertia;
@@ -79,12 +79,16 @@ class RegisteredUserController extends Controller
         // Trigger the registered event
         event(new Registered($user));
 
-        Log::channel('useraction')->info('New user registered', [
-            'user_id'     => $user->id,
-            'name'        => $profile->lastname . ' ' . $profile->firstname,
-            'phone'       => $user->phone,
-            'referred_by' => $user->referred_by,
-            'ip_address'  => $request->ip(),
+        Log::create([
+            'type'       => 'info',
+            'content'    => [
+                'action'      => 'register',
+                'user_id'     => $user->id,
+                'name'        => $profile->lastname . ' ' . $profile->firstname,
+                'phone'       => $user->phone,
+                'referred_by' => $user->referred_by,
+            ],
+            'ip_address' => $request->ip(),
         ]);
 
         // Log in the user

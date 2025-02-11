@@ -1,11 +1,11 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Models\Log;
 use App\Models\Settings;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -103,9 +103,13 @@ class PhoneVerificationController extends Controller
             // Delete the Redis key
             Redis::del($verificationCodeKey);
 
-            Log::channel('useraction')->info('Phone verification', [
-                'user_id'    => $user->id,
-                'phone'      => $user->phone,
+            Log::create([
+                'type'       => 'info',
+                'content'    => [
+                    'action'  => 'phone_verification',
+                    'user_id' => $user->id,
+                    'phone'   => $user->phone,
+                ],
                 'ip_address' => $request->ip(),
             ]);
 

@@ -192,12 +192,16 @@ class ProfileController extends Controller
 
             }
 
-            Log::channel('useraction')->info('Update user', [
-                'user_id'     => $user->id,
-                'name'        => $profile->lastname . ' ' . $profile->firstname,
-                'phone'       => $user->phone,
-                'referred_by' => $user->referred_by,
-                'ip_address'  => $request->ip(),
+            Log::create([
+                'type'       => 'info',
+                'content'    => [
+                    'action'      => 'profile_update',
+                    'user_id'     => $user->id,
+                    'name'        => $profile->lastname . ' ' . $profile->firstname,
+                    'phone'       => $user->phone,
+                    'referred_by' => $user->referred_by,
+                ],
+                'ip_address' => $request->ip(),
             ]);
 
         }
