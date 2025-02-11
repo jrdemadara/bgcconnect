@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
@@ -11,6 +10,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules;
 use Inertia\Inertia;
@@ -34,11 +34,11 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'code' => 'required|string|max:255',
+            'code'      => 'required|string|max:255',
             'firstname' => 'required|string|max:255',
-            'lastname' => 'required|string|max:255',
-            'phone' => 'required|string|max:11|unique:users',
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'lastname'  => 'required|string|max:255',
+            'phone'     => 'required|string|max:11|unique:users',
+            'password'  => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
         // Check if the referrer exists
@@ -50,36 +50,44 @@ class RegisteredUserController extends Controller
 
         // Create the user
         $user = User::create([
-            'phone' => $request->phone,
-            'password' => Hash::make($request->password),
-            'code' => $this->generateRandomString(),
+            'phone'       => $request->phone,
+            'password'    => Hash::make($request->password),
+            'code'        => $this->generateRandomString(),
             'referred_by' => $referrer,
-            'points' => 10, // Registration bonus points
+            'points'      => 10, // Registration bonus points
         ]);
 
-// Log the transaction
+        // Log the transaction
         $user->transactions()->create([
             'points_earned' => 10,
-            'description' => 'Registration bonus',
+            'description'   => 'Registration bonus',
         ]);
 
-// Create the referral record
-        $referral = new Referrals();
+        // Create the referral record
+        $referral              = new Referrals();
         $referral->referrer_id = $referrer;
         $referral->referred_id = $user->id;
         $referral->save();
 
-// Create the user profile
-        Profile::create([
+        // Create the user profile
+        $profile = Profile::create([
             'firstname' => $request->firstname,
-            'lastname' => $request->lastname,
-            'user_id' => $user->id,
+            'lastname'  => $request->lastname,
+            'user_id'   => $user->id,
         ]);
 
-// Trigger the registered event
+        // Trigger the registered event
         event(new Registered($user));
 
-// Log in the user
+        Log::channel('useraction')->info('New user registered', [
+            'user_id'     => $user->id,
+            'name'        => $profile->lastname . ' ' . $profile->firstname,
+            'phone'       => $user->phone,
+            'referred_by' => $user->referred_by,
+            'ip_address'  => $request->ip(),
+        ]);
+
+        // Log in the user
         Auth::login($user);
 
         // Redirect to the profile page
@@ -94,5 +102,4 @@ class RegisteredUserController extends Controller
         // Shuffle and pick random characters
         return substr(str_shuffle(str_repeat($characters, 12)), 0, 12);
     }
-
 }

@@ -1,11 +1,11 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Settings;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -29,8 +29,8 @@ class PhoneVerificationController extends Controller
         if ($user->level == 2) {
             $settings = Settings::find(1);
 
-            $last_channel = $settings->last_channel;
-            $channel_size = $settings->channel_size;
+            $last_channel        = $settings->last_channel;
+            $channel_size        = $settings->channel_size;
             $verification_expiry = $settings->verification_expiry;
 
             // Generate a random verification code
@@ -39,12 +39,12 @@ class PhoneVerificationController extends Controller
             // Store the verification code in Redis with an expiration of 1 hour
             Redis::setex("verification_code:{$user->id}", $verification_expiry, $verificationCode);
 
-            // Determine the next channel (ensure it loops back to '1' after '5')
+                                                                 // Determine the next channel (ensure it loops back to '1' after '5')
             $next_channel = ($last_channel % $channel_size) + 1; // Assuming you have 5 channels (sms1, sms2, ..., sms5)
 
             // Prepare and publish the message to the next SMS channel
             Redis::publish('sms' . $next_channel, json_encode([
-                'phone_number' => $phone,
+                'phone_number'      => $phone,
                 'verification_code' => $verificationCode,
             ]));
 
@@ -67,15 +67,15 @@ class PhoneVerificationController extends Controller
             $settings = Settings::find(1);
 
             $multilevel_size = $settings->multilevel_size;
-            $direct_points = $settings->direct_points;
+            $direct_points   = $settings->direct_points;
             $downline_points = $settings->downline_points;
 
-            $id = Auth::id();
+            $id                  = Auth::id();
             $verificationCodeKey = "verification_code:$id";
-            $verification_code = Redis::get($verificationCodeKey);
+            $verification_code   = Redis::get($verificationCodeKey);
 
             // Validate the verification code
-            if (!$verification_code || $request->verification_code !== $verification_code) {
+            if (! $verification_code || $request->verification_code !== $verification_code) {
                 return response()->json(['error' => 'Invalid verification code.'], 400);
             }
 
@@ -83,13 +83,13 @@ class PhoneVerificationController extends Controller
             $user = User::findOrFail($id);
             $user->update([
                 'phone_verified_at' => now(),
-                'level' => 3,
+                'level'             => 3,
             ]);
 
             $user->increment('points', 30);
             $user->transactions()->create([
                 'points_earned' => 30,
-                'description' => 'phone verification bonus',
+                'description'   => 'phone verification bonus',
             ]);
 
             // If user has referrer, create transaction
@@ -102,6 +102,12 @@ class PhoneVerificationController extends Controller
 
             // Delete the Redis key
             Redis::del($verificationCodeKey);
+
+            Log::channel('useraction')->info('Phone verification', [
+                'user_id'    => $user->id,
+                'phone'      => $user->phone,
+                'ip_address' => $request->ip(),
+            ]);
 
             return response()->json(['message' => 'Verification successful.'], 200);
 
@@ -161,7 +167,7 @@ class PhoneVerificationController extends Controller
         // Optionally, log the transaction
         $user->transactions()->create([
             'points_earned' => $points,
-            'description' => 'referral bonus',
+            'description'   => 'referral bonus',
         ]);
     }
 

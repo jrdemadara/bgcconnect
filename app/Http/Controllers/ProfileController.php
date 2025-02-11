@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\ActivityAttendees;
@@ -16,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -28,7 +28,7 @@ class ProfileController extends Controller
     // Display the user's profile form.
     public function index(Request $request): Response
     {
-        $user = Auth::user();
+        $user    = Auth::user();
         $profile = Profile::where('user_id', $user->id)
             ->select('firstname', 'lastname', 'avatar', 'province', 'municipality_city', 'barangay')
             ->first();
@@ -41,7 +41,7 @@ class ProfileController extends Controller
         ? Storage::temporaryUrl($profile->avatar, now()->addMinutes(10))
         : '';
 
-        $downline = User::where('referred_by', $user->id)->count();
+        $downline    = User::where('referred_by', $user->id)->count();
         $allDownline = DB::select('
     WITH RECURSIVE referral_hierarchy AS (
         SELECT id, referred_by FROM users WHERE id = ?
@@ -58,23 +58,23 @@ class ProfileController extends Controller
         $activitiesCount = ActivityAttendees::where('user_id', $user->id)->count();
 
         return Inertia::render('Profile/Profile', [
-            'status' => session('status'),
-            'avatar' => $avatarUrl,
-            'profile' => $profile,
-            'draw' => $draw ? $draw->draw_date : null,
-            'downline' => $downline,
-            'all_downline' => !empty($allDownline) ? $allDownline[0]->downline_count : 0,
-            'activities' => $activitiesCount,
-            'points_comparison' => $this->getPointsChange($user->id),
-            'referral_comparison' => $this->getReferralChange($user->id),
-            'activity_comparison' => $this->getActivityChange($user->id),
+            'status'               => session('status'),
+            'avatar'               => $avatarUrl,
+            'profile'              => $profile,
+            'draw'                 => $draw ? $draw->draw_date : null,
+            'downline'             => $downline,
+            'all_downline'         => ! empty($allDownline) ? $allDownline[0]->downline_count : 0,
+            'activities'           => $activitiesCount,
+            'points_comparison'    => $this->getPointsChange($user->id),
+            'referral_comparison'  => $this->getReferralChange($user->id),
+            'activity_comparison'  => $this->getActivityChange($user->id),
             'downlines_comparison' => $this->getDownlineChange($user->id),
         ]);
     }
 
     public function getUser()
     {
-        $user = Auth::user();
+        $user      = Auth::user();
         $firstname = Profile::where('user_id', $user->id)
             ->pluck('firstname')
             ->first();
@@ -83,7 +83,7 @@ class ProfileController extends Controller
 
         return response()->json([
             'user_code' => $user->code,
-            'level' => $user->level,
+            'level'     => $user->level,
             'firstname' => $firstname,
             'draw_date' => $drawExists,
 
@@ -93,24 +93,24 @@ class ProfileController extends Controller
     // Display the user's profile form for edit.
     public function edit(Request $request): Response
     {
-        $user = Auth::user();
+        $user    = Auth::user();
         $profile = $user->profile;
 
         // Use an empty object as a fallback if the profile is null
         $profile = $profile ?? (object) [
-            'province' => null,
+            'province'          => null,
             'municipality_city' => null,
-            'barangay' => null,
+            'barangay'          => null,
         ];
 
         // Render the view, ensuring that we handle potential null values
         return Inertia::render('Profile/Edit', [
-            'status' => session('status'),
-            'user' => $user,
-            'profile' => $profile,
-            'province' => $profile->province ?? '', // Safely access description or return empty
+            'status'       => session('status'),
+            'user'         => $user,
+            'profile'      => $profile,
+            'province'     => $profile->province ?? '', // Safely access description or return empty
             'municipality' => $profile->municipality_city ?? '',
-            'barangay' => $profile->barangay ?? '',
+            'barangay'     => $profile->barangay ?? '',
         ]);
 
     }
@@ -121,63 +121,63 @@ class ProfileController extends Controller
     {
 
         $request->validate([
-            'lastname' => 'required|string|max:191',
-            'firstname' => 'required|string|max:191',
-            'middlename' => 'required|string|max:191',
-            'province' => 'required|string|max:191',
+            'lastname'          => 'required|string|max:191',
+            'firstname'         => 'required|string|max:191',
+            'middlename'        => 'required|string|max:191',
+            'province'          => 'required|string|max:191',
             'municipality_city' => 'required|string|max:191',
-            'barangay' => 'required|string|max:191',
-            'street' => 'required|string|max:191',
-            'gender' => 'required|string|max:191',
-            'birthdate' => 'required|string|max:191',
-            'civil_status' => 'required|string|max:191',
-            'blood_type' => 'required|string|max:191',
-            'religion' => 'required|string|max:191',
-            'tribe' => 'required|string|max:191',
-            'livelihood' => 'required|string|max:191',
+            'barangay'          => 'required|string|max:191',
+            'street'            => 'required|string|max:191',
+            'gender'            => 'required|string|max:191',
+            'birthdate'         => 'required|string|max:191',
+            'civil_status'      => 'required|string|max:191',
+            'blood_type'        => 'required|string|max:191',
+            'religion'          => 'required|string|max:191',
+            'tribe'             => 'required|string|max:191',
+            'livelihood'        => 'required|string|max:191',
 
-            'industry_sector' => 'nullable|string|max:191',
-            'occupation' => 'nullable|string|max:191',
-            'income_level' => 'nullable|string|max:191',
+            'industry_sector'   => 'nullable|string|max:191',
+            'occupation'        => 'nullable|string|max:191',
+            'income_level'      => 'nullable|string|max:191',
 
-            'position' => 'required|string|max:191',
-            'affiliation' => 'required|string|max:191',
-            'facebook' => 'required|string|max:191',
+            'position'          => 'required|string|max:191',
+            'affiliation'       => 'required|string|max:191',
+            'facebook'          => 'required|string|max:191',
         ]);
 
-        $id = Auth::id();
+        $id   = Auth::id();
         $user = User::findOrFail($id);
 
         $profile = $user->profile;
 
         if ($user->level < 4) {
-            $profile->lastname = Str::lower($request->lastname);
-            $profile->firstname = Str::lower($request->firstname);
-            $profile->middlename = Str::lower($request->middlename);
-            $profile->extension = $request->extension ? Str::lower($request->extension) : "";
+            $profile->lastname        = Str::lower($request->lastname);
+            $profile->firstname       = Str::lower($request->firstname);
+            $profile->middlename      = Str::lower($request->middlename);
+            $profile->extension       = $request->extension ? Str::lower($request->extension) : "";
             $profile->precinct_number = Str::lower($request->precinct_number);
 
-            $profile->province = $request->province;
+            $profile->province          = $request->province;
             $profile->municipality_city = $request->municipality_city;
-            $profile->barangay = $request->barangay;
-            $profile->street = Str::lower($request->street);
+            $profile->barangay          = $request->barangay;
+            $profile->street            = Str::lower($request->street);
 
-            $profile->gender = Str::lower($request->gender);
-            $profile->birthdate = $request->birthdate;
+            $profile->gender       = Str::lower($request->gender);
+            $profile->birthdate    = $request->birthdate;
             $profile->civil_status = Str::lower($request->civil_status);
-            $profile->blood_type = $request->blood_type;
-            $profile->religion = Str::lower($request->religion);
-            $profile->tribe = Str::lower($request->tribe);
-            $profile->livelihood = Str::lower($request->livelihood);
+            $profile->blood_type   = $request->blood_type;
+            $profile->religion     = Str::lower($request->religion);
+            $profile->tribe        = Str::lower($request->tribe);
+            $profile->livelihood   = Str::lower($request->livelihood);
 
             $profile->industry_sector = Str::lower($request->industry_sector);
-            $profile->occupation = Str::lower($request->occupation);
-            $profile->income_level = $request->income_level;
+            $profile->occupation      = Str::lower($request->occupation);
+            $profile->income_level    = $request->income_level;
 
-            $profile->position = Str::lower($request->position);
+            $profile->position    = Str::lower($request->position);
             $profile->affiliation = Str::lower($request->affiliation);
-            $profile->facebook = Str::lower($request->facebook);
-            $profile->user_id = $id;
+            $profile->facebook    = Str::lower($request->facebook);
+            $profile->user_id     = $id;
             $profile->save();
 
             if ($user->level < 2) {
@@ -187,10 +187,19 @@ class ProfileController extends Controller
 
                 $user->transactions()->create([
                     'points_earned' => 20,
-                    'description' => 'profile completion bonus',
+                    'description'   => 'profile completion bonus',
                 ]);
 
             }
+
+            Log::channel('useraction')->info('Update user', [
+                'user_id'     => $user->id,
+                'name'        => $profile->lastname . ' ' . $profile->firstname,
+                'phone'       => $user->phone,
+                'referred_by' => $user->referred_by,
+                'ip_address'  => $request->ip(),
+            ]);
+
         }
 
         return redirect(route('profile.edit'));
@@ -217,7 +226,7 @@ class ProfileController extends Controller
         $path = $request->file('avatar')->store('users');
 
         // Check if the file upload was successful
-        if (!$path) {
+        if (! $path) {
             return response()->json(['error' => 'File upload failed'], 500);
         }
 
@@ -249,7 +258,7 @@ class ProfileController extends Controller
         $path = $request->file('signature')->store('signature');
 
         // Check if the file upload was successful
-        if (!$path) {
+        if (! $path) {
             return response()->json(['error' => 'File upload failed'], 500);
         }
 
@@ -285,11 +294,11 @@ class ProfileController extends Controller
     {
         // Get the current date and the first and last day of the current month
         $startOfMonth = Carbon::now()->startOfMonth();
-        $endOfMonth = Carbon::now()->endOfMonth();
+        $endOfMonth   = Carbon::now()->endOfMonth();
 
         // Get the first and last day of the previous month
         $startOfLastMonth = Carbon::now()->subMonth()->startOfMonth();
-        $endOfLastMonth = Carbon::now()->subMonth()->endOfMonth();
+        $endOfLastMonth   = Carbon::now()->subMonth()->endOfMonth();
 
         // Retrieve total points for the current month
         $currentMonthPoints = Transaction::where('user_id', $userId)
@@ -310,7 +319,7 @@ class ProfileController extends Controller
         }
 
         // Format the percentage change with + or - sign
-        $sign = $percentageChange >= 0 ? '+' : '-';
+        $sign             = $percentageChange >= 0 ? '+' : '-';
         $percentageChange = abs($percentageChange); // Convert to positive for display
 
         // Return the result as a string with + or - sign
@@ -321,11 +330,11 @@ class ProfileController extends Controller
     {
         // Get the current date and the first and last day of the current month
         $startOfMonth = Carbon::now()->startOfMonth();
-        $endOfMonth = Carbon::now()->endOfMonth();
+        $endOfMonth   = Carbon::now()->endOfMonth();
 
         // Get the first and last day of the previous month
         $startOfLastMonth = Carbon::now()->subMonth()->startOfMonth();
-        $endOfLastMonth = Carbon::now()->subMonth()->endOfMonth();
+        $endOfLastMonth   = Carbon::now()->subMonth()->endOfMonth();
 
         // Retrieve total points for the current month
         $currentMonth = Referrals::where('referrer_id', $userId)
@@ -346,7 +355,7 @@ class ProfileController extends Controller
         }
 
         // Format the percentage change with + or - sign
-        $sign = $percentageChange >= 0 ? '+' : '-';
+        $sign             = $percentageChange >= 0 ? '+' : '-';
         $percentageChange = abs($percentageChange); // Convert to positive for display
 
         // Return the result as a string with + or - sign
@@ -357,11 +366,11 @@ class ProfileController extends Controller
     {
         // Get the current date and the first and last day of the current month
         $startOfMonth = Carbon::now()->startOfMonth();
-        $endOfMonth = Carbon::now()->endOfMonth();
+        $endOfMonth   = Carbon::now()->endOfMonth();
 
         // Get the first and last day of the previous month
         $startOfLastMonth = Carbon::now()->subMonth()->startOfMonth();
-        $endOfLastMonth = Carbon::now()->subMonth()->endOfMonth();
+        $endOfLastMonth   = Carbon::now()->subMonth()->endOfMonth();
 
         // Retrieve total points for the current month
         $currentMonth = ActivityAttendees::where('user_id', $userId)
@@ -382,7 +391,7 @@ class ProfileController extends Controller
         }
 
         // Format the percentage change with + or - sign
-        $sign = $percentageChange >= 0 ? '+' : '-';
+        $sign             = $percentageChange >= 0 ? '+' : '-';
         $percentageChange = abs($percentageChange); // Convert to positive for display
 
         // Return the result as a string with + or - sign
@@ -422,11 +431,11 @@ class ProfileController extends Controller
         AND created_at < DATE_FORMAT(NOW() ,\'%Y-%m-01\')
     ', [$userId]);
 
-        $currentCount = $currentMonthCount[0]->current_month_count ?? 0;
+        $currentCount  = $currentMonthCount[0]->current_month_count ?? 0;
         $previousCount = $previousMonthCount[0]->previous_month_count ?? 0;
 
         // Ensure both counts are integers
-        $currentCount = intval($currentCount);
+        $currentCount  = intval($currentCount);
         $previousCount = intval($previousCount);
 
         // Calculate percentage change
@@ -442,7 +451,7 @@ class ProfileController extends Controller
         }
 
         // Format the percentage change
-        $sign = $percentageChange >= 0 ? '+' : '-';
+        $sign             = $percentageChange >= 0 ? '+' : '-';
         $percentageChange = abs($percentageChange); // Get the absolute value for display
 
         return $sign . number_format($percentageChange, 0); // Return the result
